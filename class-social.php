@@ -10,7 +10,7 @@ function __construct() {
   self::$_this = $this;
 
   add_filter("rsssl_fixer_output",array($this, "fix_social"));
-  add_filter( 'update_easy_social_share_url', array($this, 'fix_easy_social_share'));
+  add_filter('update_easy_social_share_url', array($this, 'fix_easy_social_share'));
 }
 
 static function this() {
@@ -34,7 +34,8 @@ public function use_http(){
   global $post;
   if ($post) {
     $start_date = strtotime(get_option("rsssl_soc_start_date_ssl"));
-    $publish_date = strtotime(get_the_date(get_option('date_format'), $post->ID));
+    $publish_date = get_post_time('U', false, $post->ID);
+    //$publish_date = strtotime(get_the_date(get_option('date_format'), $post->ID));
     // error_log("start date ".get_option("rsssl_soc_start_date_ssl"));
     // error_log("start date unix time ".$start_date);
     // error_log("publish date unix time".$publish_date);
@@ -92,6 +93,7 @@ public function fix_social($html) {
     $html = str_replace('href="http://www.facebook.com/sharer.php?u=' . $https_url_encoded ,'href="http://www.facebook.com/sharer.php?u=' . $http_url_encoded , $html);
     $html = str_replace('www.facebook.com/plugins/like.php?href=' . $https_url , 'www.facebook.com/plugins/like.php?href='. $http_url , $html);
 
+    $html = apply_filters('rsssl_social_use_http_urls', $html);
     //verification
     $html = str_replace('data-rsssl', 'data-rssslsocial=1 data-rsssl', $html);
   } else {

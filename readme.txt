@@ -19,13 +19,15 @@ Recovers the lost Facebook likes that can be lost when you change your domain to
 * Click “license”
 * Enter your license key, and activate.
 
-
 For more information: go to the [website](https://www.really-simple-ssl.com/), or
 [contact](https://www.really-simple-ssl.com/contact/) me if you have any questions or suggestions.
 
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 1.0.1 =
+Changed retrieval of post date to unix time.
+
 = 1.0.0 =
 Initial release
 
