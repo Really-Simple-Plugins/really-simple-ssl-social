@@ -79,7 +79,7 @@ public function fix_social($html) {
     $html = str_replace('addthis:url="https://', 'addthis:url="http://', $html);
     $pattern = '/addthis_sharing_toolbox.*?data-url=[\'"]\K('.$preg_url.')/i';
     $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
-
+    $html = str_replace('graph.facebook.com/?id=' . $https_url_encoded, 'graph.facebook.com/?id=' . $http_url_encoded, $html);
 
     /*Jetpack */
     $pattern = '/fb-share-button.*?data-href=[\'"]\K('.$preg_url.')/i';
