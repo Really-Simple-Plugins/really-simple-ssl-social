@@ -66,6 +66,11 @@ public function fix_social($html) {
       $html = str_replace('rel="canonical" href="'.$https_url, 'rel="canonical" href="'.$http_url, $html);
     }
 
+    /*shareaholic*/
+    $pattern = '/shareaholic-canvas.*?data-link=[\'"]\K('.$preg_url.')/';
+    $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
+    $html = str_replace("name='shareaholic:url' content='".$https_url, "name='shareaholic:url' content='".$http_url, $html);
+
     /*default facebook like button */
     $html = str_replace('data-href="'.$https_url, 'data-href="'.$http_url, $html);
     $html = str_replace('<fb:like href="'.$https_url, '<fb:like href="'.$http_url, $html);
