@@ -44,14 +44,23 @@ public function add_settings(){
   global $really_simple_ssl;
   //add_settings_section('section_rssslpp', __("Pro", "really-simple-ssl-soc"), array($this, "section_text"), 'rlrsssl');
   register_setting( 'rlrsssl_options', 'rsssl_soc_start_date_ssl', array($this,'options_validate') );
+  register_setting( 'rlrsssl_options', 'rsssl_soc_replace_ogurl', array($this,'options_validate') );
   add_settings_field('id_start_date_social', __("Set the date when your site went https, so Really Simple Social can switch your social account between http and https","really-simple-ssl-soc"), array($this,'get_option_start_date_social'), 'rlrsssl', 'rlrsssl_settings');
+  add_settings_field('id_replace_ogurl', __("Replace &lt;meta og:url to http as well. This migth cause issues in combination with a 301 redirect.","really-simple-ssl-soc"), array($this,'get_option_replace_ogurl'), 'rlrsssl', 'rlrsssl_settings');
+
 }
 
 public function get_option_start_date_social() {
   global $really_simple_ssl;
   $start_date_social = get_option('rsssl_soc_start_date_ssl');
 
-  echo '<input id="rsssl_admin_mixed_content_fixer" name="rsssl_soc_start_date_ssl" size="40" type="date" value="'.$start_date_social.'" />';
+  echo '<input id="rsssl_soc_start_date_ssl" name="rsssl_soc_start_date_ssl" size="40" type="date" value="'.$start_date_social.'" />';
+}
+
+public function get_option_replace_ogurl() {
+  global $really_simple_ssl;
+  $replace_ogurl = get_option('rsssl_soc_replace_ogurl');
+  echo '<input id="rsssl_soc_replace_ogurl" name="rsssl_soc_replace_ogurl" size="40" type="checkbox" value="1"' . checked( 1, $replace_ogurl, false ) ." />";
 }
 
 

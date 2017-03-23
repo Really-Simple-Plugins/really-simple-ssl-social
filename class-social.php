@@ -49,7 +49,6 @@ public function use_http(){
 }
 
 public function fix_social($html) {
-
   if ($this->use_http()) {
 
     $preg_url = str_replace(array("/", "."),array("\/", "\."),home_url());
@@ -60,8 +59,16 @@ public function fix_social($html) {
     $https_url_encoded = urlencode($https_url);
     $preg_url_encoded = str_replace(array("/", ".") , array("\/", "\."),$https_url_encoded);
 
+    /*<meta og:url */
+    $replace_ogurl = get_option('rsssl_soc_replace_ogurl');
+    if ($replace_ogurl) {
+      $html = str_replace('<meta property="og:url" content="'.$https_url, '<meta property="og:url" content="'.$http_url, $html);
+      $html = str_replace('rel="canonical" href="'.$https_url, 'rel="canonical" href="'.$http_url, $html);
+    }
+
     /*default facebook like button */
-    $html = str_replace('data-href="'.$https_url.'', 'data-href="'.$http_url.'', $html);
+    $html = str_replace('data-href="'.$https_url, 'data-href="'.$http_url, $html);
+    $html = str_replace('<fb:like href="'.$https_url, '<fb:like href="'.$http_url, $html);
 
     $pattern = '/fb-like.*?data-href=[\'"]\K('.$preg_url.')/i';
     $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
@@ -70,6 +77,7 @@ public function fix_social($html) {
     $html = str_replace('add_to/facebook?linkurl='.$https_url_encoded, 'add_to/facebook?linkurl='.$http_url_encoded, $html);
     $html = str_replace('data-a2a-url="'.$https_url, 'data-a2a-url="'.$http_url, $html);
     $html = str_replace('addtoany_share_save" href="https://www.addtoany.com/share#url='.$https_url_encoded, 'addtoany_share_save" href="https://www.addtoany.com/share#url='.$http_url_encoded, $html);
+    $html = str_replace('addtoany_special_service" data-url="'.$https_url, 'addtoany_special_service" data-url="'.$http_url, $html);
 
     /* Digg Digg */
     $html = str_replace('facebook.com/plugins/like.php?href='.$https_url_encoded, 'facebook.com/plugins/like.php?href='.$http_url_encoded, $html);
