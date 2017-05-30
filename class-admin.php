@@ -51,9 +51,11 @@ public function add_settings(){
   register_setting( 'rlrsssl_options', 'rsssl_soc_replace_ogurl', array($this,'options_validate_boolean') );
   register_setting( 'rlrsssl_options', 'rsssl_soc_replace_to_http_on_home', array($this,'options_validate_boolean') );
   add_settings_field('id_start_date_social', __("Set the date when your site went https, so Really Simple Social can switch your social account between http and https","really-simple-ssl-soc"), array($this,'get_option_start_date_social'), 'rlrsssl', 'rlrsssl_settings');
+
   add_settings_field('id_replace_ogurl', __("Replace &lt;meta og:url to http as well. This can cause errors in the FB console in combination with a 301 redirect.","really-simple-ssl-soc"), array($this,'get_option_replace_ogurl'), 'rlrsssl', 'rlrsssl_settings');
 
   add_settings_field('id_replace_to_http_on_home', __("Recover shares on the homepage","really-simple-ssl-soc"), array($this,'get_option_replace_to_http_on_home'), 'rlrsssl', 'rlrsssl_settings');
+
 
 }
 
