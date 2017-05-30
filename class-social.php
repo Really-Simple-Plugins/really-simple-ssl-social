@@ -9,7 +9,7 @@ function __construct() {
 
   self::$_this = $this;
 
-  add_filter("rsssl_fixer_output",array($this, "fix_social"));
+  add_filter("rsssl_fixer_output", array($this, "fix_social"));
   add_filter('update_easy_social_share_url', array($this, 'fix_easy_social_share'));
 }
 
@@ -32,6 +32,16 @@ public function use_http(){
   $use_http = TRUE;
   //if we have a post currently selected, use the date to decide on http/https.
   global $post;
+
+  if (is_home() || is_front_page()){
+    if (get_option('rsssl_soc_replace_to_http_on_home') ){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+
   if ($post) {
     $start_date = strtotime(get_option("rsssl_soc_start_date_ssl"));
     $publish_date = get_post_time('U', false, $post->ID);
@@ -51,7 +61,7 @@ public function use_http(){
 public function fix_social($html) {
   if ($this->use_http()) {
 
-    $preg_url = str_replace(array("/", "."),array("\/", "\."),home_url());
+    $preg_url = str_replace(array("/", "."),array("\/", "\."), home_url());
 
     $http_url = str_replace("https://", "http://", home_url());
     $https_url = home_url();
@@ -66,17 +76,23 @@ public function fix_social($html) {
       $html = str_replace('rel="canonical" href="'.$https_url, 'rel="canonical" href="'.$http_url, $html);
     }
 
+    //generic:
+    $html = str_replace('data-url="'.$https_url, 'data-url="'.$http_url, $html);
+    $html = str_replace('data-urlalt="'.$https_url, 'data-urlalt="'.$http_url, $html);
+
     /*shareaholic*/
     $pattern = '/shareaholic-canvas.*?data-link=[\'"]\K('.$preg_url.')/';
-    $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
     $html = str_replace("name='shareaholic:url' content='".$https_url, "name='shareaholic:url' content='".$http_url, $html);
+
+    $html = str_replace('share_counts_url":"https:', 'share_counts_url":"http:', $html);
 
     /*default facebook like button */
     $html = str_replace('data-href="'.$https_url, 'data-href="'.$http_url, $html);
     $html = str_replace('<fb:like href="'.$https_url, '<fb:like href="'.$http_url, $html);
 
     $pattern = '/fb-like.*?data-href=[\'"]\K('.$preg_url.')/i';
-    $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
     /*Add to any */
     $html = str_replace('add_to/facebook?linkurl='.$https_url_encoded, 'add_to/facebook?linkurl='.$http_url_encoded, $html);
@@ -86,17 +102,21 @@ public function fix_social($html) {
 
     /* Digg Digg */
     $html = str_replace('facebook.com/plugins/like.php?href='.$https_url_encoded, 'facebook.com/plugins/like.php?href='.$http_url_encoded, $html);
-    $html = str_replace('twitter-share-button" data-url="'.$https_url, 'twitter-share-button" data-url="'.$http_url, $html);
 
     /*Add this */
     $html = str_replace('addthis:url="https://', 'addthis:url="http://', $html);
+    $html = str_replace("addthis:url='https://", "addthis:url='http://", $html);
     $pattern = '/addthis_sharing_toolbox.*?data-url=[\'"]\K('.$preg_url.')/i';
-    $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
     $html = str_replace('graph.facebook.com/?id=' . $https_url_encoded, 'graph.facebook.com/?id=' . $http_url_encoded, $html);
 
     /*Jetpack */
     $pattern = '/fb-share-button.*?data-href=[\'"]\K('.$preg_url.')/i';
-    $html = preg_replace($pattern, str_replace("https://", "http://", home_url()), $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
+
+    /*sharedaddy*/
+    $pattern = '/data-shared.*?href=[\'"]\K('.$preg_url.')/i';
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
     //Easy Social Share Buttons 3
     $html = str_replace('data-essb-url="'.$https_url ,'data-essb-url="'.$http_url , $html);
