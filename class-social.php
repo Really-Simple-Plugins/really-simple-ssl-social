@@ -33,7 +33,7 @@ static function this() {
 *
 */
 
-public function jetpack_fb_sharing_link($permalink, $post_id, $id){
+public function jetpack_fb_sharing_link($url, $post_id, $id){
 
   if ($this->use_http()) {
     $url = str_replace("https://", "http://", $url);
