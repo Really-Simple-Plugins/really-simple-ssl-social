@@ -2,8 +2,8 @@
 Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
-Tested up to: 4.7
-Stable tag: 1.0.1
+Tested up to: 4.8
+Stable tag: 1.9.0
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 1.9.0 =
+* Tweak: added the option to insert custom share buttons from Really Simple Social, which will retrieve likes from both http and https url.
+
 = 1.0.1 =
 Changed retrieval of post date to unix time.
 

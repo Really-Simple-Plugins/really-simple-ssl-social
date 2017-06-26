@@ -3,7 +3,7 @@
  * Plugin Name: Really Simple SSL social
  * Plugin URI: https://www.really-simple-ssl.com/pro
  * Description: Add on for Really Simple SSL
- * Version: 1.0.1
+ * Version: 1.9.0
  * Text Domain: really-simple-ssl-social
  * Domain Path: /languages
  * Author: Rogier Lankhorst
@@ -28,6 +28,15 @@
 
   defined('ABSPATH') or die("you do not have acces to this page!");
 
+  require_once(ABSPATH.'wp-admin/includes/plugin.php');
+  $plugin_data = get_plugin_data( __FILE__ );  define('rsssl_soc_url', plugin_dir_url(__FILE__ ));
+  define('rsssl_soc_path', plugin_dir_path(__FILE__ ));
+  define('rsssl_soc_plugin', plugin_basename( __FILE__ ) );
+  define('rsssl_soc_version', $plugin_data['Version'] );
+  define('rsssl_soc_plugin_file', __FILE__);
+
+  if (!defined('REALLY_SIMPLE_SSL_URL')) define( 'REALLY_SIMPLE_SSL_URL', 'https://www.really-simple-ssl.com');
+
   if (is_admin() ) {
     require_once( dirname( __FILE__ ) .  '/class-licensing.php' );
     require_once( dirname( __FILE__ ) .  '/class-admin.php' );
@@ -35,5 +44,10 @@
     $rsssl_soc_admin             = new rsssl_soc_admin;
   }
 
-  require_once( dirname( __FILE__ ) .  '/class-social.php' );
-  $rsssl_soc_social             = new rsssl_soc_social;
+  if (get_option('rsssl_insert_custom_buttons')) {
+    require_once( dirname( __FILE__ ) .  '/class-native.php' );
+    $rsssl_soc_native             = new rsssl_soc_native;
+  } else {
+    require_once( dirname( __FILE__ ) .  '/class-social.php' );
+    $rsssl_soc_social             = new rsssl_soc_social;
+  }

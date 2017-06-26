@@ -10,11 +10,51 @@ function __construct() {
   self::$_this = $this;
 
   add_filter("rsssl_fixer_output", array($this, "fix_social"));
+
+
   add_filter('update_easy_social_share_url', array($this, 'fix_easy_social_share'));
+
+  /*
+      Jetpack share recovery
+  */
+
+  add_filter( 'sharing_permalink', array($this, 'jetpack_fb_sharing_link' ), 10, 3);
+  add_filter( 'jetpack_sharing_display_link', array($this, 'jetpack_fb_sharing_link' ), 10, 4);
+
 }
 
 static function this() {
   return self::$_this;
+}
+
+
+/**
+*       Filter Jetpack Facebook sharing link
+*
+*/
+
+public function jetpack_fb_sharing_link($permalink, $post_id, $id){
+
+  if ($this->use_http()) {
+    $url = str_replace("https://", "http://", $url);
+  }
+
+  return $url;
+
+}
+
+/**
+*       Filter JetPack sharing links for non FB services.
+*
+*
+*
+*/
+
+public function jetpack_sharing_display_link($url, $sharing_obj, $id, $args ){
+  if ($this->use_http()) {
+    $url = str_replace("https://", "http://", $url);
+  }
+  return $url;
 }
 
 
@@ -40,7 +80,6 @@ public function use_http(){
       return false;
     }
   }
-
 
   if ($post) {
     $start_date = strtotime(get_option("rsssl_soc_start_date_ssl"));
@@ -80,6 +119,7 @@ public function fix_social($html) {
     $html = str_replace('data-url="'.$https_url, 'data-url="'.$http_url, $html);
     $html = str_replace('data-urlalt="'.$https_url, 'data-urlalt="'.$http_url, $html);
 
+
     /*shareaholic*/
     $pattern = '/shareaholic-canvas.*?data-link=[\'"]\K('.$preg_url.')/';
     $html = preg_replace($pattern, $http_url, $html, -1, $count);
@@ -96,8 +136,11 @@ public function fix_social($html) {
 
     /*Add to any */
     $html = str_replace('add_to/facebook?linkurl='.$https_url_encoded, 'add_to/facebook?linkurl='.$http_url_encoded, $html);
+    $html = str_replace('add_to/twitter?linkurl='.$https_url_encoded, 'add_to/twitter?linkurl='.$http_url_encoded, $html);
+    $html = str_replace('add_to/pinterest?linkurl='.$https_url_encoded, 'add_to/pinterest?linkurl='.$http_url_encoded, $html);
+    $html = str_replace('add_to/google_plus?linkurl='.$https_url_encoded, 'add_to/google_plus?linkurl='.$http_url_encoded, $html);
     $html = str_replace('data-a2a-url="'.$https_url, 'data-a2a-url="'.$http_url, $html);
-    $html = str_replace('addtoany_share_save" href="https://www.addtoany.com/share#url='.$https_url_encoded, 'addtoany_share_save" href="https://www.addtoany.com/share#url='.$http_url_encoded, $html);
+    $html = str_replace('addtoany.com/share#url='.$https_url_encoded, 'addtoany.com/share#url='.$http_url_encoded, $html);
     $html = str_replace('addtoany_special_service" data-url="'.$https_url, 'addtoany_special_service" data-url="'.$http_url, $html);
 
     /* Digg Digg */
@@ -123,8 +166,8 @@ public function fix_social($html) {
     $html = str_replace('data-essb-twitter-url="'.$https_url ,'data-essb-twitter-url="'.$http_url , $html);
 
     /*Directly integrated in code */
-    $html = str_replace('href="http://www.facebook.com/sharer.php?u=' . $https_url_encoded ,'href="http://www.facebook.com/sharer.php?u=' . $http_url_encoded , $html);
-    $html = str_replace('www.facebook.com/plugins/like.php?href=' . $https_url , 'www.facebook.com/plugins/like.php?href='. $http_url , $html);
+    $html = str_replace('facebook.com/sharer.php?u=' . $https_url_encoded ,'facebook.com/sharer.php?u=' . $http_url_encoded , $html);
+    $html = str_replace('facebook.com/plugins/like.php?href=' . $https_url , 'facebook.com/plugins/like.php?href='. $http_url , $html);
 
     $html = apply_filters('rsssl_social_use_http_urls', $html);
     //verification
