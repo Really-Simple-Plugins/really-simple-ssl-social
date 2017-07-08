@@ -1,5 +1,8 @@
 .rsssl_soc{
   margin:15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .rsssl_soc a.post-share {
     display: block;
@@ -7,7 +10,7 @@
     height: 46px;
     float: left;
     margin: 10px 0px 0px 0px;
-    background: #3e599a url(../img/sidebar-share.png) no-repeat 0 0;
+    background: #3e599a url(../img/sidebar-share1.png) no-repeat 0 0;
     text-decoration:none;
     text-indent: 50px;
     font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
@@ -21,8 +24,8 @@
 .rsssl_soc a.post-share span {
     width: 30px;
     height: 16px;
-    padding: 15px;
-    margin-right: 0;
+    padding: 0;
+    margin: 14px 20px;
     display: block;
     float:right;
     color: #ffffff;
@@ -32,28 +35,33 @@
     text-indent: 0;
 }
 .rsssl_soc a.post-share.facebook {
-    background: #3e599a url(../img/sidebar-share.png) no-repeat 0 1px;
+    background: #3e599a url(../img/sidebar-share1.png) no-repeat 0 1px;
     margin-right: 10px;
 }
 .rsssl_soc a.post-share.facebook span {
     background-color: #3e599a;
 }
 .rsssl_soc a.post-share.twitter {
-    background: #4b8cbe url(../img/sidebar-share.png) no-repeat -0px -111px;
+    background: #4b8cbe url(../img/sidebar-share1.png) no-repeat -0px -111px;
     margin-right: 10px;
 }
+.rsssl_soc a.post-share.linkedin {
+    background: #007bb5 url(../img/sidebar-share1.png) no-repeat -0px -206px;
+    margin-right: 10px;
+}
+
 .rsssl_soc a.post-share.twitter span {
     background-color: #4b8cbe;
 }
 .rsssl_soc a.post-share.gplus {
-    background: #b8382e url(../img/sidebar-share.png) no-repeat -0px -50px;
+    background: #b8382e url(../img/sidebar-share1.png) no-repeat -0px -50px;
     margin-right: 10px;
 }
 .rsssl_soc a.post-share.gplus span {
     background-color: #b8382e;
 }
 .rsssl_soc a.post-share.stumble {
-    background: #e15131 url(../img/sidebar-share.png) no-repeat -0px -165px;
+    background: #e15131 url(../img/sidebar-share1.png) no-repeat -0px -165px;
 }
 .rsssl_soc a.post-share.stumble span {
     background-color: #e15131;

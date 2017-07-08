@@ -105,7 +105,7 @@ public function add_settings(){
     add_settings_field('id_replace_to_http_on_home', __("Recover shares on the homepage","really-simple-ssl-soc"), array($this,'get_option_replace_to_http_on_home'), 'rlrsssl', 'rlrsssl_settings');
   }
 
-  add_settings_field('rsssl_insert_custom_buttons', __("Generate custom share buttons","really-simple-ssl-soc"), array($this,'get_option_insert_custom_buttons'), 'rlrsssl', 'rlrsssl_settings');
+  add_settings_field('rsssl_insert_custom_buttons', __("Use the built in share buttons","really-simple-ssl-soc"), array($this,'get_option_insert_custom_buttons'), 'rlrsssl', 'rlrsssl_settings');
   if (get_option('rsssl_insert_custom_buttons')) {
     add_settings_field('rsssl_fb_access_token', __("Facebook app token","really-simple-ssl-soc"), array($this,'get_option_fb_access_token'), 'rlrsssl', 'rlrsssl_settings');
     add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on","really-simple-ssl-soc"), array($this,'get_option_buttons_on_post_types'), 'rlrsssl', 'rlrsssl_settings');
@@ -136,7 +136,7 @@ public function get_option_replace_ogurl() {
 public function get_option_insert_custom_buttons() {
   $insert_custom_buttons = get_option('rsssl_insert_custom_buttons');
   echo '<input id="rsssl_insert_custom_buttons" name="rsssl_insert_custom_buttons" size="40" type="checkbox" value="1"' . checked( 1, $insert_custom_buttons, false ) ." />";
-  RSSSL()->rsssl_help->get_help_tip(__("Enable to generate custom share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
+  RSSSL()->rsssl_help->get_help_tip(__("Enable to use the built in share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
 }
 
 public function get_option_buttons_on_post_types() {

@@ -10,8 +10,6 @@ function __construct() {
   self::$_this = $this;
 
   add_filter("rsssl_fixer_output", array($this, "fix_social"));
-
-
   add_filter('update_easy_social_share_url', array($this, 'fix_easy_social_share'));
 
   /*
@@ -35,7 +33,7 @@ static function this() {
 
 public function jetpack_fb_sharing_link($url, $post_id, $id){
 
-  if ($this->use_http()) {
+  if ($this->use_http($post_id)) {
     $url = str_replace("https://", "http://", $url);
   }
 
@@ -62,16 +60,16 @@ public function jetpack_sharing_display_link($url, $sharing_obj, $id, $args ){
     Fix for easy social share buttons WordPress
 */
 public function fix_easy_social_share($url) {
+
   if ($this->use_http()) {
     $url = str_replace("https://", "http://", $url);
   }
   return $url;
 }
 
-public function use_http(){
+public function use_http($post_id=false){
   $use_http = TRUE;
-  //if we have a post currently selected, use the date to decide on http/https.
-  global $post;
+  $have_post = false;
 
   if (is_home() || is_front_page()){
     if (get_option('rsssl_soc_replace_to_http_on_home') ){
@@ -81,14 +79,21 @@ public function use_http(){
     }
   }
 
+  //if an id was passed, get post by id
+  if ($post_id) {
+    $post = get_post($post_id);
+    $have_post = true;
+  }
+
+  //if don't have a post yet by id, get the global one.
+  if (!$have_post) {
+    global $post;
+  }
+
   if ($post) {
     $start_date = strtotime(get_option("rsssl_soc_start_date_ssl"));
     $publish_date = get_post_time('U', false, $post->ID);
-    //$publish_date = strtotime(get_the_date(get_option('date_format'), $post->ID));
-    // error_log("start date ".get_option("rsssl_soc_start_date_ssl"));
-    // error_log("start date unix time ".$start_date);
-    // error_log("publish date unix time".$publish_date);
-    //when publish date is after migration to ssl date, use the https url.
+
     if ($start_date && ($publish_date > $start_date)){
       $use_http = FALSE;
     }

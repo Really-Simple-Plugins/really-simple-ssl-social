@@ -70,6 +70,12 @@ public function get_likes(){
   if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
   if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
 
+  $linkedin_likes = 0;
+  if ($get_http)      $linkedin_likes = $this->retrieve_linkedin_likes($url_http);
+  if ($get_https)     $linkedin_likes += $this->retrieve_linkedin_likes($url_https);
+  if ($get_httpwww)   $linkedin_likes += $this->retrieve_linkedin_likes($url_httpwww);
+  if ($get_httpswww)  $linkedin_likes += $this->retrieve_linkedin_likes($url_httpswww);
+
   $stumble_likes = 0;
   if ($get_http)      $stumble_likes = $this->retrieve_stumbleupon_likes($url_http);
   if ($get_https)     $stumble_likes += $this->retrieve_stumbleupon_likes($url_https);
@@ -77,16 +83,34 @@ public function get_likes(){
   if ($get_httpswww)  $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpswww);
 
   $out = array(
-        'facebook'  => $fb_likes,
-        'twitter'   => $twitter_likes,
-        'gplus'     => $google_likes,
-        'stumble'   => $stumble_likes,
+        'facebook'  => $this->convert_nr($fb_likes),
+        'twitter'   => $this->convert_nr($twitter_likes),
+        'gplus'     => $this->convert_nr($google_likes),
+        'stumble'   => $this->convert_nr($stumble_likes),
+        'linkedin'  => $this->convert_nr($linkedin_likes),
       );
 
   die(json_encode($out));
 
 }
 
+private function convert_nr($nr){
+
+  if ($nr>=1000000) {
+    return round($nr/1000000, 1)."m";
+  }
+
+  if ($nr>=1000) {
+    return round($nr/1000, 1)."k";
+  }
+
+  if ($nr==0){
+    return '';
+  }
+
+  return $nr;
+
+}
 
 private function retrieve_fb_likes($url){
 
@@ -156,6 +180,23 @@ private function retrieve_google_likes($url){
 
   return intval($shares);
 }
+
+private function retrieve_linkedin_likes($url){
+  $share_cache = get_transient('rsssl_linkedin_shares');
+  //if (!$share_cache || !isset($share_cache[$url])) {
+    $request = wp_remote_get('http://www.linkedin.com/countserv/count/share?url='.urlencode($url).'&format=json');
+    $json = wp_remote_retrieve_body($request);
+    $output = json_decode( $json );
+    $shares = $output->count;
+    $share_cache[$url] = $shares;
+    set_transient('rsssl_linkedin_shares', $share_cache, DAY_IN_SECONDS);
+  // } else {
+  //    $shares = $share_cache[$url];
+  // }
+
+  return intval($shares);
+}
+
 
 
 private function retrieve_stumbleupon_likes($url){
@@ -234,9 +275,11 @@ public function generate_like_buttons($single = true){
 
   global $post;
   $post_id = 0;
+  $title = "";
   if ($post) {
     $url = get_permalink($post);
     $post_id = $post->ID;
+    $title = $post->post_title;
   }
 
   $url_http = str_replace("https://", "http://", $url);
@@ -255,7 +298,7 @@ public function generate_like_buttons($single = true){
     $file = $theme_file;
   }
   $html = file_get_contents($file);
-  $html = str_replace(array("[POST_ID]", "[FB_SHARE_URL]", "[URL]"), array($post_id, $fb_share_url, $url), $html);
+  $html = str_replace(array("[POST_ID]", "[FB_SHARE_URL]", "[URL]", "[TITLE]"), array($post_id, $fb_share_url, $url, $title), $html);
   $html = apply_filters('rsssl_soc_share_buttons', $html);
 
   return $html;
@@ -266,7 +309,7 @@ public function generate_like_buttons($single = true){
 
 public function enqueue_scripts() {
     $version = (strpos(home_url(), "localhost")===false) ? time() : "";
-    wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'/assets/css/style.css', array(), rsssl_soc_version);
+    wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
     $url = home_url();
 
     global $post;
