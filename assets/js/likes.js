@@ -15,6 +15,8 @@ $(document).on('click', '.post-share', function(e){
 
 function rsssl_soc_get_likes(){
   var data;
+	if (rsssl_soc_ajax.use_cache) return;
+
   $(".rsssl_soc").each(function(i, obj) {
 		var post_id = $(this).data('rsssl_post_id');
 		var button_container = $('[data-rsssl_post_id="'+post_id+'"]');
