@@ -10,6 +10,20 @@ $(document).on('click', '.post-share', function(e){
 	if (counter=='') counter=0;
 	counter++;
 	$(this).find('span').html(counter);
+
+	//now, clear the share cache for this url
+	var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
+	$.ajax({
+			type: "GET",
+			url: rsssl_soc_ajax.ajaxurl,
+			dataType: 'json',
+			data: ({
+				action: 'rsssl_clear_likes',
+				post_id: post_id,
+			}),
+			success: function(data){
+			}
+	});
 });
 
 

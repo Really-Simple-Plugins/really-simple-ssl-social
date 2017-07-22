@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 4.8
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 2.0.4 =
+* Tweak: share cache is now cleared on click of the share button
+
 = 2.0.3 =
 * Changed share retrieval so cached shares are shown instantly, after page load the most recent shares are retrieved, if they are not cached.
 * With the filter rsssl_social_cache_expiration you can change the expiration timeout (default one hour)
