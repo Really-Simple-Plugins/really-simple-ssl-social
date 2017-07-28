@@ -34,6 +34,7 @@ public function get_likes(){
     $url = get_permalink($post_id);
   }
 
+
   //make sure the current home_url is https, as this is a really simple ssl add on.
   $url_https = str_replace("http://", "https://", $url);
 
@@ -87,12 +88,20 @@ public function get_likes(){
   if ($get_httpwww)   $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpwww);
   if ($get_httpswww)  $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpswww);
 
+  $pinterest_likes = 0;
+  if ($get_http)      $pinterest_likes = $this->retrieve_pinterest_likes($url_http);
+  if ($get_https)     $pinterest_likes += $this->retrieve_pinterest_likes($url_https);
+  if ($get_httpwww)   $pinterest_likes += $this->retrieve_pinterest_likes($url_httpwww);
+  if ($get_httpswww)  $pinterest_likes += $this->retrieve_pinterest_likes($url_httpswww);
+
+
   $out = array(
         'facebook'  => $this->convert_nr($fb_likes),
         'twitter'   => $this->convert_nr($twitter_likes),
         'gplus'     => $this->convert_nr($google_likes),
         'stumble'   => $this->convert_nr($stumble_likes),
         'linkedin'  => $this->convert_nr($linkedin_likes),
+        'pinterest' => $this->convert_nr($pinterest_likes),
       );
 
   die(json_encode($out));
@@ -109,7 +118,7 @@ public function get_likes(){
 public function clear_likes(){
   if (!isset($_GET['post_id'])) return;
   $post_id = intval($_GET['post_id']);
-  
+
   if ($post_id == 0) {
     $url = home_url();
   } else {
@@ -187,6 +196,7 @@ private function get_cached_likes($type, $url){
   if ($type=="google") $share_cache = get_transient('rsssl_google_shares');
   if ($type=="linkedin") $share_cache = get_transient('rsssl_linkedin_shares');
   if ($type=="stumble") $share_cache = get_transient('rsssl_stumble_shares');
+  if ($type=="pinterest") $share_cache = get_transient('rsssl_pinterest_shares');
 
   if (!$share_cache || !isset($share_cache[$url])) {
      return "";
@@ -216,6 +226,10 @@ private function clear_cached_likes($url){
   $share_cache = get_transient('rsssl_stumble_shares');
   unset($share_cache[$url]);
   set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+
+  $share_cache = get_transient('rsssl_pinterest_shares');
+  unset($share_cache[$url]);
+  set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
 }
 
 
@@ -268,8 +282,10 @@ private function retrieve_twitter_likes($url){
   $request = wp_remote_get('http://opensharecount.com/count.json?url='.$url);
   $json = wp_remote_retrieve_body($request);
   $output = json_decode( $json );
-
-  $shares = $output->count;
+  $shares = 0;
+  if (!empty($output)){
+    $shares = $output->count;
+  }
   $share_cache[$url] = $shares;
   set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
   return intval($shares);
@@ -309,12 +325,31 @@ private function retrieve_stumbleupon_likes($url){
   $json = wp_remote_retrieve_body($request);
   $output = json_decode( $json );
   $shares = 0;
-  //error_log(print_r($output,true));
-  if ($output->result->in_index==1) {
+
+  if (!empty($output) && $output->result->in_index==1) {
     $shares = $output->result->views;
   }
   $share_cache[$url] = $shares;
   set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+
+  return intval($shares);
+}
+
+private function retrieve_pinterest_likes($url) {
+  $shares = 0;
+  $share_cache = get_transient('rsssl_pinterest_shares');
+  $request = wp_remote_get('http://api.pinterest.com/v1/urls/count.json?&url='.$url);
+
+  $json = wp_remote_retrieve_body($request);
+
+  $json = preg_replace('/^receiveCount\((.*)\)$/', "\\1", $json);
+  $output = json_decode( $json );
+
+  if (!empty($output)) {
+    $shares = $output->count;
+  }
+  $share_cache[$url] = $shares;
+  set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
 
   return intval($shares);
 }
@@ -384,9 +419,6 @@ public function generate_like_buttons($single = true){
     $title = $post->post_title;
   }
 
-  $url_http = str_replace("https://", "http://", $url);
-  $url_https = $url;
-
   $fb_share_url = 'https://www.facebook.com/share.php?u=';
 
   if (get_option('rsssl_fb_button_type')=='like') {
@@ -407,9 +439,10 @@ public function generate_like_buttons($single = true){
   $twitter_shares = $this->get_cached_likes_total('twitter', $post_id);
   $google_shares = $this->get_cached_likes_total('google', $post_id);
   $stumble_shares = $this->get_cached_likes_total('stumble', $post_id);
+  $pinterest_shares = $this->get_cached_likes_total('pinterest', $post_id);
 
   $html = str_replace(array("[POST_ID]", "[FB_SHARE_URL]", "[URL]", "[TITLE]"), array($post_id, $fb_share_url, $url, $title), $html);
-  $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[stumble_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $stumble_shares), $html);
+  $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[stumble_shares]", "[pinterest_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $stumble_shares, $pinterest_shares), $html);
   $html = apply_filters('rsssl_soc_share_buttons', $html);
 
   return $html;

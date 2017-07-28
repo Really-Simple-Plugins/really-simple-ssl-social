@@ -41,18 +41,18 @@
     text-indent: 0;
 }
 .rsssl_soc a.post-share.facebook {
-    background: #3e599a url(../img/sidebar-share1.png) no-repeat 0 1px;
+    background: #3e599a url(../img/sidebar-share2.png) no-repeat 0 1px;
     margin-right: 10px;
 }
 .rsssl_soc a.post-share.facebook span {
     background-color: #3e599a;
 }
 .rsssl_soc a.post-share.twitter {
-    background: #4b8cbe url(../img/sidebar-share1.png) no-repeat -0px -111px;
+    background: #4b8cbe url(../img/sidebar-share2.png) no-repeat -0px -111px;
     margin-right: 10px;
 }
 .rsssl_soc a.post-share.linkedin {
-    background: #007bb5 url(../img/sidebar-share1.png) no-repeat -0px -206px;
+    background: #007bb5 url(../img/sidebar-share2.png) no-repeat -0px -206px;
     margin-right: 10px;
 }
 
@@ -60,15 +60,21 @@
     background-color: #4b8cbe;
 }
 .rsssl_soc a.post-share.gplus {
-    background: #b8382e url(../img/sidebar-share1.png) no-repeat -0px -50px;
+    background: #b8382e url(../img/sidebar-share2.png) no-repeat -0px -50px;
     margin-right: 10px;
 }
 .rsssl_soc a.post-share.gplus span {
     background-color: #b8382e;
 }
 .rsssl_soc a.post-share.stumble {
-    background: #e15131 url(../img/sidebar-share1.png) no-repeat -0px -165px;
+    background: #e15131 url(../img/sidebar-share2.png) no-repeat -0px -165px;
+    margin-right: 10px;
 }
+
+.rsssl_soc a.post-share.pinterest {
+    background: #BD081C url(../img/sidebar-share2.png) no-repeat -0px -255px;
+}
+
 .rsssl_soc a.post-share.stumble span {
     background-color: #e15131;
 }

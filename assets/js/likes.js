@@ -48,6 +48,7 @@ function rsssl_soc_get_likes(){
           button_container.find('a.post-share.gplus span').html(data.gplus);
           button_container.find('a.post-share.stumble span').html(data.stumble);
 					button_container.find('a.post-share.linkedin span').html(data.linkedin);
+					button_container.find('a.post-share.pinterest span').html(data.pinterest);
         }
     });
   });
