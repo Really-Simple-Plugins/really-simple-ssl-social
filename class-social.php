@@ -174,6 +174,10 @@ public function fix_social($html) {
     $html = str_replace('facebook.com/sharer.php?u=' . $https_url_encoded ,'facebook.com/sharer.php?u=' . $http_url_encoded , $html);
     $html = str_replace('facebook.com/plugins/like.php?href=' . $https_url , 'facebook.com/plugins/like.php?href='. $http_url , $html);
 
+    //not encoded
+    $html = str_replace('facebook.com/sharer.php?u=' . $https_url ,'facebook.com/sharer.php?u=' . $http_url , $html);
+    $html = str_replace('facebook.com/plugins/like.php?href=' . $https_url , 'facebook.com/plugins/like.php?href='. $http_url , $html);
+
     $html = apply_filters('rsssl_social_use_http_urls', $html);
     //verification
     $html = str_replace('data-rsssl', 'data-rssslsocial=1 data-rsssl', $html);

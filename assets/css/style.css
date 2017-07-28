@@ -40,41 +40,41 @@
     text-align: center;
     text-indent: 0;
 }
-.rsssl_soc a.post-share.facebook {
+.rsssl_soc a.post-share.rsssl-facebook {
     background: #3e599a url(../img/sidebar-share2.png) no-repeat 0 1px;
     margin-right: 10px;
 }
-.rsssl_soc a.post-share.facebook span {
+.rsssl_soc a.post-share.rsssl-facebook span {
     background-color: #3e599a;
 }
-.rsssl_soc a.post-share.twitter {
+.rsssl_soc a.post-share.rsssl-twitter {
     background: #4b8cbe url(../img/sidebar-share2.png) no-repeat -0px -111px;
     margin-right: 10px;
 }
-.rsssl_soc a.post-share.linkedin {
+.rsssl_soc a.post-share.rsssl-linkedin {
     background: #007bb5 url(../img/sidebar-share2.png) no-repeat -0px -206px;
     margin-right: 10px;
 }
 
-.rsssl_soc a.post-share.twitter span {
+.rsssl_soc a.post-share.rsssl-twitter span {
     background-color: #4b8cbe;
 }
-.rsssl_soc a.post-share.gplus {
+.rsssl_soc a.post-share.rsssl-gplus {
     background: #b8382e url(../img/sidebar-share2.png) no-repeat -0px -50px;
     margin-right: 10px;
 }
-.rsssl_soc a.post-share.gplus span {
+.rsssl_soc a.post-share.rsssl-gplus span {
     background-color: #b8382e;
 }
-.rsssl_soc a.post-share.stumble {
+.rsssl_soc a.post-share.rsssl-stumble {
     background: #e15131 url(../img/sidebar-share2.png) no-repeat -0px -165px;
     margin-right: 10px;
 }
 
-.rsssl_soc a.post-share.pinterest {
+.rsssl_soc a.post-share.rsssl-pinterest {
     background: #BD081C url(../img/sidebar-share2.png) no-repeat -0px -255px;
 }
 
-.rsssl_soc a.post-share.stumble span {
+.rsssl_soc a.post-share.rsssl-stumble span {
     background-color: #e15131;
 }
