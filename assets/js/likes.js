@@ -43,12 +43,12 @@ function rsssl_soc_get_likes(){
           post_id: post_id,
         }),
         success: function(data){
-					button_container.find('a.post-share.rsssl-twitter span').html(data.twitter);
-          button_container.find('a.post-share.rsssl-facebook span').html(data.facebook);
-          button_container.find('a.post-share.rsssl-gplus span').html(data.gplus);
-          button_container.find('a.post-share.rsssl-stumble span').html(data.stumble);
-					button_container.find('a.post-share.rsssl-linkedin span').html(data.linkedin);
-					button_container.find('a.post-share.rsssl-pinterest span').html(data.pinterest);
+					button_container.find('a.post-share.twitter span').html(data.twitter);
+          button_container.find('a.post-share.facebook span').html(data.facebook);
+          button_container.find('a.post-share.gplus span').html(data.gplus);
+          button_container.find('a.post-share.stumble span').html(data.stumble);
+					button_container.find('a.post-share.linkedin span').html(data.linkedin);
+					button_container.find('a.post-share.pinterest span').html(data.pinterest);
         }
     });
   });

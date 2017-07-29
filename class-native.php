@@ -14,6 +14,7 @@ function __construct() {
   add_action('wp_ajax_rsssl_clear_likes', array($this, 'clear_likes') );
   add_filter('the_content',  array($this, 'like_buttons_content_filter'));
   add_shortcode('rsssl_share_buttons', array($this, 'insert_shortcode_buttons') );
+  add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10,3);
 
 
 }
@@ -33,7 +34,6 @@ public function get_likes(){
   } else {
     $url = get_permalink($post_id);
   }
-
 
   //make sure the current home_url is https, as this is a really simple ssl add on.
   $url_https = str_replace("http://", "https://", $url);
@@ -253,7 +253,6 @@ private function convert_nr($nr){
 }
 
 private function retrieve_fb_likes($url){
-
   $shares = 0;
   $share_cache = get_transient('rsssl_fb_shares');
   $fb_access_token = get_option('rsssl_soc_fb_access_token');
@@ -433,7 +432,6 @@ public function generate_like_buttons($single = true){
   }
   $html = file_get_contents($file);
 
-
   $fb_shares = $this->get_cached_likes_total('facebook', $post_id);
   $linkedin_shares = $this->get_cached_likes_total('linkedin', $post_id);
   $twitter_shares = $this->get_cached_likes_total('twitter', $post_id);
@@ -469,6 +467,7 @@ public function enqueue_scripts() {
       $use_cache = false;
     }
 
+    wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
     wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
     wp_localize_script('rsssl_social','rsssl_soc_ajax', array(
       'ajaxurl'=> admin_url( 'admin-ajax.php' ),
@@ -478,6 +477,17 @@ public function enqueue_scripts() {
 
   }
 
+
+/*
+    add attributes to pinterest src
+*/
+
+public function filter_pinterest_script($tag, $handle, $src){
+  if ($handle=='rsssl_pinterest'){
+    return str_replace('<script', '<script async defer data-pin-hover="true" ', $tag);
+  }
+  return $tag;
+}
 
   /*
 
