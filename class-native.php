@@ -2,6 +2,13 @@
 defined('ABSPATH') or die("you do not have acces to this page!");
 class rsssl_soc_native {
   private static $_this;
+  public $facebook;
+  public $linkedin;
+  public $twitter;
+  public $google;
+  public $pinterest;
+  public $stumble;
+
 
 function __construct() {
   if ( isset( self::$_this ) )
@@ -15,7 +22,8 @@ function __construct() {
   add_filter('the_content',  array($this, 'like_buttons_content_filter'));
   add_shortcode('rsssl_share_buttons', array($this, 'insert_shortcode_buttons') );
   add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10,3);
-
+  add_filter('rsssl_soc_share_buttons', array($this, 'social_share_buttons_html'), 10, 1);
+  add_action('plugins_loaded',array($this, 'initialize'));
 
 }
 
@@ -24,6 +32,15 @@ static function this() {
 }
 
 
+public function initialize(){
+  $services = get_option('rsssl_social_services');
+  $this->facebook   = (isset($services['facebook']) && $services['facebook']) ? true : false;
+  $this->linkedin   = (isset($services['linkedin']) && $services['linkedin']) ? true : false;
+  $this->twitter    = (isset($services['twitter']) && $services['twitter']) ? true : false;
+  $this->google     = (isset($services['google']) && $services['google']) ? true : false;
+  $this->stumble     = (isset($services['stumble']) && $services['stumble']) ? true : false;
+  $this->pinterest  = (isset($services['pinterest']) && $services['pinterest']) ? true : false;
+}
 
 public function get_likes(){
   if (!isset($_GET['post_id'])) return;
@@ -59,41 +76,54 @@ public function get_likes(){
 
   //get likes for both http and https
   $fb_likes = 0;
-  if ($get_http)      $fb_likes = $this->retrieve_fb_likes($url_http);
-  if ($get_https)     $fb_likes += $this->retrieve_fb_likes($url_https);
-  if ($get_httpwww)   $fb_likes += $this->retrieve_fb_likes($url_httpwww);
-  if ($get_httpswww)  $fb_likes += $this->retrieve_fb_likes($url_httpswww);
+  if ($this->facebook) {
+    if ($get_http)      $fb_likes = $this->retrieve_fb_likes($url_http);
+    if ($get_https)     $fb_likes += $this->retrieve_fb_likes($url_https);
+    if ($get_httpwww)   $fb_likes += $this->retrieve_fb_likes($url_httpwww);
+    if ($get_httpswww)  $fb_likes += $this->retrieve_fb_likes($url_httpswww);
+  }
 
   $twitter_likes = 0;
-  if ($get_http)      $twitter_likes = $this->retrieve_twitter_likes($url_http);
-  if ($get_https)     $twitter_likes += $this->retrieve_twitter_likes($url_https);
-  if ($get_httpwww)   $twitter_likes += $this->retrieve_twitter_likes($url_httpwww);
-  if ($get_httpswww)  $twitter_likes += $this->retrieve_twitter_likes($url_httpswww);
+  if ($this->twitter) {
+    if ($get_http)      $twitter_likes = $this->retrieve_twitter_likes($url_http);
+    if ($get_https)     $twitter_likes += $this->retrieve_twitter_likes($url_https);
+    if ($get_httpwww)   $twitter_likes += $this->retrieve_twitter_likes($url_httpwww);
+    if ($get_httpswww)  $twitter_likes += $this->retrieve_twitter_likes($url_httpswww);
+  }
 
   $google_likes = 0;
-  if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
-  if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
-  if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
-  if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
+  //google seems to return the correct likes anyway.
+  if ($this->google) {
+    $google_likes = $this->retrieve_google_likes($url_https);
+    // if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
+    // if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
+    // if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
+    // if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
+  }
 
   $linkedin_likes = 0;
-  if ($get_http)      $linkedin_likes = $this->retrieve_linkedin_likes($url_http);
-  if ($get_https)     $linkedin_likes += $this->retrieve_linkedin_likes($url_https);
-  if ($get_httpwww)   $linkedin_likes += $this->retrieve_linkedin_likes($url_httpwww);
-  if ($get_httpswww)  $linkedin_likes += $this->retrieve_linkedin_likes($url_httpswww);
+  if ($this->linkedin) {
+    if ($get_http)      $linkedin_likes = $this->retrieve_linkedin_likes($url_http);
+    if ($get_https)     $linkedin_likes += $this->retrieve_linkedin_likes($url_https);
+    if ($get_httpwww)   $linkedin_likes += $this->retrieve_linkedin_likes($url_httpwww);
+    if ($get_httpswww)  $linkedin_likes += $this->retrieve_linkedin_likes($url_httpswww);
+  }
 
   $stumble_likes = 0;
-  if ($get_http)      $stumble_likes = $this->retrieve_stumbleupon_likes($url_http);
-  if ($get_https)     $stumble_likes += $this->retrieve_stumbleupon_likes($url_https);
-  if ($get_httpwww)   $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpwww);
-  if ($get_httpswww)  $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpswww);
+  if ($this->stumble) {
+    if ($get_http)      $stumble_likes = $this->retrieve_stumbleupon_likes($url_http);
+    if ($get_https)     $stumble_likes += $this->retrieve_stumbleupon_likes($url_https);
+    if ($get_httpwww)   $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpwww);
+    if ($get_httpswww)  $stumble_likes += $this->retrieve_stumbleupon_likes($url_httpswww);
+  }
 
   $pinterest_likes = 0;
-  if ($get_http)      $pinterest_likes = $this->retrieve_pinterest_likes($url_http);
-  if ($get_https)     $pinterest_likes += $this->retrieve_pinterest_likes($url_https);
-  if ($get_httpwww)   $pinterest_likes += $this->retrieve_pinterest_likes($url_httpwww);
-  if ($get_httpswww)  $pinterest_likes += $this->retrieve_pinterest_likes($url_httpswww);
-
+  if ($this->pinterest) {
+    if ($get_http)      $pinterest_likes = $this->retrieve_pinterest_likes($url_http);
+    if ($get_https)     $pinterest_likes += $this->retrieve_pinterest_likes($url_https);
+    if ($get_httpwww)   $pinterest_likes += $this->retrieve_pinterest_likes($url_httpwww);
+    if ($get_httpswww)  $pinterest_likes += $this->retrieve_pinterest_likes($url_httpswww);
+  }
 
   $out = array(
         'facebook'  => $this->convert_nr($fb_likes),
@@ -209,27 +239,27 @@ private function clear_cached_likes($url){
 
   $share_cache = get_transient('rsssl_fb_shares');
   unset($share_cache[$url]);
-  set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_twitter_shares');
   unset($share_cache[$url]);
-  set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_google_shares');
   unset($share_cache[$url]);
-  set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_linkedin_shares');
   unset($share_cache[$url]);
-  set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_stumble_shares');
   unset($share_cache[$url]);
-  set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_pinterest_shares');
   unset($share_cache[$url]);
-  set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 }
 
 
@@ -270,7 +300,7 @@ private function retrieve_fb_likes($url){
   }
 
   $share_cache[$url] = $shares;
-  set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
   return $shares;
 }
 
@@ -286,20 +316,36 @@ private function retrieve_twitter_likes($url){
     $shares = $output->count;
   }
   $share_cache[$url] = $shares;
-  set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
   return intval($shares);
 }
 
 private function retrieve_google_likes($url){
   $share_cache = get_transient('rsssl_google_shares');
 
-  $request = wp_remote_get('https://plusone.google.com/_/+1/fastbutton?url='.urlencode($url).'&count=true');
-  $json = wp_remote_retrieve_body($request);
-  preg_match('/c: ([0-9.]+) /', $json, $matches);
-  $shares = 0;
-  if (isset($matches[1])) $shares = $matches[1];
+  // $request = wp_remote_get('https://plusone.google.com/_/+1/fastbutton?url='.urlencode($url).'&count=true');
+  // $json = wp_remote_retrieve_body($request);
+  // preg_match('/c: ([0-9.]+) /', $json, $matches);
+  // $shares = 0;
+  // if (isset($matches[1])) $shares = $matches[1];
+  // $share_cache[$url] = $shares;
+  // set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+
+  $curl = curl_init();
+  curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
+  curl_setopt($curl, CURLOPT_POST, true);
+  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($curl, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"'.rawurldecode($url).'","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]');
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+  $curl_results = curl_exec ($curl);
+  curl_close ($curl);
+  $json = json_decode($curl_results, true);
+
+  $shares = isset($json[0]['result']['metadata']['globalCounts']['count'])?intval( $json[0]['result']['metadata']['globalCounts']['count'] ):0;
+
   $share_cache[$url] = $shares;
-  set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   return intval($shares);
 }
@@ -311,7 +357,7 @@ private function retrieve_linkedin_likes($url){
   $output = json_decode( $json );
   $shares = $output->count;
   $share_cache[$url] = $shares;
-  set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   return intval($shares);
 }
@@ -326,10 +372,11 @@ private function retrieve_stumbleupon_likes($url){
   $shares = 0;
 
   if (!empty($output) && $output->result->in_index==1) {
+    error_log(print_r($output,true));
     $shares = $output->result->views;
   }
   $share_cache[$url] = $shares;
-  set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   return intval($shares);
 }
@@ -348,7 +395,7 @@ private function retrieve_pinterest_likes($url) {
     $shares = $output->count;
   }
   $share_cache[$url] = $shares;
-  set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
+  set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   return intval($shares);
 }
@@ -447,10 +494,31 @@ public function generate_like_buttons($single = true){
 }
 
 
+/*
+    Remove buttons that are not used currently
+*/
+
+public function social_share_buttons_html($html){
+  $services = get_option('rsssl_social_services');
+
+  $patterns = array();
+  if ($this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
+  if ($this->linkedin)  $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
+  if ($this->twitter)   $patterns[] = '/<a class="post-share twitter".*<\/a>/i';
+  if ($this->google)    $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
+  if ($this->stumble)   $patterns[] = '/<a class="post-share stumble".*<\/a>/i';
+  if ($this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
+
+  $html = preg_replace($patterns, '', $html);
+
+  return $html;
+}
 
 
 public function enqueue_scripts() {
     $version = (strpos(home_url(), "localhost")===false) ? time() : "";
+    $services = get_option('rsssl_social_services');
+
     wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
 
     $url = home_url();
@@ -467,7 +535,10 @@ public function enqueue_scripts() {
       $use_cache = false;
     }
 
-    wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
+    if ($this->pinterest) {
+      wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
+    }
+
     wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
     wp_localize_script('rsssl_social','rsssl_soc_ajax', array(
       'ajaxurl'=> admin_url( 'admin-ajax.php' ),
