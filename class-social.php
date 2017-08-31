@@ -99,7 +99,7 @@ public function use_http($post_id=false){
     }
   }
 
-  return $use_http;
+  return apply_filters("rsssl_soc_use_http", $use_http);
 }
 
 public function fix_social($html) {
