@@ -24,7 +24,6 @@ static function this() {
 }
 
 
-
 public function get_likes(){
   if (!isset($_GET['post_id'])) return;
   $post_id = intval($_GET['post_id']);
@@ -35,8 +34,10 @@ public function get_likes(){
     $url = get_permalink($post_id);
   }
 
+  error_log("Hallo!");
+
   //make sure the current home_url is https, as this is a really simple ssl add on.
-  $url_https = str_replace("http://", "https://", $url);
+  $url_https = "https://addthis.com";//str_replace("http://", "https://", $url);
 
   $url_https = str_replace("https://www.", "https://", $url_https);
   $url_httpswww = str_replace("https://", "https://www.", $url_https);
@@ -94,6 +95,7 @@ public function get_likes(){
   if ($get_httpwww)   $pinterest_likes += $this->retrieve_pinterest_likes($url_httpwww);
   if ($get_httpswww)  $pinterest_likes += $this->retrieve_pinterest_likes($url_httpswww);
 
+error_log($fb_likes);
 
   $out = array(
         'facebook'  => $this->convert_nr($fb_likes),
@@ -103,7 +105,7 @@ public function get_likes(){
         'linkedin'  => $this->convert_nr($linkedin_likes),
         'pinterest' => $this->convert_nr($pinterest_likes),
       );
-
+      error_log(print_r($out,true));
   die(json_encode($out));
 
 }
@@ -191,6 +193,7 @@ public function get_cached_likes_total($type, $post_id){
 }
 
 private function get_cached_likes($type, $url){
+
   if ($type=="facebook") $share_cache = get_transient('rsssl_fb_shares');
   if ($type=="twitter") $share_cache = get_transient('rsssl_twitter_shares');
   if ($type=="google") $share_cache = get_transient('rsssl_google_shares');
@@ -259,7 +262,6 @@ private function retrieve_fb_likes($url){
 
   $auth="";
   if ($fb_access_token) $auth = '&access_token='.$fb_access_token;
-
   $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id='.$url.$auth);
   //https://developers.facebook.com/tools/accesstoken/
 
@@ -273,8 +275,6 @@ private function retrieve_fb_likes($url){
   set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", HOUR_IN_SECONDS));
   return $shares;
 }
-
-
 
 private function retrieve_twitter_likes($url){
   $share_cache = get_transient('rsssl_twitter_shares');
@@ -315,8 +315,6 @@ private function retrieve_linkedin_likes($url){
 
   return intval($shares);
 }
-
-
 
 private function retrieve_stumbleupon_likes($url){
   $share_cache = get_transient('rsssl_stumble_shares');
@@ -433,6 +431,7 @@ public function generate_like_buttons($single = true){
   $html = file_get_contents($file);
 
   $fb_shares = $this->get_cached_likes_total('facebook', $post_id);
+
   $linkedin_shares = $this->get_cached_likes_total('linkedin', $post_id);
   $twitter_shares = $this->get_cached_likes_total('twitter', $post_id);
   $google_shares = $this->get_cached_likes_total('google', $post_id);
@@ -463,9 +462,9 @@ public function enqueue_scripts() {
 
     //check a transient as well, if the transient has expired, we will set set usecache to true, so it will retrieve the shares fresh.
     $share_cache = get_transient('rsssl_fb_shares');
-    if ((defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
+    //if ((defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
       $use_cache = false;
-    }
+    //}
 
     wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
     wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
