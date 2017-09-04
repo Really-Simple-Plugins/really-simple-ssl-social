@@ -97,10 +97,23 @@ public function use_http($post_id=false){
     if ($start_date && ($publish_date > $start_date)){
       $use_http = FALSE;
     }
+
   }
 
-  return $use_http;
+  return apply_filters("rsssl_soc_use_http", $use_http);
 }
+
+// add_filter("rsssl_soc_use_http", "my_function_use_http");
+// function my_function_use_http($use_http){
+//   global $post;
+//   $postid=0;
+//   if ($post) $postid=$post->ID;
+//
+//   if(($postid==12) || ($postid==13)) {
+//     $use_http = false;
+//   }
+//   return $use_http;
+// }
 
 public function fix_social($html) {
   if ($this->use_http()) {
@@ -117,7 +130,7 @@ public function fix_social($html) {
     $replace_ogurl = get_option('rsssl_soc_replace_ogurl');
     if ($replace_ogurl) {
       $html = str_replace('<meta property="og:url" content="'.$https_url, '<meta property="og:url" content="'.$http_url, $html);
-      $html = str_replace('rel="canonical" href="'.$https_url, 'rel="canonical" href="'.$http_url, $html);
+      //$html = str_replace('rel="canonical" href="'.$https_url, 'rel="canonical" href="'.$http_url, $html);
     }
 
     //generic:
