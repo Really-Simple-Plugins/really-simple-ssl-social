@@ -12,14 +12,14 @@ $(document).on('click', '.post-share', function(e){
 	$(this).find('span').html(counter);
 
 	//now, clear the share cache for this url
-	var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
+	var rsssl_post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
 	$.ajax({
 			type: "GET",
 			url: rsssl_soc_ajax.ajaxurl,
 			dataType: 'json',
 			data: ({
 				action: 'rsssl_clear_likes',
-				post_id: post_id,
+				post_id: rsssl_post_id,
 			}),
 			success: function(data){
 			}
@@ -32,15 +32,15 @@ function rsssl_soc_get_likes(){
 	if (rsssl_soc_ajax.use_cache) return;
 
   $(".rsssl_soc").each(function(i, obj) {
-		var post_id = $(this).data('rsssl_post_id');
-		var button_container = $('[data-rsssl_post_id="'+post_id+'"]');
+		var rsssl_post_id = $(this).data('rsssl_post_id');
+		var button_container = $('[data-rsssl_post_id="'+rsssl_post_id+'"]');
 		$.ajax({
         type: "GET",
         url: rsssl_soc_ajax.ajaxurl,
         dataType: 'json',
         data: ({
           action: 'rsssl_get_likes',
-          post_id: post_id,
+          post_id: rsssl_post_id,
         }),
         success: function(data){
 					button_container.find('a.post-share.twitter span').html(data.twitter);

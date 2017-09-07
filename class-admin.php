@@ -19,11 +19,10 @@ static function this() {
   return self::$_this;
 }
 
-
 public function check_for_upgrade() {
     $db_version = get_option('rsssl_soc_version');
-    if (!$db_version || version_compare($db_version, rsssl_soc_version, '<')){
-      if (!get_option('rsssl_retrieval_services')) {
+    if (!$db_version || version_compare($db_version, rsssl_soc_version, '<') ){
+      if (!get_option('rsssl_social_services')) {
 
         $services = array(
           'facebook' => true,
@@ -33,13 +32,13 @@ public function check_for_upgrade() {
           'stumble' => true,
           'pinterest' => true,
         );
-        update_option("rsssl_retrieval_services",$services );
+
+        update_option("rsssl_social_services",$services );
       }
       update_option('rsssl_soc_version', rsssl_soc_version);
     }
 
 }
-
 
 
 /*set the date to an inital value of today. */
@@ -80,14 +79,15 @@ static function install(){
     update_option("rsssl_retrieval_domains",$domains );
   }
 
-  if (!get_option('rsssl_retrieval_services')) {
+  if (!get_option('rsssl_social_services')) {
     $services = array(
       'facebook' => true,
       'linkedin' => true,
       'google' => true,
       'pinterest' => true,
     );
-    update_option("rsssl_retrieval_services",$services );
+
+    update_option("rsssl_social_services",$services );
   }
 }
 

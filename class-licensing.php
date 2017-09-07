@@ -108,10 +108,10 @@ public function show_multisite_notice_license(){
 
 public function plugin_updater() {
 	// retrieve our license key from the DB
-	$license_key = trim( get_option( 'rsssl_soc_pro_license_key' ) );
+	$license_key = trim( get_option( 'rsssl_soc_license_key' ) );
 
 	// setup the updater
-	$edd_updater = new EDD_SL_Plugin_Updater( REALLY_SIMPLE_SSL_URL, dirname(__FILE__)."/really-simple-ssl-soc.php", array(
+	$edd_updater = new EDD_SL_Plugin_Updater( REALLY_SIMPLE_SSL_URL, dirname(__FILE__)."/really-simple-social.php", array(
 			'version' 	=> rsssl_soc_version, 				// current version number
 			'license' 	=> $license_key, 		// license key (used get_option above to retrieve from DB)
 			'item_name' => REALLY_SIMPLE_SSL_SOC, 	// name of this plugin

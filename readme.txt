@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 4.8
-Stable tag: 2.0.5
+Stable tag: 2.0.6
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,7 +25,11 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 2.0.6 =
+* Fixed a bug where not logged in user click would not result in clearing of the share cache
+
 = 2.0.5 =
+* Notice: please check the selected social services after upgrading!
 * Tweak: Added pinterest to share buttons
 * Tweak: changed default share cache expiration to one day
 * Tweak: easy select the social services you want to use

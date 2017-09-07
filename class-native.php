@@ -19,6 +19,7 @@ function __construct() {
   add_action('wp_ajax_nopriv_rsssl_get_likes', array($this, 'get_likes') );
   add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes') );
   add_action('wp_ajax_rsssl_clear_likes', array($this, 'clear_likes') );
+  add_action('wp_ajax_nopriv_rsssl_clear_likes', array($this, 'clear_likes') );
   add_filter('the_content',  array($this, 'like_buttons_content_filter'));
   add_shortcode('rsssl_share_buttons', array($this, 'insert_shortcode_buttons') );
   add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10,3);
@@ -362,8 +363,6 @@ private function retrieve_linkedin_likes($url){
   return intval($shares);
 }
 
-
-
 private function retrieve_stumbleupon_likes($url){
   $share_cache = get_transient('rsssl_stumble_shares');
   $request = wp_remote_get('https://www.stumbleupon.com/services/1.01/badge.getinfo?url='.$url);
@@ -371,8 +370,9 @@ private function retrieve_stumbleupon_likes($url){
   $output = json_decode( $json );
   $shares = 0;
 
+  //error_log(print_r($output,true));
   if (!empty($output) && $output->result->in_index==1) {
-    error_log(print_r($output,true));
+
     $shares = $output->result->views;
   }
   $share_cache[$url] = $shares;
@@ -380,6 +380,8 @@ private function retrieve_stumbleupon_likes($url){
 
   return intval($shares);
 }
+
+//https://vk.com/share.php?act=count&url=https://really-simple-ssl.com
 
 private function retrieve_pinterest_likes($url) {
   $shares = 0;
@@ -502,12 +504,12 @@ public function social_share_buttons_html($html){
   $services = get_option('rsssl_social_services');
 
   $patterns = array();
-  if ($this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
-  if ($this->linkedin)  $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
-  if ($this->twitter)   $patterns[] = '/<a class="post-share twitter".*<\/a>/i';
-  if ($this->google)    $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
-  if ($this->stumble)   $patterns[] = '/<a class="post-share stumble".*<\/a>/i';
-  if ($this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
+  if (!$this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
+  if (!$this->linkedin)  $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
+  if (!$this->twitter)   $patterns[] = '/<a class="post-share twitter".*<\/a>/i';
+  if (!$this->google)    $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
+  if (!$this->stumble)   $patterns[] = '/<a class="post-share stumble".*<\/a>/i';
+  if (!$this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
 
   $html = preg_replace($patterns, '', $html);
 
