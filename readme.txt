@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 4.8
-Stable tag: 2.0.6
+Stable tag: 2.0.8
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,12 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 2.0.8 =
+* Fix: buttons not showing up on pages after fix in 2.0.7
+
+= 2.0.7 =
+* Fix: shares from built in buttons also appearing in archive pages
+
 = 2.0.6 =
 * Fixed a bug where not logged in user click would not result in clearing of the share cache
 

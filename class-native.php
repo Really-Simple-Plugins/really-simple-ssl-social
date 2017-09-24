@@ -8,6 +8,7 @@ class rsssl_soc_native {
   public $google;
   public $pinterest;
   public $stumble;
+  public $debug = false;
 
 
 function __construct() {
@@ -53,6 +54,8 @@ public function get_likes(){
     $url = get_permalink($post_id);
   }
 
+  if ($this->debug) $url = "https://really-simple-ssl.com";
+
   //make sure the current home_url is https, as this is a really simple ssl add on.
   $url_https = str_replace("http://", "https://", $url);
 
@@ -96,10 +99,10 @@ public function get_likes(){
   //google seems to return the correct likes anyway.
   if ($this->google) {
     $google_likes = $this->retrieve_google_likes($url_https);
-    // if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
-    // if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
-    // if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
-    // if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
+    if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
+    if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
+    if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
+    if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
   }
 
   $linkedin_likes = 0;
@@ -292,6 +295,7 @@ private function retrieve_fb_likes($url){
   if ($fb_access_token) $auth = '&access_token='.$fb_access_token;
 
   $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id='.$url.$auth);
+
   //https://developers.facebook.com/tools/accesstoken/
 
   if ($request["response"]["code"]==200) {
@@ -410,11 +414,12 @@ private function retrieve_pinterest_likes($url) {
 */
 
 public function like_buttons_content_filter($content){
-    //check if this posttype needs the buttons.
+  //prevent showing numbers on in appropriate places, like archives.
+  if (is_single() || is_page()) {
+       //check if this posttype needs the buttons.
     if ($this->show_buttons()) {
       $html = $this->generate_like_buttons();
       $position = get_option('rsssl_button_position');
-
       //position depending on setting
       if ($position == 'bottom') {
         $content = $content.$html;
@@ -425,6 +430,9 @@ public function like_buttons_content_filter($content){
       }
 
     }
+  } else {
+    error_log("not is single");
+  }
 
     return $content;
 }
@@ -533,9 +541,10 @@ public function enqueue_scripts() {
 
     //check a transient as well, if the transient has expired, we will set set usecache to true, so it will retrieve the shares fresh.
     $share_cache = get_transient('rsssl_fb_shares');
-    if ((defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
+    if ($this->debug || (defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
       $use_cache = false;
     }
+
 
     if ($this->pinterest) {
       wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);

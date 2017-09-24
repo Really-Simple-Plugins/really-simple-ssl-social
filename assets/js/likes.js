@@ -30,7 +30,7 @@ $(document).on('click', '.post-share', function(e){
 function rsssl_soc_get_likes(){
   var data;
 	if (rsssl_soc_ajax.use_cache) return;
-
+	console.log("get likes");
   $(".rsssl_soc").each(function(i, obj) {
 		var rsssl_post_id = $(this).data('rsssl_post_id');
 		var button_container = $('[data-rsssl_post_id="'+rsssl_post_id+'"]');
@@ -43,6 +43,7 @@ function rsssl_soc_get_likes(){
           post_id: rsssl_post_id,
         }),
         success: function(data){
+					console.log(data);
 					button_container.find('a.post-share.twitter span').html(data.twitter);
           button_container.find('a.post-share.facebook span').html(data.facebook);
           button_container.find('a.post-share.gplus span').html(data.gplus);
