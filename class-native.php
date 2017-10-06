@@ -54,8 +54,6 @@ public function get_likes(){
     $url = get_permalink($post_id);
   }
 
-  error_log("Hallo!");
-
   //make sure the current home_url is https, as this is a really simple ssl add on.
   $url_https = "https://addthis.com";//str_replace("http://", "https://", $url);
 
@@ -138,7 +136,6 @@ public function get_likes(){
         'linkedin'  => $this->convert_nr($linkedin_likes),
         'pinterest' => $this->convert_nr($pinterest_likes),
       );
-      error_log(print_r($out,true));
   die(json_encode($out));
 
 }
@@ -373,7 +370,6 @@ private function retrieve_stumbleupon_likes($url){
   $shares = 0;
 
   if (!empty($output) && $output->result->in_index==1) {
-    error_log(print_r($output,true));
     $shares = $output->result->views;
   }
   $share_cache[$url] = $shares;
@@ -492,6 +488,10 @@ public function generate_like_buttons($single = true){
   $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[stumble_shares]", "[pinterest_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $stumble_shares, $pinterest_shares), $html);
   $html = apply_filters('rsssl_soc_share_buttons', $html);
 
+  if(get_option('rsssl_inline_or_left') == "left") {
+    $html = str_replace('rsssl_soc' , 'rsssl_soc rsssl_left' , $html);
+  }
+
   return $html;
 }
 
@@ -503,13 +503,14 @@ public function generate_like_buttons($single = true){
 public function social_share_buttons_html($html){
   $services = get_option('rsssl_social_services');
 
+
   $patterns = array();
-  if ($this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
-  if ($this->linkedin)  $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
-  if ($this->twitter)   $patterns[] = '/<a class="post-share twitter".*<\/a>/i';
-  if ($this->google)    $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
-  if ($this->stumble)   $patterns[] = '/<a class="post-share stumble".*<\/a>/i';
-  if ($this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
+  if (!$this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
+  if (!$this->linkedin)  $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
+  if (!$this->twitter)   $patterns[] = '/<a class="post-share twitter".*<\/a>/i';
+  if (!$this->google)    $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
+  if (!$this->stumble)   $patterns[] = '/<a class="post-share stumble".*<\/a>/i';
+  if (!$this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
 
   $html = preg_replace($patterns, '', $html);
 
@@ -522,6 +523,7 @@ public function enqueue_scripts() {
     $services = get_option('rsssl_social_services');
 
     wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
+    wp_enqueue_style( 'rsssl_social_fontello' ,plugin_dir_url( __FILE__ ).'assets/font/fontello-icons/css/fontello.css', array(), rsssl_soc_version);
 
     $url = home_url();
     global $post;

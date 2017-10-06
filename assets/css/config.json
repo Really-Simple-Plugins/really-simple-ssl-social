@@ -1,0 +1,46 @@
+{
+  "name": "",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "8e04c98c8f5ca0a035776e3001ad2638",
+      "css": "facebook",
+      "code": 61594,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "627abcdb627cb1789e009c08e2678ef9",
+      "css": "twitter",
+      "code": 61593,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "f06fe7ff18d1c591bc1183cb3ab105e9",
+      "css": "google",
+      "code": 61856,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "cc399e4597f157dcbf016be0b7407fea",
+      "css": "pinterest",
+      "code": 62001,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "e9107949dd6c9e8ab2b29ae07156e38c",
+      "css": "linkedin",
+      "code": 61665,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "3958d12510001a1a172f088893506c27",
+      "css": "stumbleupon",
+      "code": 61860,
+      "src": "fontawesome"
+    }
+  ]
+}

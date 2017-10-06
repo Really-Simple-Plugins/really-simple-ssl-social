@@ -132,6 +132,8 @@ public function add_settings(){
   register_setting( 'rlrsssl_options', 'rsssl_button_position', array($this,'options_validate') );
   register_setting( 'rlrsssl_options', 'rsssl_retrieval_domains', array($this,'options_validate_boolean_array') );
   register_setting( 'rlrsssl_options', 'rsssl_social_services', array($this,'options_validate_boolean_array') );
+  //Nieuwe switch buttons naar rsssl_inline_or_left optie
+  register_setting( 'rlrsssl_options', 'rsssl_inline_or_left', array($this,'options_validate') );
 
   if (!get_option('rsssl_insert_custom_buttons')) {
     add_settings_field('id_start_date_social', __("SSL switch date","really-simple-ssl-soc"), array($this,'get_option_start_date_social'), 'rlrsssl', 'rlrsssl_settings');
@@ -145,8 +147,9 @@ public function add_settings(){
     add_settings_field('rsssl_fb_access_token', __("Facebook app token","really-simple-ssl-soc"), array($this,'get_option_fb_access_token'), 'rlrsssl', 'rlrsssl_settings');
     add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on","really-simple-ssl-soc"), array($this,'get_option_buttons_on_post_types'), 'rlrsssl', 'rlrsssl_settings');
     add_settings_field('rsssl_fb_button_type', __("Use share or like","really-simple-ssl-soc"), array($this,'get_option_fb_button_type'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl', 'rlrsssl_settings');
     add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares","really-simple-ssl-soc"), array($this,'get_option_retrieval_domains'), 'rlrsssl', 'rlrsssl_settings');
+    add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar","really-simple-ssl-soc"), array($this,'get_option_rsssl_inline_or_left'), 'rlrsssl', 'rlrsssl_settings');
+    add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl', 'rlrsssl_settings');
 
 
   }
@@ -276,7 +279,14 @@ public function get_option_fb_access_token() {
   echo '<p>'.__('To prevent rate limiting you need to create an app in facebook, then copy the app token which you can find here: https://developers.facebook.com/tools/accesstoken/','really-simple-ssl-soc')."</p>";
 }
 
-
-
+public function get_option_rsssl_inline_or_left() {
+  $rsssl_inline_or_left = get_option('rsssl_inline_or_left');
+ ?>
+  <select name="rsssl_inline_or_left">
+    <option value="inline" <?php if ($rsssl_inline_or_left=="inline") echo "selected"?>>Inline
+    <option value="left" <?php if ($rsssl_inline_or_left=="left") echo "selected"?>>Left
+  </select>
+ <?php
+}
 
 }//class closure

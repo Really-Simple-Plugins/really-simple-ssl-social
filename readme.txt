@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 2.0.8 =
+
+
 = 2.0.5 =
 * Tweak: Added pinterest to share buttons
 * Tweak: changed default share cache expiration to one day
