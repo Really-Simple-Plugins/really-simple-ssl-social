@@ -55,7 +55,7 @@ public function get_likes(){
   }
 
   //make sure the current home_url is https, as this is a really simple ssl add on.
-  $url_https = "https://addthis.com";//str_replace("http://", "https://", $url);
+  $url_https = str_replace("http://", "https://", $url);
 
   $url_https = str_replace("https://www.", "https://", $url_https);
   $url_httpswww = str_replace("https://", "https://www.", $url_https);
@@ -232,7 +232,7 @@ private function get_cached_likes($type, $url){
   if ($type=="pinterest") $share_cache = get_transient('rsssl_pinterest_shares');
 
   if (!$share_cache || !isset($share_cache[$url])) {
-     return "";
+     return 0;
    } else {
      return $share_cache[$url];
    }
@@ -469,8 +469,17 @@ public function generate_like_buttons($single = true){
   }
 
   //load template from theme directory if available
-  $file = rsssl_soc_path . 'templates/sharing-buttons.html';
-  $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons.html';
+
+  $old_or_new_look = get_option('rsssl_use_30_styling');
+
+  if ($old_or_new_look == FALSE) {
+    $file = rsssl_soc_path . 'templates/sharing-buttons.html';
+    $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons.html';
+  } else {
+    $file = rsssl_soc_path . 'templates/sharing-buttons-3.html';
+    $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons-3.html';
+  }
+
   if (file_exists($theme_file)) {
     $file = $theme_file;
   }
@@ -521,9 +530,16 @@ public function social_share_buttons_html($html){
 public function enqueue_scripts() {
     $version = (strpos(home_url(), "localhost")===false) ? time() : "";
     $services = get_option('rsssl_social_services');
+    $old_or_new_look = get_option('rsssl_use_30_styling');
 
+if ($old_or_new_look == FALSE) {
     wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
+    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
+  } else {
+    wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style-3.css', array(), rsssl_soc_version);
     wp_enqueue_style( 'rsssl_social_fontello' ,plugin_dir_url( __FILE__ ).'assets/font/fontello-icons/css/fontello.css', array(), rsssl_soc_version);
+    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes-3.js", array('jquery'),rsssl_soc_version, true);
+  }
 
     $url = home_url();
     global $post;
@@ -543,7 +559,7 @@ public function enqueue_scripts() {
       wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
     }
 
-    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
+
     wp_localize_script('rsssl_social','rsssl_soc_ajax', array(
       'ajaxurl'=> admin_url( 'admin-ajax.php' ),
       'token' => wp_create_nonce('rsssl_social_nonce', 'token'),

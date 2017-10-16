@@ -2,14 +2,16 @@ jQuery(document).ready(function($) {
 	 'use strict';
 
 $(document).on('click', '.post-share', function(e){
-	var counter = $(this).find('span').html();
+	var container = $(this).find('span');
+
+	var counter = container.html();
 	if (counter.indexOf('k')>=0 || counter.indexOf('m')>=0) {
 		return;
 	}
 
 	if (counter=='') counter=0;
 	counter++;
-	$(this).find('span').html(counter);
+	container.html(counter);
 
 	//now, clear the share cache for this url
 	var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
@@ -25,7 +27,6 @@ $(document).on('click', '.post-share', function(e){
 			}
 	});
 });
-
 
 function rsssl_soc_get_likes(){
   var data;
