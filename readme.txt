@@ -27,8 +27,19 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Changelog ==
 
 = 3.0.0 =
-* Changed the look of the buttons
+* Changed the look of built-in buttons
+* Added an option to either use the old styling or new styling
 * Added an option to display the buttons on post or as a left sidebar
+* Added default settings when enabling the built-in buttons
+
+= 2.0.8 =
+* Fix: buttons not showing up on page post type after fix for archive pages in 2.0.7
+
+= 2.0.7 =
+* Fix: shares from built in buttons also appearing in archive pages
+
+= 2.0.6 =
+* Fixed: not logged in user click would not result in clearing of the share cache
 
 = 2.0.5 =
 * Tweak: Added pinterest to share buttons

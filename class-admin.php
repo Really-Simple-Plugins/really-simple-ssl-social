@@ -217,7 +217,7 @@ public function add_settings(){
     add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl', 'rlrsssl_settings');
     add_settings_field('rsssl_use_30_styling', __("Use 3.0 styling for buttons","really-simple-ssl-soc"), array($this,'get_option_rsssl_use_30_styling'), 'rlrsssl', 'rlrsssl_settings');
   if (get_option('rsssl_use_30_styling')) {
-    add_settings_field('rsssl_inline_or_left', __("Show buttons inline in post or as left sidebar","really-simple-ssl-soc"), array($this,'get_option_rsssl_inline_or_left'), 'rlrsssl', 'rlrsssl_settings');
+    add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar","really-simple-ssl-soc"), array($this,'get_option_rsssl_inline_or_left'), 'rlrsssl', 'rlrsssl_settings');
   }
 
   }
