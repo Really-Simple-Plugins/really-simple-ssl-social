@@ -10,7 +10,6 @@ class rsssl_soc_native {
   public $stumble;
   public $debug = false;
 
-
 function __construct() {
   if ( isset( self::$_this ) )
       wp_die( sprintf( __( '%s is a singleton class and you cannot create a second instance.','really-simple-ssl-soc' ), get_class( $this ) ) );
@@ -34,6 +33,7 @@ static function this() {
 }
 
 
+
 public function initialize(){
   $services = get_option('rsssl_social_services');
   $this->facebook   = (isset($services['facebook']) && $services['facebook']) ? true : false;
@@ -43,6 +43,7 @@ public function initialize(){
   $this->stumble     = (isset($services['stumble']) && $services['stumble']) ? true : false;
   $this->pinterest  = (isset($services['pinterest']) && $services['pinterest']) ? true : false;
 }
+
 
 public function get_likes(){
   if (!isset($_GET['post_id'])) return;
@@ -122,6 +123,7 @@ public function get_likes(){
   }
 
   $pinterest_likes = 0;
+
   if ($this->pinterest) {
     if ($get_http)      $pinterest_likes = $this->retrieve_pinterest_likes($url_http);
     if ($get_https)     $pinterest_likes += $this->retrieve_pinterest_likes($url_https);
@@ -137,7 +139,6 @@ public function get_likes(){
         'linkedin'  => $this->convert_nr($linkedin_likes),
         'pinterest' => $this->convert_nr($pinterest_likes),
       );
-
   die(json_encode($out));
 
 }
@@ -225,6 +226,7 @@ public function get_cached_likes_total($type, $post_id){
 }
 
 private function get_cached_likes($type, $url){
+
   if ($type=="facebook") $share_cache = get_transient('rsssl_fb_shares');
   if ($type=="twitter") $share_cache = get_transient('rsssl_twitter_shares');
   if ($type=="google") $share_cache = get_transient('rsssl_google_shares');
@@ -233,7 +235,7 @@ private function get_cached_likes($type, $url){
   if ($type=="pinterest") $share_cache = get_transient('rsssl_pinterest_shares');
 
   if (!$share_cache || !isset($share_cache[$url])) {
-     return "";
+     return 0;
    } else {
      return $share_cache[$url];
    }
@@ -293,7 +295,6 @@ private function retrieve_fb_likes($url){
 
   $auth="";
   if ($fb_access_token) $auth = '&access_token='.$fb_access_token;
-
   $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id='.$url.$auth);
 
   //https://developers.facebook.com/tools/accesstoken/
@@ -308,8 +309,6 @@ private function retrieve_fb_likes($url){
   set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
   return $shares;
 }
-
-
 
 private function retrieve_twitter_likes($url){
   $share_cache = get_transient('rsssl_twitter_shares');
@@ -376,7 +375,6 @@ private function retrieve_stumbleupon_likes($url){
 
   //error_log(print_r($output,true));
   if (!empty($output) && $output->result->in_index==1) {
-
     $shares = $output->result->views;
   }
   $share_cache[$url] = $shares;
@@ -482,14 +480,24 @@ public function generate_like_buttons($single = true){
   }
 
   //load template from theme directory if available
-  $file = rsssl_soc_path . 'templates/sharing-buttons.html';
-  $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons.html';
+
+  $old_or_new_look = get_option('rsssl_use_30_styling');
+
+  if ($old_or_new_look == FALSE) {
+    $file = rsssl_soc_path . 'templates/sharing-buttons.html';
+    $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons.html';
+  } else {
+    $file = rsssl_soc_path . 'templates/sharing-buttons-3.html';
+    $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons-3.html';
+  }
+
   if (file_exists($theme_file)) {
     $file = $theme_file;
   }
   $html = file_get_contents($file);
 
   $fb_shares = $this->get_cached_likes_total('facebook', $post_id);
+
   $linkedin_shares = $this->get_cached_likes_total('linkedin', $post_id);
   $twitter_shares = $this->get_cached_likes_total('twitter', $post_id);
   $google_shares = $this->get_cached_likes_total('google', $post_id);
@@ -499,6 +507,10 @@ public function generate_like_buttons($single = true){
   $html = str_replace(array("[POST_ID]", "[FB_SHARE_URL]", "[URL]", "[TITLE]"), array($post_id, $fb_share_url, $url, $title), $html);
   $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[stumble_shares]", "[pinterest_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $stumble_shares, $pinterest_shares), $html);
   $html = apply_filters('rsssl_soc_share_buttons', $html);
+
+  if(get_option('rsssl_inline_or_left') == "left") {
+    $html = str_replace('rsssl_soc' , 'rsssl_soc rsssl_left' , $html);
+  }
 
   return $html;
 }
@@ -510,6 +522,7 @@ public function generate_like_buttons($single = true){
 
 public function social_share_buttons_html($html){
   $services = get_option('rsssl_social_services');
+
 
   $patterns = array();
   if (!$this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
@@ -528,8 +541,16 @@ public function social_share_buttons_html($html){
 public function enqueue_scripts() {
     $version = (strpos(home_url(), "localhost")===false) ? time() : "";
     $services = get_option('rsssl_social_services');
+    $old_or_new_look = get_option('rsssl_use_30_styling');
 
+if ($old_or_new_look == FALSE) {
     wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
+    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
+  } else {
+    wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style-3.css', array(), rsssl_soc_version);
+    wp_enqueue_style( 'rsssl_social_fontello' ,plugin_dir_url( __FILE__ ).'assets/font/fontello-icons/css/fontello.css', array(), rsssl_soc_version);
+    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes-3.js", array('jquery'),rsssl_soc_version, true);
+  }
 
     $url = home_url();
     global $post;
@@ -545,12 +566,10 @@ public function enqueue_scripts() {
       $use_cache = false;
     }
 
-
     if ($this->pinterest) {
       wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
     }
 
-    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
     wp_localize_script('rsssl_social','rsssl_soc_ajax', array(
       'ajaxurl'=> admin_url( 'admin-ajax.php' ),
       'token' => wp_create_nonce('rsssl_social_nonce', 'token'),
