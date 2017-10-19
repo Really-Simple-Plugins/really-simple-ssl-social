@@ -241,27 +241,27 @@ private function get_cached_likes($type, $url){
 private function clear_cached_likes($url){
 
   $share_cache = get_transient('rsssl_fb_shares');
-  unset($share_cache[$url]);
+  if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_twitter_shares');
-  unset($share_cache[$url]);
+  if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_google_shares');
-  unset($share_cache[$url]);
+  if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_linkedin_shares');
-  unset($share_cache[$url]);
+  if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_stumble_shares');
-  unset($share_cache[$url]);
+  if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_stumble_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
   $share_cache = get_transient('rsssl_pinterest_shares');
-  unset($share_cache[$url]);
+  if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 }
 
@@ -407,18 +407,21 @@ private function retrieve_pinterest_likes($url) {
 public function like_buttons_content_filter($content){
     //check if this posttype needs the buttons.
     if ($this->show_buttons()) {
-      $html = $this->generate_like_buttons();
-      $position = get_option('rsssl_button_position');
+      //show the buttons when the is_home blog post index is true or the is_front_page blog post index or static page is not true
+        if ((is_home() || !is_front_page()) || get_option('rsssl_inline_or_left') == "left" )  {
+          $html = $this->generate_like_buttons();
+          $position = get_option('rsssl_button_position');
 
-      //position depending on setting
-      if ($position == 'bottom') {
-        $content = $content.$html;
-      } elseif($position == 'both'){
-        $content = $html.$content.$html;
-      } else {
-        $content = $html.$content;
-      }
+          //position depending on setting
+          if ($position == 'bottom') {
+            $content = $content.$html;
+          } elseif($position == 'both'){
+            $content = $html.$content.$html;
+          } else {
+            $content = $html.$content;
+          }
 
+        }
     }
 
     return $content;

@@ -1,6 +1,16 @@
 jQuery(document).ready(function($) {
 	 'use strict';
 
+//Shows the pinterest overlay when clicking on the icon
+$(document).on('click', '.pinterest .rsssl_count', function(e){
+	console.log("count click");
+	PinUtils.pinAny();
+});
+$(document).on('click', '.icon-pinterest', function(e){
+	console.log("icon click");
+	PinUtils.pinAny();
+});
+
 $(document).on('click', '.post-share', function(e){
 	var container = $(this).find('span');
 

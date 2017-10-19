@@ -48,7 +48,6 @@ public function maybe_init_buttons_on_post_types($oldvalue, $newvalue, $option){
 }
 
 public function maybe_init_retrieval_services($oldvalue, $newvalue, $option){
-  error_log("running setup services");
   if ($this->setup_built_in_buttons) {
     $this->setup_built_in_buttons_settings();
   }
@@ -65,7 +64,6 @@ public function maybe_init_retrieval_services($oldvalue, $newvalue, $option){
  */
 
 public function setup_built_in_buttons_settings(){
-  error_log("running");
   if (!get_option('rsssl_use_30_styling')) {
     update_option("rsssl_use_30_styling", true);
   }
@@ -77,8 +75,6 @@ public function setup_built_in_buttons_settings(){
     $rsssl_buttons_on_post_types = get_option('rsssl_buttons_on_post_types');
     $rsssl_buttons_on_post_types['post'] = true;
     update_option("rsssl_buttons_on_post_types", $rsssl_buttons_on_post_types);
-
-
 
     $http = false;
     $https = false;
@@ -169,8 +165,6 @@ public function init(){
 
 public function options_validate($input){
   $validated_input = sanitize_text_field($input);
-  error_log("gevalideerde input");
-  error_log($validated_input);
   return $validated_input;
 }
 

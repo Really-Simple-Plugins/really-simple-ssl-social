@@ -200,7 +200,6 @@ public function activate_license() {
 	 	if( ! check_admin_referer( 'rsssl_soc_nonce', 'rsssl_soc_nonce' ) )
 			return; // get out if we didn't click the Activate button
 
-		error_log("after nonce check");
 		// retrieve the license from the database
 		$license = sanitize_key(trim( $_POST['rsssl_soc_license_key']));
 		update_option('rsssl_soc_license_key', $license);
