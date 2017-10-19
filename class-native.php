@@ -8,7 +8,7 @@ class rsssl_soc_native {
   public $google;
   public $pinterest;
   public $stumble;
-
+  public $debug = false;
 
 function __construct() {
   if ( isset( self::$_this ) )
@@ -19,6 +19,7 @@ function __construct() {
   add_action('wp_ajax_nopriv_rsssl_get_likes', array($this, 'get_likes') );
   add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes') );
   add_action('wp_ajax_rsssl_clear_likes', array($this, 'clear_likes') );
+  add_action('wp_ajax_nopriv_rsssl_clear_likes', array($this, 'clear_likes') );
   add_filter('the_content',  array($this, 'like_buttons_content_filter'));
   add_shortcode('rsssl_share_buttons', array($this, 'insert_shortcode_buttons') );
   add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10,3);
@@ -53,6 +54,8 @@ public function get_likes(){
   } else {
     $url = get_permalink($post_id);
   }
+
+  if ($this->debug) $url = "https://really-simple-ssl.com";
 
   //make sure the current home_url is https, as this is a really simple ssl add on.
   $url_https = str_replace("http://", "https://", $url);
@@ -97,10 +100,10 @@ public function get_likes(){
   //google seems to return the correct likes anyway.
   if ($this->google) {
     $google_likes = $this->retrieve_google_likes($url_https);
-    // if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
-    // if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
-    // if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
-    // if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
+    if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
+    if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
+    if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
+    if ($get_httpswww)  $google_likes += $this->retrieve_google_likes($url_httpswww);
   }
 
   $linkedin_likes = 0;
@@ -293,6 +296,7 @@ private function retrieve_fb_likes($url){
   $auth="";
   if ($fb_access_token) $auth = '&access_token='.$fb_access_token;
   $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id='.$url.$auth);
+
   //https://developers.facebook.com/tools/accesstoken/
 
   if ($request["response"]["code"]==200) {
@@ -369,6 +373,7 @@ private function retrieve_stumbleupon_likes($url){
   $output = json_decode( $json );
   $shares = 0;
 
+  //error_log(print_r($output,true));
   if (!empty($output) && $output->result->in_index==1) {
     $shares = $output->result->views;
   }
@@ -377,6 +382,8 @@ private function retrieve_stumbleupon_likes($url){
 
   return intval($shares);
 }
+
+//https://vk.com/share.php?act=count&url=https://really-simple-ssl.com
 
 private function retrieve_pinterest_likes($url) {
   $shares = 0;
@@ -405,10 +412,15 @@ private function retrieve_pinterest_likes($url) {
 */
 
 public function like_buttons_content_filter($content){
-    //check if this posttype needs the buttons.
+  //prevent showing numbers on in appropriate places, like archives.
+  if (is_single() || is_page()) {
+       //check if this posttype needs the buttons.
     if ($this->show_buttons()) {
-      //show the buttons when the is_home blog post index is true or the is_front_page blog post index or static page is not true
-        if ((is_home() || !is_front_page()) || get_option('rsssl_inline_or_left') == "left" )  {
+
+      //show the buttons
+      // - not on homepage, but do show them on blogs overview page (is_front_page)
+      // always when left is enabled.
+        if ((is_home() || !is_front_page() ) || get_option('rsssl_inline_or_left') == "left" )  {
           $html = $this->generate_like_buttons();
           $position = get_option('rsssl_button_position');
 
@@ -423,6 +435,9 @@ public function like_buttons_content_filter($content){
 
         }
     }
+  } else {
+    error_log("not is single");
+  }
 
     return $content;
 }
@@ -554,14 +569,13 @@ if ($old_or_new_look == FALSE) {
 
     //check a transient as well, if the transient has expired, we will set set usecache to true, so it will retrieve the shares fresh.
     $share_cache = get_transient('rsssl_fb_shares');
-    //if ((defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
+    if ($this->debug || (defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
       $use_cache = false;
-    //}
+    }
 
     if ($this->pinterest) {
       wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(),"", true);
     }
-
 
     wp_localize_script('rsssl_social','rsssl_soc_ajax', array(
       'ajaxurl'=> admin_url( 'admin-ajax.php' ),

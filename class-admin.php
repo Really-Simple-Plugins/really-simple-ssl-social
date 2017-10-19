@@ -21,9 +21,8 @@ function __construct() {
   add_action("update_option_rsssl_fb_button_type", array($this, "maybe_init_fb_button_types"), 10,3);
   add_action("update_option_rsssl_buttons_on_post_types", array($this, "maybe_init_buttons_on_post_types"), 10,3);
   add_action("update_option_rsssl_retrieval_services", array($this, "maybe_init_retrieval_services"), 10,3);
-
-
   }
+
 
 static function this() {
   return self::$_this;
@@ -34,6 +33,8 @@ public function maybe_init_styling_3($oldvalue, $newvalue, $option){
     $this->setup_built_in_buttons_settings();
   }
 }
+
+/*set the date to an inital value of today. */
 
 public function maybe_init_fb_button_types($oldvalue, $newvalue, $option){
   if ($this->setup_built_in_buttons) {
@@ -97,12 +98,17 @@ public function setup_built_in_buttons_settings(){
     );
     update_option("rsssl_retrieval_domains",$domains );
 
-    $rsssl_retrieval_services = array();
-    $rsssl_retrieval_services['facebook'] = true;
-    $rsssl_retrieval_services['twitter'] = true;
-    $rsssl_retrieval_services['google'] = true;
-    $rsssl_retrieval_services['linkedin'] = true;
-    update_option("rsssl_social_services", $rsssl_retrieval_services );
+    if (!get_option('rsssl_social_services')) {
+      $services = array(
+        'facebook' => true,
+        'linkedin' => true,
+        'google' => true,
+        'pinterest' => true,
+      );
+
+      update_option("rsssl_social_services",$services );
+    }
+
 }
 
 
@@ -126,26 +132,6 @@ public function maybe_install_built_in_buttons($oldvalue, $newvalue, $option){
   }
 }
 
-
-public function check_for_upgrade() {
-    $db_version = get_option('rsssl_soc_version');
-    if (!$db_version || version_compare($db_version, rsssl_soc_version, '<')){
-      if (!get_option('rsssl_retrieval_services')) {
-
-        $services = array(
-          'facebook' => true,
-          'linkedin' => true,
-          'google' => true,
-          'twitter' => true,
-          'stumble' => true,
-          'pinterest' => true,
-        );
-        update_option("rsssl_retrieval_services",$services );
-      }
-      update_option('rsssl_soc_version', rsssl_soc_version);
-    }
-
-}
 
 /*set the date to an inital value of today. */
 
