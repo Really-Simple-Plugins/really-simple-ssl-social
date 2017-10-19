@@ -27,6 +27,7 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+
 = 3.0.0 =
 * Changed the look of built-in buttons
 * Added an option to either use the old styling or new styling

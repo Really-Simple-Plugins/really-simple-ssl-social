@@ -412,13 +412,9 @@ private function retrieve_pinterest_likes($url) {
 */
 
 public function like_buttons_content_filter($content){
-  //prevent showing numbers on in appropriate places, like archives.
-  if (is_single() || is_page()) {
-       //check if this posttype needs the buttons.
     if ($this->show_buttons()) {
-
-      //show the buttons
-      // - not on homepage, but do show them on blogs overview page (is_front_page)
+      // show the buttons
+      // not on homepage, but do show them on blogs overview page (is_front_page)
       // always when left is enabled.
         if ((is_home() || !is_front_page() ) || get_option('rsssl_inline_or_left') == "left" )  {
           $html = $this->generate_like_buttons();
@@ -435,9 +431,6 @@ public function like_buttons_content_filter($content){
 
         }
     }
-  } else {
-    error_log("not is single");
-  }
 
     return $content;
 }

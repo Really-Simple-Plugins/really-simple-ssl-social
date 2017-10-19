@@ -13,8 +13,7 @@ function __construct() {
   add_action('admin_init', array($this, 'init'), 15 );
 
   register_activation_hook( rsssl_soc_plugin_file , array( $this, 'install' ) );
-  add_action( 'plugins_loaded', array($this, 'check_for_upgrade') );
-
+  
   add_action("update_option_rsssl_insert_custom_buttons", array($this, "maybe_install_built_in_buttons"), 10,3);
 
   add_action("update_option_rsssl_use_30_styling", array($this, "maybe_init_styling_3"), 10,3);
