@@ -220,7 +220,6 @@ public function add_settings(){
 }
 
 public function add_social_page(){
-  add_settings_field('rsssl_insert_custom_buttons', __("Use the built in share buttons","really-simple-ssl-soc"), array($this,'get_option_insert_custom_buttons'), 'social', 'rlrsssl_settings');
   ?>
   <form action="options.php" method="post">
   <?php
