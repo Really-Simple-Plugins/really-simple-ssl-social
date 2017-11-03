@@ -30,7 +30,8 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 
 = 3.0.1 =
 * Added a dedicated tab for social settings
-* Fix: enlarged and centered the count on buttons 
+* Fix: enlarged and centered the count on buttons
+* Tweak: button position on post type only shown when buttons are set to display inline 
 
 = 3.0.0 =
 * Changed the look of built-in buttons
