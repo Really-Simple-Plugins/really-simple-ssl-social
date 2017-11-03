@@ -34,6 +34,7 @@ $(document).on('click', '.post-share', function(e){
 				post_id: post_id,
 			}),
 			success: function(data){
+				console.log('successfully cleared cached shares!');
 			}
 	});
 });
