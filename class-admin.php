@@ -10,16 +10,23 @@ function __construct() {
 
   self::$_this = $this;
 
+  //Add social settings tab
+  add_filter('rsssl_tabs', array($this,'add_social_tab'),10,3 );
+  add_action('show_tab_social', array($this, 'add_social_page'));
+
   add_action('admin_init', array($this, 'init'), 15 );
 
   register_activation_hook( rsssl_soc_plugin_file , array( $this, 'install' ) );
-  
+
   add_action("update_option_rsssl_insert_custom_buttons", array($this, "maybe_install_built_in_buttons"), 10,3);
 
   add_action("update_option_rsssl_use_30_styling", array($this, "maybe_init_styling_3"), 10,3);
   add_action("update_option_rsssl_fb_button_type", array($this, "maybe_init_fb_button_types"), 10,3);
   add_action("update_option_rsssl_buttons_on_post_types", array($this, "maybe_init_buttons_on_post_types"), 10,3);
   add_action("update_option_rsssl_retrieval_services", array($this, "maybe_init_retrieval_services"), 10,3);
+  //Add_settings?
+  add_action('admin_init', array($this, 'add_settings'),40);
+
   }
 
 
@@ -171,6 +178,9 @@ public function options_validate_boolean_array($input){
 public function add_settings(){
   if (!class_exists("rsssl_admin")) return;
 
+  add_settings_section('rlrsssl_settings', __("Settings","really-simple-ssl"), array($this,'section_text'), 'rlrsssl-social');
+
+
   //add_settings_section('section_rssslpp', __("Pro", "really-simple-ssl-soc"), array($this, "section_text"), 'rlrsssl');
   register_setting( 'rlrsssl_options', 'rsssl_soc_start_date_ssl', array($this,'options_validate') );
   register_setting( 'rlrsssl_options', 'rsssl_soc_replace_ogurl', array($this,'options_validate_boolean') );
@@ -187,27 +197,45 @@ public function add_settings(){
   register_setting( 'rlrsssl_options', 'rsssl_use_30_styling', array($this,'options_validate') );
 
   if (!get_option('rsssl_insert_custom_buttons')) {
-    add_settings_field('id_start_date_social', __("SSL switch date","really-simple-ssl-soc"), array($this,'get_option_start_date_social'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('id_replace_ogurl', __("Use http:// for the meta og:url","really-simple-ssl-soc"), array($this,'get_option_replace_ogurl'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('id_replace_to_http_on_home', __("Recover shares on the homepage","really-simple-ssl-soc"), array($this,'get_option_replace_to_http_on_home'), 'rlrsssl', 'rlrsssl_settings');
+    add_settings_field('id_start_date_social', __("SSL switch date","really-simple-ssl-soc"), array($this,'get_option_start_date_social'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('id_replace_ogurl', __("Use http:// for the meta og:url","really-simple-ssl-soc"), array($this,'get_option_replace_ogurl'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('id_replace_to_http_on_home', __("Recover shares on the homepage","really-simple-ssl-soc"), array($this,'get_option_replace_to_http_on_home'), 'rlrsssl-social', 'rlrsssl_settings');
   }
 
-  add_settings_field('rsssl_insert_custom_buttons', __("Use the built in share buttons","really-simple-ssl-soc"), array($this,'get_option_insert_custom_buttons'), 'rlrsssl', 'rlrsssl_settings');
+  add_settings_field('rsssl_insert_custom_buttons', __("Use the built in share buttons","really-simple-ssl-soc"), array($this,'get_option_insert_custom_buttons'), 'rlrsssl-social', 'rlrsssl_settings');
   if (get_option('rsssl_insert_custom_buttons')) {
-    add_settings_field('rsssl_social_services', __("Social services you want to use","really-simple-ssl-soc"), array($this,'get_option_social_services'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_fb_access_token', __("Facebook app token","really-simple-ssl-soc"), array($this,'get_option_fb_access_token'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on","really-simple-ssl-soc"), array($this,'get_option_buttons_on_post_types'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_fb_button_type', __("Use share or like","really-simple-ssl-soc"), array($this,'get_option_fb_button_type'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares","really-simple-ssl-soc"), array($this,'get_option_retrieval_domains'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl', 'rlrsssl_settings');
-    add_settings_field('rsssl_use_30_styling', __("Use 3.0 styling for buttons","really-simple-ssl-soc"), array($this,'get_option_rsssl_use_30_styling'), 'rlrsssl', 'rlrsssl_settings');
+    add_settings_field('rsssl_social_services', __("Social services you want to use","really-simple-ssl-soc"), array($this,'get_option_social_services'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('rsssl_fb_access_token', __("Facebook app token","really-simple-ssl-soc"), array($this,'get_option_fb_access_token'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on","really-simple-ssl-soc"), array($this,'get_option_buttons_on_post_types'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('rsssl_fb_button_type', __("Use share or like","really-simple-ssl-soc"), array($this,'get_option_fb_button_type'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares","really-simple-ssl-soc"), array($this,'get_option_retrieval_domains'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
+    add_settings_field('rsssl_use_30_styling', __("Use 3.0 styling for buttons","really-simple-ssl-soc"), array($this,'get_option_rsssl_use_30_styling'), 'rlrsssl-social', 'rlrsssl_settings');
   if (get_option('rsssl_use_30_styling')) {
-    add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar","really-simple-ssl-soc"), array($this,'get_option_rsssl_inline_or_left'), 'rlrsssl', 'rlrsssl_settings');
+    add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar","really-simple-ssl-soc"), array($this,'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
   }
 
   }
 
 }
+
+public function add_social_page(){
+  add_settings_field('rsssl_insert_custom_buttons', __("Use the built in share buttons","really-simple-ssl-soc"), array($this,'get_option_insert_custom_buttons'), 'social', 'rlrsssl_settings');
+  ?>
+  <form action="options.php" method="post">
+  <?php
+      settings_fields('rlrsssl_options');
+      do_settings_sections('rlrsssl-social');
+  ?>
+
+  <input class="button button-primary" name="Submit" type="submit" value="<?php echo __("Save","really-simple-ssl"); ?>" />
+  </form>
+
+  <?php
+
+
+}
+
 
 public function get_option_start_date_social() {
 
@@ -338,6 +366,26 @@ public function get_option_rsssl_use_30_styling() {
   $rsssl_use_30_styling = get_option('rsssl_use_30_styling');
   echo '<input id="rsssl_soc_replace_ogurl" name="rsssl_use_30_styling" size="40" type="checkbox" value="1"' . checked( 1, $rsssl_use_30_styling, false ) ." />";
   RSSSL()->rsssl_help->get_help_tip(__("Use the old or new look", "really-simple-ssl-soc"));
+}
+
+public function add_social_tab($tabs){
+  $tabs['social'] = __("Social","really-simple-ssl-pro");
+  return $tabs;
+}
+
+/**
+ * Insert some explanation above the form
+ *
+ * @since  2.0
+ *
+ * @access public
+ *
+ */
+
+public function section_text() {
+?>
+<p><?php _e('Settings for Really Simple SSL Social','really-simple-ssl-soc');?></p>
+<?php
 }
 
 }//class closure

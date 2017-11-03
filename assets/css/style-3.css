@@ -131,7 +131,8 @@
   display: block;
   margin-top: -29px;
   text-align: center;
-  font-size: 0.65em;
+  font-size: 0.8em;
+  width: 125%;
 }
 
 .rsssl_count {
