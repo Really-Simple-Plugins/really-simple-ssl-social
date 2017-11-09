@@ -81,6 +81,8 @@ public function setup_built_in_buttons_settings(){
 
     $rsssl_buttons_on_post_types = get_option('rsssl_buttons_on_post_types');
     $rsssl_buttons_on_post_types['post'] = true;
+    $rsssl_buttons_on_post_types['page'] = true;
+
     update_option("rsssl_buttons_on_post_types", $rsssl_buttons_on_post_types);
 
     $http = false;

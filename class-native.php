@@ -373,7 +373,6 @@ private function retrieve_stumbleupon_likes($url){
   $output = json_decode( $json );
   $shares = 0;
 
-  //error_log(print_r($output,true));
   if (!empty($output) && $output->result->in_index==1) {
     $shares = $output->result->views;
   }

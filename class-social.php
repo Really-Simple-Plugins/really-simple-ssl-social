@@ -19,10 +19,43 @@ function __construct() {
   add_filter( 'sharing_permalink', array($this, 'jetpack_fb_sharing_link' ), 10, 3);
   add_filter( 'jetpack_sharing_display_link', array($this, 'jetpack_fb_sharing_link' ), 10, 4);
 
+  add_filter("rsssl_htaccess_output", array($this, "maybe_edit_htaccess"), 100, 1);
+  add_filter("rsssl_wp_redirect_url", array($this, "maybe_no_ssl_redirection"), 100, 1);
+
+
 }
 
 static function this() {
   return self::$_this;
+}
+
+
+public function maybe_edit_htaccess($rules){
+
+  if (get_option('rsssl_soc_replace_ogurl') ) {
+
+  $fb_rule = "RewriteCond %{HTTP_USER_AGENT} !facebookexternalhit/[0-9]|Facebot"."\n";
+  if (strlen($rules)>0) {
+    $rsssl_rewrite_rule = "RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]"."\n";
+    if (strpos($rules, $rsssl_rewrite_rule)!==false) {
+        $rules = str_replace($rsssl_rewrite_rule, $fb_rule.$rsssl_rewrite_rule, $rules);
+    }
+  }
+  return $rules;
+  }
+}
+
+public function maybe_no_ssl_redirection($url){
+
+  if (get_option('rsssl_soc_replace_ogurl') ) {
+
+    if (strpos($_SERVER["HTTP_USER_AGENT"],"facebookexternalhit") !==false || strpos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false) {
+        $url = str_replace("https://", "http://", $url);
+        }
+
+  return $url;
+
+ }
 }
 
 
