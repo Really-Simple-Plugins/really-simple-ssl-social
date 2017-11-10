@@ -29,7 +29,6 @@ function __construct() {
 
   }
 
-
 static function this() {
   return self::$_this;
 }
@@ -116,7 +115,6 @@ public function setup_built_in_buttons_settings(){
 
       update_option("rsssl_social_services",$services );
     }
-
 }
 
 
@@ -147,6 +145,9 @@ public function install(){
 
   if (!get_option('rsssl_soc_start_date_ssl')) {
     update_option("rsssl_soc_startdate", date(get_option('date_format')));
+  }
+  if (!get_option('rsssl_soc_replace_ogurl')) {
+    update_option('rsssl_soc_replace_ogurl', true);
   }
 
 }
@@ -187,6 +188,7 @@ public function add_settings(){
   //add_settings_section('section_rssslpp', __("Pro", "really-simple-ssl-soc"), array($this, "section_text"), 'rlrsssl');
   register_setting( 'rlrsssl_social_options', 'rsssl_soc_start_date_ssl', array($this,'options_validate') );
   register_setting( 'rlrsssl_social_options', 'rsssl_soc_replace_ogurl', array($this,'options_validate_boolean') );
+
   register_setting( 'rlrsssl_social_options', 'rsssl_soc_replace_to_http_on_home', array($this,'options_validate_boolean') );
   register_setting( 'rlrsssl_social_options', 'rsssl_insert_custom_buttons', array($this,'options_validate_boolean') );
   register_setting( 'rlrsssl_social_options', 'rsssl_soc_fb_access_token', array($this,'options_validate') );
