@@ -4,7 +4,7 @@ Requires at least: 4.2
 License: GPL2
 Tested up to: 4.8
 
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 
 
 Recovers Facebook likes for your website after migration to https.
@@ -28,10 +28,14 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 
 == Changelog ==
 
+= 3.0.2 =
+* Added WhatsApp share button
+* Added Yummly share button
+
 = 3.0.1 =
 * Added a dedicated tab for social settings
 * Fix: enlarged and centered the count on buttons
-* Tweak: button position on post type only shown when buttons are set to display inline 
+* Tweak: button position on post type only shown when buttons are set to display inline
 
 = 3.0.0 =
 * Changed the look of built-in buttons

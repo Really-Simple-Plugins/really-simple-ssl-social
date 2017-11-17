@@ -8,6 +8,7 @@ class rsssl_soc_native {
   public $google;
   public $pinterest;
   public $stumble;
+  public $yummly;
   public $debug = false;
 
 function __construct() {
@@ -134,6 +135,15 @@ public function get_likes(){
     if ($get_httpswww)  $pinterest_likes += $this->retrieve_pinterest_likes($url_httpswww);
   }
 
+  $yummly_likes = 0;
+
+  if ($this->pinterest) {
+    if ($get_http)      $yummly_likes = $this->retrieve_yummly_likes($url_http);
+    if ($get_https)     $yummly_likes += $this->retrieve_yummly_likes($url_https);
+    if ($get_httpwww)   $yummly_likes += $this->retrieve_yummly_likes($url_httpwww);
+    if ($get_httpswww)  $yummly_likes += $this->retrieve_yummly_likes($url_httpswww);
+  }
+
   $out = array(
         'facebook'  => $this->convert_nr($fb_likes),
         'twitter'   => $this->convert_nr($twitter_likes),
@@ -141,6 +151,7 @@ public function get_likes(){
         'stumble'   => $this->convert_nr($stumble_likes),
         'linkedin'  => $this->convert_nr($linkedin_likes),
         'pinterest' => $this->convert_nr($pinterest_likes),
+        'yummly'    => $this->convert_nr($yummly_likes),
       );
   die(json_encode($out));
 
@@ -236,6 +247,8 @@ private function get_cached_likes($type, $url){
   if ($type=="linkedin") $share_cache = get_transient('rsssl_linkedin_shares');
   if ($type=="stumble") $share_cache = get_transient('rsssl_stumble_shares');
   if ($type=="pinterest") $share_cache = get_transient('rsssl_pinterest_shares');
+  if ($type=="yummly") $share_cache = get_transient('rsssl_yummly_shares');
+
 
   if (!$share_cache || !isset($share_cache[$url])) {
      return 0;
@@ -269,6 +282,10 @@ private function clear_cached_likes($url){
   $share_cache = get_transient('rsssl_pinterest_shares');
   if ($share_cache) unset($share_cache[$url]);
   set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+
+  $share_cache = get_transient('rsssl_yummly_shares');
+  if ($share_cache) unset($share_cache[$url]);
+  set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 }
 
 
@@ -406,6 +423,22 @@ private function retrieve_pinterest_likes($url) {
   return intval($shares);
 }
 
+private function retrieve_yummly_lkes($url) {
+  $shares = 0;
+  $share_cache = get_transient('rsssl_yummly_shares');
+  $request = wp_remote_get('http://www.yummly.com/services/yum-count?url=%s'.$url);
+  $json = wp_remote_retrieve_body($request);
+
+  $output = json_decode($json);
+
+  if (!empty($output)) {
+    $shares = $output->count;
+  }
+  $share_cache[$url] = $shares;
+  set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+
+  return intval($shares);
+}
 
 /*
 
@@ -505,9 +538,10 @@ public function generate_like_buttons($single = true){
   $google_shares = $this->get_cached_likes_total('google', $post_id);
   $stumble_shares = $this->get_cached_likes_total('stumble', $post_id);
   $pinterest_shares = $this->get_cached_likes_total('pinterest', $post_id);
+  $yummly_shares = $this->get_cached_likes_total('yummly', $post_id);
 
   $html = str_replace(array("[POST_ID]", "[FB_SHARE_URL]", "[URL]", "[TITLE]"), array($post_id, $fb_share_url, $url, $title), $html);
-  $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[stumble_shares]", "[pinterest_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $stumble_shares, $pinterest_shares), $html);
+  $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[stumble_shares]", "[pinterest_shares]", "[yummly_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $stumble_shares, $pinterest_shares, $yummly_shares), $html);
   $html = apply_filters('rsssl_soc_share_buttons', $html);
 
   if(get_option('rsssl_inline_or_left') == "left") {

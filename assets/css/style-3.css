@@ -92,25 +92,24 @@
 }
 
 .rsssl_soc a.post-share.pinterest {
-    background: #BD081C no-repeat;
+    background: #bd081c no-repeat;
 }
 .rsssl_soc a.post-share.pinterest:hover {
     background: #cc464f no-repeat;
 }
 
-
 .rsssl_soc a.post-share.whatsapp {
-    background: #57BE53 no-repeat;
+    background: #57be53 no-repeat;
 }
 .rsssl_soc a.post-share.whatsapp:hover {
-    background: #1EBEA5 no-repeat;
+    background: #1ebea5 no-repeat;
 }
 
 .rsssl_soc a.post-share.yummly {
-    background: #DF6131 no-repeat;
+    background: #df6131 no-repeat;
 }
 .rsssl_soc a.post-share.yummly:hover {
-    background: #DE6131 no-repeat;
+    background: #c67453 no-repeat;
 }
 
 .rsssl_soc i.icon-facebook {
@@ -138,6 +137,10 @@
     margin-left: 11px;
 }
 .rsssl_soc i.icon-whatsapp {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-food {
     font-size: 1.6em;
     margin-left: 11px;
 }
