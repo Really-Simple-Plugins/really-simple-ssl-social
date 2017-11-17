@@ -320,6 +320,9 @@ public function get_option_social_services() {
   $google = isset($services['google']) ? $services['google'] : false;
   $stumble = isset($services['stumble']) ? $services['stumble'] : false;
   $pinterest = isset($services['pinterest']) ? $services['pinterest'] : false;
+  $whatsapp = isset($services['whatsapp']) ? $services['whatsapp'] : false;
+  $yummly = isset($services['yummly']) ? $services['yummly'] : false;
+
   ?>
   <input type="checkbox" name="rsssl_social_services[facebook]" value="1" <?php checked( $facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[linkedin]" value="1" <?php checked( $linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc")?><br>
@@ -327,6 +330,8 @@ public function get_option_social_services() {
   <input type="checkbox" name="rsssl_social_services[google]" value="1" <?php checked( $google, "1"); ?>/><?php _e("Google share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[stumble]" value="1" <?php checked( $stumble, "1"); ?>/><?php _e("Stumble share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[pinterest]" value="1" <?php checked( $pinterest, "1"); ?>/><?php _e("Pinterest share button", "really-simple-ssl-soc")?><br>
+  <input type="checkbox" name="rsssl_social_services[whatsapp]" value="1" <?php checked( $whatsapp, "1"); ?>/><?php _e("Whatsapp share button", "really-simple-ssl-soc")?><br>
+  <input type="checkbox" name="rsssl_social_services[yummly]" value="1" <?php checked( $yummly, "1"); ?>/><?php _e("Yummly share button", "really-simple-ssl-soc")?><br>
 
   <?php
   RSSSL()->rsssl_help->get_help_tip(__("Choose which social services you want to include sharing buttons.", "really-simple-ssl-soc"));

@@ -41,6 +41,12 @@
       "css": "stumbleupon",
       "code": 61860,
       "src": "fontawesome"
+    },
+    {
+      "uid": "9d3e9faf68fd4e12def853f0d4e1173b",
+      "css": "whatsapp",
+      "code": 62002,
+      "src": "fontawesome"
     }
   ]
 }

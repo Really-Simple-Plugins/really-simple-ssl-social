@@ -40,8 +40,11 @@ public function initialize(){
   $this->linkedin   = (isset($services['linkedin']) && $services['linkedin']) ? true : false;
   $this->twitter    = (isset($services['twitter']) && $services['twitter']) ? true : false;
   $this->google     = (isset($services['google']) && $services['google']) ? true : false;
-  $this->stumble     = (isset($services['stumble']) && $services['stumble']) ? true : false;
+  $this->stumble    = (isset($services['stumble']) && $services['stumble']) ? true : false;
   $this->pinterest  = (isset($services['pinterest']) && $services['pinterest']) ? true : false;
+  $this->whatsapp   = (isset($services['whatsapp']) && $services['whatsapp']) ? true : false;
+  $this->yummly     = (isset($services['yummly']) && $services['yummly']) ? true : false;
+
 }
 
 
@@ -522,7 +525,6 @@ public function generate_like_buttons($single = true){
 public function social_share_buttons_html($html){
   $services = get_option('rsssl_social_services');
 
-
   $patterns = array();
   if (!$this->facebook)  $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
   if (!$this->linkedin)  $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
@@ -530,6 +532,8 @@ public function social_share_buttons_html($html){
   if (!$this->google)    $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
   if (!$this->stumble)   $patterns[] = '/<a class="post-share stumble".*<\/a>/i';
   if (!$this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
+  if ((!$this->whatsapp) || (!wp_is_mobile()))  $patterns[] = '/<a class="post-share whatsapp".*<\/a>/i';
+  if (!$this->yummly)    $patterns[] = '/<a class="post-share yummly".*<\/a>/i';
 
   $html = preg_replace($patterns, '', $html);
 
