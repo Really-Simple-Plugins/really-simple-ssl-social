@@ -423,7 +423,7 @@ private function retrieve_pinterest_likes($url) {
   return intval($shares);
 }
 
-private function retrieve_yummly_lkes($url) {
+private function retrieve_yummly_likes($url) {
   $shares = 0;
   $share_cache = get_transient('rsssl_yummly_shares');
   $request = wp_remote_get('http://www.yummly.com/services/yum-count?url=%s'.$url);
