@@ -4,7 +4,7 @@ Requires at least: 4.2
 License: GPL2
 Tested up to: 4.8
 
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 
 
 Recovers Facebook likes for your website after migration to https.
@@ -28,10 +28,11 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 
 == Changelog ==
 
-
 = 3.0.2 =
 * Added support for Simple Share Buttons adder, assuming they add a filter to use
-* Fixed an error in the JetPack sharing filters 
+* Fixed an error in the JetPack sharing filters
+* Added WhatsApp share button
+* Added Yummly share button
 
 = 3.0.1 =
 * Added a dedicated tab for social settings

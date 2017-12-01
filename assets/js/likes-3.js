@@ -6,12 +6,14 @@ $(document).on('click', '.pinterest .rsssl_count', function(e){
 	console.log("count click");
 	PinUtils.pinAny();
 });
+
 $(document).on('click', '.icon-pinterest', function(e){
 	console.log("icon click");
 	PinUtils.pinAny();
 });
 
 $(document).on('click', '.post-share', function(e){
+	console.log("sharing");
 	var container = $(this).find('span');
 
 	var counter = container.html();
@@ -19,9 +21,10 @@ $(document).on('click', '.post-share', function(e){
 		return;
 	}
 
-	if (counter=='') counter=0;
+	if (isNaN(counter) || counter=='') counter=0;
 	counter++;
 	container.html(counter);
+	console.log(counter);
 
 	//now, clear the share cache for this url
 	var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
