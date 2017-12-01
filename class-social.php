@@ -16,11 +16,13 @@ function __construct() {
       Jetpack share recovery
   */
 
-  add_filter( 'sharing_permalink', array($this, 'jetpack_fb_sharing_link' ), 10, 3);
-  add_filter( 'jetpack_sharing_display_link', array($this, 'jetpack_fb_sharing_link' ), 10, 4);
+  add_filter( 'sharing_permalink', array($this, 'jetpack_sharing_permalink' ), 10, 3);
+  add_filter( 'jetpack_sharing_display_link', array($this, 'jetpack_sharing_display_link' ), 10, 4);
 
   add_filter("rsssl_htaccess_output", array($this, "maybe_edit_htaccess"), 100, 1);
   add_filter("rsssl_wp_redirect_url", array($this, "maybe_no_ssl_redirection"), 100, 1);
+
+  add_filter('ssba_url_current_page', array($this, 'simple_share_buttons_adder'), 10, 1);
 
 
 }
@@ -59,12 +61,28 @@ public function maybe_no_ssl_redirection($url){
 }
 
 
+/*
+    filter url for simple share buttons adder
+    https://nl.wordpress.org/plugins/simple-share-buttons-adder/
+*/
+
+
+public function simple_share_buttons_adder($url){
+  if ($this->use_http()) {
+    $url = str_replace("https://", "http://", $url);
+  }
+  return $url;
+}
+
+
+
 /**
-*       Filter Jetpack Facebook sharing link
+*       Filter Jetpack Facebook sharing link, for non FB services
+*       https://github.com/Automattic/jetpack/blob/98c78e2cdd7ad6bb4461cb0c67417bdea5311d2e/modules/sharedaddy/sharing-sources.php#L82
 *
 */
 
-public function jetpack_fb_sharing_link($url, $post_id, $id){
+public function jetpack_sharing_display_link($url, $obj, $post_id, $args){
 
   if ($this->use_http($post_id)) {
     $url = str_replace("https://", "http://", $url);
@@ -75,17 +93,19 @@ public function jetpack_fb_sharing_link($url, $post_id, $id){
 }
 
 /**
-*       Filter JetPack sharing links for non FB services.
-*
-*
-*
+*       Filter Jetpack Facebook sharing link
+*       For the native FB like button, we use this function to pass to the button:
+*       https://github.com/Automattic/jetpack/blob/98c78e2cdd7ad6bb4461cb0c67417bdea5311d2e/modules/sharedaddy/sharing-sources.php#L45
 */
 
-public function jetpack_sharing_display_link($url, $sharing_obj, $id, $args ){
-  if ($this->use_http()) {
+public function jetpack_sharing_permalink($url, $post_id, $sharing_id){
+
+  if ($this->use_http($post_id)) {
     $url = str_replace("https://", "http://", $url);
   }
+
   return $url;
+
 }
 
 

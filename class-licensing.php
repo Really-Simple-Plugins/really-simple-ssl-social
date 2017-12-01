@@ -121,6 +121,7 @@ public function plugin_updater() {
 
 }
 
+
 public function add_license_tab($tabs){
 	$tabs['license'] = __("License","really-simple-ssl-soc");
 	return $tabs;
@@ -170,6 +171,8 @@ public function add_license_page(){
 
 	<?php
 }
+
+
 
 public function register_option() {
 	// creates our settings in the options table
