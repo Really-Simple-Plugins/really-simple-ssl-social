@@ -25,12 +25,30 @@ function __construct() {
   add_filter('ssba_url_current_page', array($this, 'simple_share_buttons_adder'), 10, 1);
 
 
+  add_action('wp_head', array($this, 'rsssl_recover_addthis'), 10, 1);
 }
 
 static function this() {
   return self::$_this;
 }
 
+/*
+ *      fixes add this recovery
+ *
+ *
+ * */
+
+public function rsssl_recover_addthis()
+{
+    if ($this->use_http()) {
+        ?>
+        <script type="text/javascript">
+            var rsssl_share_url = window.location.href.replace('https://', 'http://');
+            var addthis_share = {url: '' + rsssl_share_url + ''};
+        </script>
+        <?php
+    }
+}
 
 public function maybe_edit_htaccess($rules){
 
