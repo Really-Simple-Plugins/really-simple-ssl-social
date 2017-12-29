@@ -24,6 +24,8 @@ function __construct() {
 
   add_filter('ssba_url_current_page', array($this, 'simple_share_buttons_adder'), 10, 1);
 
+  add_filter('apss_share_url', array($this, 'accesspress_sharing_permalink' ), 10, 1);
+
 
   add_action('wp_head', array($this, 'rsssl_recover_addthis'), 10, 1);
 }
@@ -127,6 +129,21 @@ public function jetpack_sharing_permalink($url, $post_id, $sharing_id){
 }
 
 
+    /**
+     *       AccessPress Facebook sharing link
+     *       For the native FB like button, we use this function to pass to the button:
+     */
+
+    public function accesspress_sharing_permalink($url){
+        if ($this->use_http()) {
+            $url = str_replace("https://", "http://", $url);
+        }
+
+        return $url;
+
+    }
+
+
 /*
     Fix for easy social share buttons WordPress
 */
@@ -205,8 +222,10 @@ public function fix_social($html) {
     }
 
     //generic:
-    $html = str_replace('data-url="'.$https_url, 'data-url="'.$http_url, $html);
-    $html = str_replace('data-urlalt="'.$https_url, 'data-urlalt="'.$http_url, $html);
+    $pattern = '/(data-url|data-urlalt)\s*=\s*(\'|")\K('.$preg_url.')/i';
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
+//    $html = str_replace('data-url="'.$https_url, 'data-url="'.$http_url, $html);
+//    $html = str_replace('data-urlalt="'.$https_url, 'data-urlalt="'.$http_url, $html);
 
 
     /*shareaholic*/
@@ -256,10 +275,13 @@ public function fix_social($html) {
 
     /*Directly integrated in code */
     $html = str_replace('facebook.com/sharer.php?u=' . $https_url_encoded ,'facebook.com/sharer.php?u=' . $http_url_encoded , $html);
+    $html = str_replace('facebook.com/sharer/sharer.php?u=' . $https_url_encoded ,'facebook.com/sharer/sharer.php?u=' . $http_url_encoded , $html);
+
     $html = str_replace('facebook.com/plugins/like.php?href=' . $https_url , 'facebook.com/plugins/like.php?href='. $http_url , $html);
 
     //not encoded
     $html = str_replace('facebook.com/sharer.php?u=' . $https_url ,'facebook.com/sharer.php?u=' . $http_url , $html);
+    $html = str_replace('facebook.com/sharer/sharer.php?u=' . $https_url ,'facebook.com/sharer/sharer.php?u=' . $http_url , $html);
     $html = str_replace('facebook.com/plugins/like.php?href=' . $https_url , 'facebook.com/plugins/like.php?href='. $http_url , $html);
 
     $html = apply_filters('rsssl_social_use_http_urls', $html);
