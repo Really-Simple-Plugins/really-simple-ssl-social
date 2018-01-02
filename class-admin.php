@@ -146,9 +146,6 @@ public function install(){
   if (!get_option('rsssl_soc_start_date_ssl')) {
     update_option("rsssl_soc_startdate", date(get_option('date_format')));
   }
-  if (!get_option('rsssl_soc_replace_ogurl')) {
-    update_option('rsssl_soc_replace_ogurl', true);
-  }
 
 }
 
@@ -187,7 +184,6 @@ public function add_settings(){
 
   //add_settings_section('section_rssslpp', __("Pro", "really-simple-ssl-soc"), array($this, "section_text"), 'rlrsssl');
   register_setting( 'rlrsssl_social_options', 'rsssl_soc_start_date_ssl', array($this,'options_validate') );
-  register_setting( 'rlrsssl_social_options', 'rsssl_soc_replace_ogurl', array($this,'options_validate_boolean') );
 
   register_setting( 'rlrsssl_social_options', 'rsssl_soc_replace_to_http_on_home', array($this,'options_validate_boolean') );
   register_setting( 'rlrsssl_social_options', 'rsssl_insert_custom_buttons', array($this,'options_validate_boolean') );
@@ -203,7 +199,6 @@ public function add_settings(){
 
   if (!get_option('rsssl_insert_custom_buttons')) {
     add_settings_field('id_start_date_social', __("SSL switch date","really-simple-ssl-soc"), array($this,'get_option_start_date_social'), 'rlrsssl-social', 'rlrsssl_settings');
-    add_settings_field('id_replace_ogurl', __("Use http:// for the meta og:url","really-simple-ssl-soc"), array($this,'get_option_replace_ogurl'), 'rlrsssl-social', 'rlrsssl_settings');
     add_settings_field('id_replace_to_http_on_home', __("Recover shares on the homepage","really-simple-ssl-soc"), array($this,'get_option_replace_to_http_on_home'), 'rlrsssl-social', 'rlrsssl_settings');
   }
 
@@ -218,7 +213,7 @@ public function add_settings(){
   if (get_option('rsssl_use_30_styling')) {
     add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar","really-simple-ssl-soc"), array($this,'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
     if (get_option("rsssl_inline_or_left")=='inline') {
-    add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
+        add_settings_field('rsssl_button_position', __("Position of buttons","really-simple-ssl-soc"), array($this,'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
     }
   }
 
@@ -248,13 +243,6 @@ public function get_option_start_date_social() {
 
   echo '<input id="rsssl_soc_start_date_ssl" name="rsssl_soc_start_date_ssl" size="40" type="date" value="'.$start_date_social.'" />';
   RSSSL()->rsssl_help->get_help_tip(__("Enter the date on which you switched over to https. You can use the date format you use in the general WordPress settings.", "really-simple-ssl-soc"));
-}
-
-public function get_option_replace_ogurl() {
-
-  $replace_ogurl = get_option('rsssl_soc_replace_ogurl');
-  echo '<input id="rsssl_soc_replace_ogurl" name="rsssl_soc_replace_ogurl" size="40" type="checkbox" value="1"' . checked( 1, $replace_ogurl, false ) ." />";
-  RSSSL()->rsssl_help->get_help_tip(__("Use with caution. This can cause errors in the FB console in combination with a 301 redirect.", "really-simple-ssl-soc"));
 }
 
 public function get_option_insert_custom_buttons() {
@@ -374,7 +362,7 @@ public function get_option_rsssl_inline_or_left() {
 
 public function get_option_rsssl_use_30_styling() {
   $rsssl_use_30_styling = get_option('rsssl_use_30_styling');
-  echo '<input id="rsssl_soc_replace_ogurl" name="rsssl_use_30_styling" size="40" type="checkbox" value="1"' . checked( 1, $rsssl_use_30_styling, false ) ." />";
+  echo '<input name="rsssl_use_30_styling" size="40" type="checkbox" value="1"' . checked( 1, $rsssl_use_30_styling, false ) ." />";
   RSSSL()->rsssl_help->get_help_tip(__("Use the old or new look", "really-simple-ssl-soc"));
 }
 

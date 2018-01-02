@@ -4,7 +4,7 @@ Requires at least: 4.2
 License: GPL2
 Tested up to: 4.8
 
-Stable tag: 3.0.2
+Stable tag: 3.0.4
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -26,6 +26,11 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 3.0.4 =
+* Tweak: removed og:url option, now default enabled.
+
+= 3.0.3 =
+* Add this support
 
 = 3.0.2 =
 * Added support for Simple Share Buttons adder, assuming they add a filter to use
