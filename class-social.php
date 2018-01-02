@@ -198,11 +198,7 @@ public function fix_social($html) {
     $preg_url_encoded = str_replace(array("/", ".") , array("\/", "\."),$https_url_encoded);
 
     /*<meta og:url */
-    $replace_ogurl = get_option('rsssl_soc_replace_ogurl');
-    if ($replace_ogurl) {
-      $html = str_replace('<meta property="og:url" content="'.$https_url, '<meta property="og:url" content="'.$http_url, $html);
-      //$html = str_replace('rel="canonical" href="'.$https_url, 'rel="canonical" href="'.$http_url, $html);
-    }
+    $html = str_replace('<meta property="og:url" content="'.$https_url, '<meta property="og:url" content="'.$http_url, $html);
 
     //generic:
     $html = str_replace('data-url="'.$https_url, 'data-url="'.$http_url, $html);
