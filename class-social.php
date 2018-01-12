@@ -62,7 +62,7 @@ public function maybe_edit_htaccess($rules){
         }
       }
   }
-  
+
   return $rules;
 }
 
