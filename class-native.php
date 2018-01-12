@@ -576,18 +576,19 @@ public function social_share_buttons_html($html){
 
 
 public function enqueue_scripts() {
+
     $version = (strpos(home_url(), "localhost")===false) ? time() : "";
     $services = get_option('rsssl_social_services');
     $old_or_new_look = get_option('rsssl_use_30_styling');
 
-if ($old_or_new_look == FALSE) {
-    wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
-    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
-  } else {
-    wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style-3.css', array(), rsssl_soc_version);
-    wp_enqueue_style( 'rsssl_social_fontello' ,plugin_dir_url( __FILE__ ).'assets/font/fontello-icons/css/fontello.css', array(), rsssl_soc_version);
-    wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes-3.js", array('jquery'),rsssl_soc_version, true);
-  }
+    if ($old_or_new_look == FALSE) {
+        wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style.css', array(), rsssl_soc_version);
+        wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes.js", array('jquery'),rsssl_soc_version, true);
+      } else {
+        wp_enqueue_style( 'rsssl_social',plugin_dir_url( __FILE__ ).'assets/css/style-3.css', array(), rsssl_soc_version);
+        wp_enqueue_style( 'rsssl_social_fontello' ,plugin_dir_url( __FILE__ ).'assets/font/fontello-icons/css/fontello.css', array(), rsssl_soc_version);
+        wp_enqueue_script('rsssl_social', plugin_dir_url( __FILE__ )."assets/js/likes-3.js", array('jquery'),rsssl_soc_version, true);
+      }
 
     $url = home_url();
     global $post;

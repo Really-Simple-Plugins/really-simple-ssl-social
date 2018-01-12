@@ -58,13 +58,14 @@ public function maybe_edit_htaccess($rules){
 
   $fb_rule = "RewriteCond %{HTTP_USER_AGENT} !facebookexternalhit/[0-9]|Facebot"."\n";
   if (strlen($rules)>0) {
-    $rsssl_rewrite_rule = "RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]"."\n";
-    if (strpos($rules, $rsssl_rewrite_rule)!==false) {
-        $rules = str_replace($rsssl_rewrite_rule, $fb_rule.$rsssl_rewrite_rule, $rules);
-    }
+        $rsssl_rewrite_rule = "RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]"."\n";
+        if (strpos($rules, $rsssl_rewrite_rule)!==false) {
+            $rules = str_replace($rsssl_rewrite_rule, $fb_rule.$rsssl_rewrite_rule, $rules);
+        }
+      }
   }
+  
   return $rules;
-  }
 }
 
 public function maybe_no_ssl_redirection($url){
