@@ -112,10 +112,12 @@ public function get_likes(){
 
   $linkedin_likes = 0;
   if ($this->linkedin) {
-    if ($get_http)      $linkedin_likes = $this->retrieve_linkedin_likes($url_http);
-    if ($get_https)     $linkedin_likes += $this->retrieve_linkedin_likes($url_https);
-    if ($get_httpwww)   $linkedin_likes += $this->retrieve_linkedin_likes($url_httpwww);
-    if ($get_httpswww)  $linkedin_likes += $this->retrieve_linkedin_likes($url_httpswww);
+    //only retrieve one domain, do not aggregate.
+    if ($get_https) {
+        $linkedin_likes = $this->retrieve_linkedin_likes($url_https);
+    } else {
+        $linkedin_likes = $this->retrieve_linkedin_likes($url_httpswww);
+    }
   }
 
   $stumble_likes = 0;
@@ -226,8 +228,15 @@ public function get_cached_likes_total($type, $post_id){
     $get_httpswww = true;
   }
 
-  //get likes for both http and https
+  //do not aggregate for linkedin
+  if ($type === "linkedin") {
+      $get_http = false;
+      $get_httpwww = false;
+      //only get one of the two:
+      $get_httpswww = !$get_https;
+  }
 
+  //get likes for both http and https
   $likes = 0;
   if ($get_http)      $likes = $this->get_cached_likes($type, $url_http);
   if ($get_https)     $likes += $this->get_cached_likes($type,$url_https);
