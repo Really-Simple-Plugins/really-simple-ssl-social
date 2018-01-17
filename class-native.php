@@ -103,7 +103,7 @@ public function get_likes(){
   $google_likes = 0;
   //google seems to return the correct likes anyway.
   if ($this->google) {
-    $google_likes = $this->retrieve_google_likes($url_https);
+    //$google_likes = $this->retrieve_google_likes($url_https);
     if ($get_http)      $google_likes = $this->retrieve_google_likes($url_http);
     if ($get_https)     $google_likes += $this->retrieve_google_likes($url_https);
     if ($get_httpwww)   $google_likes += $this->retrieve_google_likes($url_httpwww);
@@ -385,7 +385,7 @@ private function retrieve_google_likes($url){
 
 private function retrieve_linkedin_likes($url){
   $share_cache = get_transient('rsssl_linkedin_shares');
-  $request = wp_remote_get('http://www.linkedin.com/countserv/count/share?url='.urlencode($url).'&format=json');
+  $request = wp_remote_get('https://www.linkedin.com/countserv/count/share?url='.urlencode($url).'&format=json');
   $json = wp_remote_retrieve_body($request);
   $output = json_decode( $json );
   $shares = $output->count;

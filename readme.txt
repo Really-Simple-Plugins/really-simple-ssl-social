@@ -27,6 +27,7 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 
 == Changelog ==
 = 3.0.4 =
+* Fix: linkedin shares were retrieved over http, which has stopped working
 * Tweak: dropped linkedin aggragation, as linkedin returns all shares for both URL's
 * Tweak: removed og:url option, now default enabled.
 
