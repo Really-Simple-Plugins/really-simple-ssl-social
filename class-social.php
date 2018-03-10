@@ -220,7 +220,7 @@ public function fix_social($html) {
 
     //generic:
     $pattern = '/(data-url|data-urlalt)\s*=\s*(\'|")\K('.$preg_url_https.')/i';
-    $html = preg_replace($pattern, $http_url, $html, -1, $count);
+    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
 
     //sharif
     $pattern = '/(data-url|data-urlalt)\s*=\s*(\'|")\K('.$https_url_encoded.')/i';
