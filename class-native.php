@@ -59,7 +59,7 @@ public function get_likes(){
     $url = get_permalink($post_id);
   }
 
-  if ($this->debug) $url = "https://really-simple-ssl.com";
+  if ($this->debug) $url = "https://wordpress.com";
 
   //make sure the current home_url is https, as this is a really simple ssl add on.
   $url_https = str_replace("http://", "https://", $url);
@@ -356,14 +356,6 @@ private function retrieve_twitter_likes($url){
 private function retrieve_google_likes($url){
   $share_cache = get_transient('rsssl_google_shares');
 
-  // $request = wp_remote_get('https://plusone.google.com/_/+1/fastbutton?url='.urlencode($url).'&count=true');
-  // $json = wp_remote_retrieve_body($request);
-  // preg_match('/c: ([0-9.]+) /', $json, $matches);
-  // $shares = 0;
-  // if (isset($matches[1])) $shares = $matches[1];
-  // $share_cache[$url] = $shares;
-  // set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
-
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
   curl_setopt($curl, CURLOPT_POST, true);
@@ -373,6 +365,7 @@ private function retrieve_google_likes($url){
   curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
   $curl_results = curl_exec ($curl);
   curl_close ($curl);
+
   $json = json_decode($curl_results, true);
 
   $shares = isset($json[0]['result']['metadata']['globalCounts']['count'])?intval( $json[0]['result']['metadata']['globalCounts']['count'] ):0;
