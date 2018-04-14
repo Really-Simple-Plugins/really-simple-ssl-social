@@ -2,9 +2,8 @@
 Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
-Tested up to: 4.9
-
-Stable tag: 3.0.4
+Tested up to: 5.0
+Stable tag: 3.0.6
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -26,6 +25,12 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 3.0.6 =
+* Fix: regex replace replaced FB data-url in incorrect format
+
+= 3.0.5 =
+* Added support for https://wordpress.org/plugins/shariff-sharing/
+
 = 3.0.4 =
 * Fix: linkedin shares were retrieved over http, which has stopped working
 * Tweak: dropped linkedin aggragation, as linkedin returns all shares for both URL's
