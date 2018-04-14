@@ -3,7 +3,7 @@
  * Plugin Name: Really Simple SSL social
  * Plugin URI: https://www.really-simple-ssl.com/pro
  * Description: Add on for Really Simple SSL
- * Version: 3.0.5
+ * Version: 3.0.6
  * Text Domain: really-simple-ssl-social
  * Domain Path: /languages
  * Author: Rogier Lankhorst

@@ -203,6 +203,16 @@ public function use_http($post_id=false){
 //   return $use_http;
 // }
 
+//add_filter("rsssl_fixer_output", "rsssl_fix_encoding", 100, 1);
+//function rsssl_fix_encoding($html){
+//    $http_url = str_replace("https://", "http://", home_url());
+//    $preg_url_http = str_replace(array("/", "."),array("\/", "\."), $http_url);
+//    $pattern = '/(data-url|data-urlalt)\s*=\s*(\'|")\K('.$preg_url_http.')/i';
+//    $html = preg_replace($pattern, $http_url, $html, -1, $count);
+//    return $html;
+//}
+
+
 public function fix_social($html) {
   if ($this->use_http()) {
 
@@ -220,7 +230,7 @@ public function fix_social($html) {
 
     //generic:
     $pattern = '/(data-url|data-urlalt)\s*=\s*(\'|")\K('.$preg_url_https.')/i';
-    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
     //sharif
     $pattern = '/(data-url|data-urlalt)\s*=\s*(\'|")\K('.$https_url_encoded.')/i';
