@@ -238,7 +238,7 @@ public function fix_social($html) {
 
     /*shareaholic*/
     $pattern = '/shareaholic-canvas.*?data-link=[\'"]\K('.$preg_url_https.')/';
-    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
     $html = str_replace("name='shareaholic:url' content='".$https_url, "name='shareaholic:url' content='".$http_url, $html);
     $html = str_replace('share_counts_url":"https:', 'share_counts_url":"http:', $html);
 
@@ -246,7 +246,7 @@ public function fix_social($html) {
     $html = str_replace('data-href="'.$https_url, 'data-href="'.$http_url, $html);
     $html = str_replace('<fb:like href="'.$https_url, '<fb:like href="'.$http_url, $html);
     $pattern = '/fb-like.*?data-href=[\'"]\K('.$preg_url_https.')/i';
-    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
     /*Add to any */
     $html = str_replace('add_to/facebook?linkurl='.$https_url_encoded, 'add_to/facebook?linkurl='.$http_url_encoded, $html);
@@ -257,6 +257,10 @@ public function fix_social($html) {
     $html = str_replace('addtoany.com/share#url='.$https_url_encoded, 'addtoany.com/share#url='.$http_url_encoded, $html);
     $html = str_replace('addtoany_special_service" data-url="'.$https_url, 'addtoany_special_service" data-url="'.$http_url, $html);
 
+    /*Pinterest "Pin It" Button Pro*/
+    $pattern = '/data-pin-url=[\'"]\K('. $preg_url_https.')/i';
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
+
     /* Digg Digg */
     $html = str_replace('facebook.com/plugins/like.php?href='.$https_url_encoded, 'facebook.com/plugins/like.php?href='.$http_url_encoded, $html);
 
@@ -264,16 +268,16 @@ public function fix_social($html) {
     $html = str_replace('addthis:url="https://', 'addthis:url="http://', $html);
     $html = str_replace("addthis:url='https://", "addthis:url='http://", $html);
     $pattern = '/addthis_sharing_toolbox.*?data-url=[\'"]\K('.$preg_url_https.')/i';
-    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
     $html = str_replace('graph.facebook.com/?id=' . $https_url_encoded, 'graph.facebook.com/?id=' . $http_url_encoded, $html);
 
     /*Jetpack */
     $pattern = '/fb-share-button.*?data-href=[\'"]\K('.$preg_url_https.')/i';
-    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
     /*sharedaddy*/
     $pattern = '/data-shared.*?href=[\'"]\K('.$preg_url_https.')/i';
-    $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+    $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
     //Easy Social Share Buttons 3
     $html = str_replace('data-essb-url="'.$https_url ,'data-essb-url="'.$http_url , $html);
