@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,10 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 3.0.7 =
+* Improved support for recovering Pinterest pins
+* Fix: replaced a number of incorrect $preg_url_http uses with $http_url
+
 = 3.0.6 =
 * Fix: regex replace replaced FB data-url in incorrect format
 
