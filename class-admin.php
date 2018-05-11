@@ -12,8 +12,10 @@ function __construct() {
   //Add social settings tab
   add_filter('rsssl_tabs', array($this,'add_social_tab'),10,3 );
   add_action('show_tab_social', array($this, 'add_social_page'));
+  add_filter("plugin_action_links", array($this, 'plugin_settings_link'));
 
-  add_action('admin_init', array($this, 'init'), 15 );
+
+    add_action('admin_init', array($this, 'init'), 15 );
 
   register_activation_hook( rsssl_soc_plugin_file , array( $this, 'install' ) );
 
@@ -306,6 +308,14 @@ public function add_social_tab($tabs){
   $tabs['social'] = __("Social","really-simple-ssl-pro");
   return $tabs;
 }
+
+    public function plugin_settings_link($links){
+
+        $settings_link = '<a href="' . admin_url("options-general.php?page=rlrsssl_really_simple_ssl&tab=social") . '">' . __("Settings", "really-simple-ssl") . '</a>';
+        array_unshift($links, $settings_link);
+
+        return $links;
+    }
 
 /**
  * Insert some explanation above the form
