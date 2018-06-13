@@ -159,7 +159,7 @@ public function use_http($post_id=false){
   $use_http = TRUE;
   $have_post = false;
 
-  if (is_home() || is_front_page()){
+  if (is_front_page()){
     if (get_option('rsssl_soc_replace_to_http_on_home') ){
       return true;
     }else{
