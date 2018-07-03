@@ -3,12 +3,10 @@ jQuery(document).ready(function($) {
 
 //Shows the pinterest overlay when clicking on the icon
 $(document).on('click', '.pinterest .rsssl_count', function(e){
-	console.log("count click");
 	PinUtils.pinAny();
 });
 
 $(document).on('click', '.icon-pinterest', function(e){
-	console.log("icon click");
 	PinUtils.pinAny();
 });
 

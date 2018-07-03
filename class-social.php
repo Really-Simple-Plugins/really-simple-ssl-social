@@ -57,15 +57,11 @@ class rsssl_soc_social
 
     public function maybe_edit_htaccess($rules)
     {
-
-        if (get_option('rsssl_soc_replace_ogurl')) {
-
-            $fb_rule = "RewriteCond %{HTTP_USER_AGENT} !facebookexternalhit/[0-9]|Facebot" . "\n";
-            if (strlen($rules) > 0) {
-                $rsssl_rewrite_rule = "RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]" . "\n";
-                if (strpos($rules, $rsssl_rewrite_rule) !== false) {
-                    $rules = str_replace($rsssl_rewrite_rule, $fb_rule . $rsssl_rewrite_rule, $rules);
-                }
+        $fb_rule = "RewriteCond %{HTTP_USER_AGENT} !facebookexternalhit/[0-9]|Facebot" . "\n";
+        if (strlen($rules) > 0) {
+            $rsssl_rewrite_rule = "RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]" . "\n";
+            if (strpos($rules, $rsssl_rewrite_rule) !== false) {
+                $rules = str_replace($rsssl_rewrite_rule, $fb_rule . $rsssl_rewrite_rule, $rules);
             }
         }
 
@@ -75,15 +71,11 @@ class rsssl_soc_social
     public function maybe_no_ssl_redirection($url)
     {
 
-        if (get_option('rsssl_soc_replace_ogurl')) {
-
-            if (strpos($_SERVER["HTTP_USER_AGENT"], "facebookexternalhit") !== false || strpos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false) {
-                $url = str_replace("https://", "http://", $url);
-            }
-
-            return $url;
-
+        if (strpos($_SERVER["HTTP_USER_AGENT"], "facebookexternalhit") !== false || strpos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false) {
+            $url = str_replace("https://", "http://", $url);
         }
+
+        return $url;
     }
 
 
@@ -159,10 +151,29 @@ class rsssl_soc_social
     public function fix_easy_social_share($url)
     {
 
+        <<<<
+        <<< HEAD
+  if ($this->use_http()) {
+    $url = str_replace("https://", "http://", $url);
+  }
+  return $url;
+}
+
+public function use_http($post_id=false){
+  $use_http = TRUE;
+  $have_post = false;
+
+  if (is_front_page()){
+    if (get_option('rsssl_soc_replace_to_http_on_home') ){
+      return true;
+    }else{
+      return false;
+=======
         if ($this->use_http()) {
             $url = str_replace("https://", "http://", $url);
         }
         return $url;
+>>>>>>> master
     }
 
     public function use_http($post_id = false)
