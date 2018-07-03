@@ -151,29 +151,10 @@ class rsssl_soc_social
     public function fix_easy_social_share($url)
     {
 
-        <<<<
-        <<< HEAD
-  if ($this->use_http()) {
-    $url = str_replace("https://", "http://", $url);
-  }
-  return $url;
-}
-
-public function use_http($post_id=false){
-  $use_http = TRUE;
-  $have_post = false;
-
-  if (is_front_page()){
-    if (get_option('rsssl_soc_replace_to_http_on_home') ){
-      return true;
-    }else{
-      return false;
-=======
         if ($this->use_http()) {
             $url = str_replace("https://", "http://", $url);
         }
         return $url;
->>>>>>> master
     }
 
     public function use_http($post_id = false)
@@ -235,7 +216,8 @@ public function use_http($post_id=false){
 //}
 
 
-    public function fix_social($html)
+    public
+    function fix_social($html)
     {
         if ($this->use_http()) {
 
@@ -271,16 +253,24 @@ public function use_http($post_id=false){
 
             $pattern = '/facebook\.com\/plugins\/like\.php\?.*?href=\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
-
             $pattern = '/facebook\.com\/plugins\/like\.php\?.*?href=\K(' . $preg_url_https . ')/';
             $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
 
             $pattern = '/fb-iframe-plugin-query=?.*?href=\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
-
             $pattern = '/fb-iframe-plugin-query=?.*?href=\K(' . $preg_url_https . ')/';
             $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
 
+            $pattern = '/fb-like.*?data-href=[\'"]\K(' . $https_url_encoded . ')/';
+            $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
+            $pattern = '/fb-like.*?data-href=[\'"]\K(' . $preg_url_https . ')/';
+            $html = preg_replace($pattern, $http_url, $html, -1, $count);
+
+            $pattern = '/fb-like.*?href=\K(' . $https_url_encoded . ')/';
+            $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
+
+            $pattern = '/fb-like.*?data-href=[\'"]\K(' . $https_url_encoded . ')/';
+            $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
             $pattern = '/fb-like.*?data-href=[\'"]\K(' . $preg_url_https . ')/';
             $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
