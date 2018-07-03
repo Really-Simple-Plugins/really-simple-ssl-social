@@ -53,8 +53,6 @@ public function rsssl_recover_addthis()
 
 public function maybe_edit_htaccess($rules){
 
-  if (get_option('rsssl_soc_replace_ogurl') ) {
-
   $fb_rule = "RewriteCond %{HTTP_USER_AGENT} !facebookexternalhit/[0-9]|Facebot"."\n";
   if (strlen($rules)>0) {
         $rsssl_rewrite_rule = "RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]"."\n";
@@ -62,22 +60,18 @@ public function maybe_edit_htaccess($rules){
             $rules = str_replace($rsssl_rewrite_rule, $fb_rule.$rsssl_rewrite_rule, $rules);
         }
       }
-  }
 
   return $rules;
 }
 
 public function maybe_no_ssl_redirection($url){
 
-  if (get_option('rsssl_soc_replace_ogurl') ) {
-
     if (strpos($_SERVER["HTTP_USER_AGENT"],"facebookexternalhit") !==false || strpos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false) {
         $url = str_replace("https://", "http://", $url);
-        }
+    }
 
-  return $url;
+    return $url;
 
- }
 }
 
 
