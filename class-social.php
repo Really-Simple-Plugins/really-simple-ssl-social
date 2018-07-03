@@ -266,7 +266,6 @@ class rsssl_soc_social
             $pattern = '/fb-like.*?data-href=[\'"]\K(' . $preg_url_https . ')/';
             $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
-
             $pattern = '/fb-like.*?href=\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
 
