@@ -3,7 +3,7 @@
  * Plugin Name: Really Simple SSL social
  * Plugin URI: https://www.really-simple-ssl.com/pro
  * Description: Add on for Really Simple SSL
- * Version: 3.0.8
+ * Version: 3.0.11
  * Text Domain: really-simple-ssl-social
  * Domain Path: /languages
  * Author: Rogier Lankhorst
@@ -32,6 +32,7 @@
   $plugin_data = get_plugin_data( __FILE__ );  define('rsssl_soc_url', plugin_dir_url(__FILE__ ));
   define('rsssl_soc_path', plugin_dir_path(__FILE__ ));
   define('rsssl_soc_plugin', plugin_basename( __FILE__ ) );
+
   define('rsssl_soc_version', $plugin_data['Version'] );
   define('rsssl_soc_plugin_file', __FILE__);
 

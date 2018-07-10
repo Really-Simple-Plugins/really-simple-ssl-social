@@ -253,13 +253,14 @@ class rsssl_soc_social
 
             $pattern = '/facebook\.com\/plugins\/like\.php\?.*?href=\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
+
             $pattern = '/facebook\.com\/plugins\/like\.php\?.*?href=\K(' . $preg_url_https . ')/';
-            $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+            $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
             $pattern = '/fb-iframe-plugin-query=?.*?href=\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
             $pattern = '/fb-iframe-plugin-query=?.*?href=\K(' . $preg_url_https . ')/';
-            $html = preg_replace($pattern, $preg_url_http, $html, -1, $count);
+            $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
             $pattern = '/fb-like.*?data-href=[\'"]\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
@@ -268,11 +269,6 @@ class rsssl_soc_social
 
             $pattern = '/fb-like.*?href=\K(' . $https_url_encoded . ')/';
             $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
-
-            $pattern = '/fb-like.*?data-href=[\'"]\K(' . $https_url_encoded . ')/';
-            $html = preg_replace($pattern, $http_url_encoded, $html, -1, $count);
-            $pattern = '/fb-like.*?data-href=[\'"]\K(' . $preg_url_https . ')/';
-            $html = preg_replace($pattern, $http_url, $html, -1, $count);
 
             /*Add to any */
             $html = str_replace('add_to/facebook?linkurl=' . $https_url_encoded, 'add_to/facebook?linkurl=' . $http_url_encoded, $html);
