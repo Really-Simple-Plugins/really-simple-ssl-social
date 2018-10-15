@@ -185,8 +185,15 @@ public function get_option_start_date_social() {
 
 public function get_option_insert_custom_buttons() {
   $insert_custom_buttons = get_option('rsssl_insert_custom_buttons');
-  echo '<input id="rsssl_insert_custom_buttons" name="rsssl_insert_custom_buttons" size="40" type="checkbox" value="1"' . checked( 1, $insert_custom_buttons, false ) ." />";
-  RSSSL()->rsssl_help->get_help_tip(__("Enable to use the built in share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
+
+    ?>
+    <label class="rsssl-switch">
+        <input id="rlrsssl_options" name="rsssl_insert_custom_buttons" size="40" value="1"
+               type="checkbox" <?php checked(1, $insert_custom_buttons, true) ?> />
+        <span class="rsssl-slider rsssl-round"></span>
+    </label>
+    <?php
+    RSSSL()->rsssl_help->get_help_tip(__("Enable to use the built in share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
 }
 
 public function get_option_buttons_on_post_types() {
@@ -201,8 +208,9 @@ public function get_option_buttons_on_post_types() {
   foreach ( $post_types as $post_type ) {
     $checked = false;
     if (isset($rsssl_buttons_on_post_types[$post_type])) {
-      $checked = checked( 1, $rsssl_buttons_on_post_types[$post_type], false );
+      $checked = checked( 1, $rsssl_buttons_on_post_types[$post_type], true );
     }
+
     ?>
     <input name="rsssl_buttons_on_post_types[<?php echo $post_type?>]" size="40" type="checkbox" value="1" <?php echo $checked ?> /> <?php echo $post_type?><br>
     <?php
@@ -300,8 +308,15 @@ public function get_option_rsssl_inline_or_left() {
 
 public function get_option_rsssl_use_30_styling() {
   $rsssl_use_30_styling = get_option('rsssl_use_30_styling');
-  echo '<input name="rsssl_use_30_styling" size="40" type="checkbox" value="1"' . checked( 1, $rsssl_use_30_styling, false ) ." />";
-  RSSSL()->rsssl_help->get_help_tip(__("Use the old or new look", "really-simple-ssl-soc"));
+
+    ?>
+    <label class="rsssl-switch">
+        <input id="rlrsssl_options" name="rsssl_use_30_styling" size="40" value="1"
+               type="checkbox" <?php checked(1, $rsssl_use_30_styling, true) ?> />
+        <span class="rsssl-slider rsssl-round"></span>
+    </label>
+    <?php
+    RSSSL()->rsssl_help->get_help_tip(__("Use the old or new look", "really-simple-ssl-soc"));
 }
 
 public function add_social_tab($tabs){
