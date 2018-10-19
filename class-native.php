@@ -21,8 +21,8 @@ class rsssl_soc_native
         self::$_this = $this;
         error_log("running the native script");
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 100);
-        add_action('wp_ajax_nopriv_rsssl_get_likes', array($this, 'get_likes'));
-        add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes'));
+        add_action('wp_ajax_nopriv_rsssl_get_likes', array($this, 'get_likes_ajax'));
+        add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
         add_action('wp_ajax_nopriv_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
 
@@ -62,7 +62,8 @@ class rsssl_soc_native
         $atts = shortcode_atts(['type' => 'facebook', 'post_id' => $post_id], $atts, $tag);
         $type = $atts['type'];
         if (in_array($type, $types) && $post_id) {
-            $shares = $this->get_cached_likes_total($type, $post_id);
+            $shares = $this->get_cached_likes_total($type, $post_id, true);
+            error_log("Shares raw count" . $shares);
             echo $shares;
         }
 
@@ -85,10 +86,8 @@ class rsssl_soc_native
     }
 
 
-    public function get_likes()
+    public function get_likes($post_id)
     {
-        if (!isset($_GET['post_id'])) return;
-        $post_id = intval($_GET['post_id']);
 
         if ($post_id == 0) {
             $url = home_url();
@@ -183,7 +182,7 @@ class rsssl_soc_native
             if ($get_httpswww) $yummly_likes += $this->retrieve_yummly_likes($url_httpswww);
         }
 
-        $out = array(
+        $share_array = array(
             'facebook' => $this->convert_nr($fb_likes),
             'twitter' => $this->convert_nr($twitter_likes),
             'gplus' => $this->convert_nr($google_likes),
@@ -192,6 +191,20 @@ class rsssl_soc_native
             'pinterest' => $this->convert_nr($pinterest_likes),
             'yummly' => $this->convert_nr($yummly_likes),
         );
+
+        return $share_array;
+
+
+    }
+
+
+    public function get_likes_ajax($post_id=false)
+    {
+        if (!isset($_GET['post_id'])) return;
+        $post_id = intval($_GET['post_id']);
+
+        $out = $this->get_likes($post_id);
+
         die(json_encode($out));
 
     }
@@ -244,7 +257,7 @@ class rsssl_soc_native
 
     */
 
-    public function get_cached_likes_total($type, $post_id)
+    public function get_cached_likes_total($type, $post_id, $raw_counts=false)
     {
 
         if ($post_id == 0) {
@@ -285,17 +298,17 @@ class rsssl_soc_native
 
         //get likes for both http and https
         $likes = 0;
-        if ($get_http) $likes = $this->get_cached_likes($type, $url_http);
-        if ($get_https) $likes += $this->get_cached_likes($type, $url_https);
-        if ($get_httpwww) $likes += $this->get_cached_likes($type, $url_httpwww);
-        if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww);
+        if ($get_http) $likes = $this->get_cached_likes($type, $url_http, $raw_counts, $post_id);
+        if ($get_https) $likes += $this->get_cached_likes($type, $url_https, $raw_counts, $post_id);
+        if ($get_httpwww) $likes += $this->get_cached_likes($type, $url_httpwww, $raw_counts, $post_id);
+        if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww, $raw_counts, $post_id);
 
         if ($likes == 0) $likes = "";
         return $likes;
 
     }
 
-    private function get_cached_likes($type, $url)
+    private function get_cached_likes($type, $url, $raw_counts, $post_id)
     {
 
         if ($type == "facebook") $share_cache = get_transient('rsssl_fb_shares');
@@ -307,9 +320,17 @@ class rsssl_soc_native
         if ($type == "yummly") $share_cache = get_transient('rsssl_yummly_shares');
 
         if (!$share_cache || !isset($share_cache[$url])) {
+            //when raw counts are requested, the button which triggers the share retrieval is not in place, so shares need to be requested explicitly.
+            if ($raw_counts){
+                $this->get_likes($post_id);
+            }
+
+            error_log("Geen share cache (is er wel), of geen share_cache[url]");
             return 0;
         } else {
             return $share_cache[$url];
+            error_log("Share cache");
+            error_log($share_cache[$url]);
         }
     }
 
@@ -367,6 +388,8 @@ class rsssl_soc_native
 
     private function retrieve_fb_likes($url)
     {
+        error_log("Retrieve fb _likes");
+
         $shares = 0;
         $share_cache = get_transient('rsssl_fb_shares');
 
