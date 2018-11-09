@@ -208,7 +208,7 @@ public function get_option_buttons_on_post_types() {
   foreach ( $post_types as $post_type ) {
     $checked = false;
     if (isset($rsssl_buttons_on_post_types[$post_type])) {
-      $checked = checked( 1, $rsssl_buttons_on_post_types[$post_type], true );
+      $checked = checked( 1, $rsssl_buttons_on_post_types[$post_type], false );
     }
 
     ?>
@@ -252,7 +252,6 @@ public function get_option_social_services() {
   $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
   $twitter = isset($services['twitter']) ? $services['twitter'] : false;
   $google = isset($services['google']) ? $services['google'] : false;
-  $stumble = isset($services['stumble']) ? $services['stumble'] : false;
   $pinterest = isset($services['pinterest']) ? $services['pinterest'] : false;
   $whatsapp = isset($services['whatsapp']) ? $services['whatsapp'] : false;
   $yummly = isset($services['yummly']) ? $services['yummly'] : false;
@@ -262,7 +261,6 @@ public function get_option_social_services() {
   <input type="checkbox" name="rsssl_social_services[linkedin]" value="1" <?php checked( $linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[twitter]" value="1" <?php checked( $twitter, "1"); ?>/><?php _e("Twitter  share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[google]" value="1" <?php checked( $google, "1"); ?>/><?php _e("Google share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[stumble]" value="1" <?php checked( $stumble, "1"); ?>/><?php _e("Stumble share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[pinterest]" value="1" <?php checked( $pinterest, "1"); ?>/><?php _e("Pinterest share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[whatsapp]" value="1" <?php checked( $whatsapp, "1"); ?>/><?php _e("Whatsapp share button", "really-simple-ssl-soc")?><br>
   <input type="checkbox" name="rsssl_social_services[yummly]" value="1" <?php checked( $yummly, "1"); ?>/><?php _e("Yummly share button", "really-simple-ssl-soc")?><br>
