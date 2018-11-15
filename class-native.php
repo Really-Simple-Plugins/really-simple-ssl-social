@@ -9,7 +9,6 @@ class rsssl_soc_native
     public $twitter;
     public $google;
     public $pinterest;
-    public $stumble;
     public $yummly;
     public $debug = false;
 
@@ -51,7 +50,7 @@ class rsssl_soc_native
         $atts = array_change_key_case((array)$atts, CASE_LOWER);
         ob_start();
 
-        $types = array('facebook', 'linkedin', 'twitter', 'google', 'stumble', 'pinterest', 'yummly');
+        $types = array('facebook', 'linkedin', 'twitter', 'google', 'pinterest', 'yummly');
         global $post;
         $post_id = false;
         if ($post) $post_id = $post->ID;
@@ -75,7 +74,6 @@ class rsssl_soc_native
         $this->linkedin = (isset($services['linkedin']) && $services['linkedin']) ? true : false;
         $this->twitter = (isset($services['twitter']) && $services['twitter']) ? true : false;
         $this->google = (isset($services['google']) && $services['google']) ? true : false;
-        $this->stumble = (isset($services['stumble']) && $services['stumble']) ? true : false;
         $this->pinterest = (isset($services['pinterest']) && $services['pinterest']) ? true : false;
         $this->whatsapp = (isset($services['whatsapp']) && $services['whatsapp']) ? true : false;
         $this->yummly = (isset($services['yummly']) && $services['yummly']) ? true : false;
@@ -177,7 +175,6 @@ class rsssl_soc_native
             'facebook' => $this->convert_nr($fb_likes),
             'twitter' => $this->convert_nr($twitter_likes),
             'gplus' => $this->convert_nr($google_likes),
-            'stumble' => $this->convert_nr($stumble_likes),
             'linkedin' => $this->convert_nr($linkedin_likes),
             'pinterest' => $this->convert_nr($pinterest_likes),
             'yummly' => $this->convert_nr($yummly_likes),
@@ -642,6 +639,7 @@ class rsssl_soc_native
         return false;
     }
 
+
     /*
 
         Generate like buttons to be used in either shortcode or content filter
@@ -687,8 +685,6 @@ class rsssl_soc_native
         $html = "";
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
-            error_log("Service");
-            error_log($service);
             if ($service === 'whatsapp' && !wp_is_mobile()) continue;
             $html .= $this->get_button_html($service, $url, $post_id, $title);
         }

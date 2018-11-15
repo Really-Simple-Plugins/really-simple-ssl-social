@@ -77,7 +77,7 @@ class rsssl_soc_admin
         );
 
         update_option("rsssl_social_services", $services);
-        update_option('rsssl_insert_custom_buttons', false);
+        //update_option('rsssl_insert_custom_buttons', false);
 
     }
 
@@ -125,7 +125,7 @@ class rsssl_soc_admin
         register_setting('rlrsssl_social_options', 'rsssl_soc_start_date_ssl', array($this, 'options_validate'));
 
         register_setting('rlrsssl_social_options', 'rsssl_soc_replace_to_http_on_home', array($this, 'options_validate_boolean'));
-        register_setting('rlrsssl_social_options', 'rsssl_insert_custom_buttons', array($this, 'options_validate_boolean'));
+        //register_setting('rlrsssl_social_options', 'rsssl_insert_custom_buttons', array($this, 'options_validate_boolean'));
 
         if (get_option('rsssl_button_type') === 'existing') {
             add_settings_field('id_start_date_social', __("SSL switch date", "really-simple-ssl-soc"), array($this, 'get_option_start_date_social'), 'rlrsssl-social', 'rlrsssl_settings');
@@ -182,7 +182,6 @@ class rsssl_soc_admin
     {
         $rsssl_button_type = get_option('rsssl_button_type');
 
-        error_log("button type" . $rsssl_button_type);
             ?>
         <select name="rsssl_button_type">
             <option value="existing" <?php if ($rsssl_button_type == "existing") echo "selected" ?>><?php _e("Recover shares for existing buttons", "really-simple-ssl-soc"); ?>
@@ -214,12 +213,12 @@ class rsssl_soc_admin
         RSSSL()->rsssl_help->get_help_tip(__("Enter the date on which you switched over to https. You can use the date format you use in the general WordPress settings.", "really-simple-ssl-soc"));
     }
 
-    public function get_option_insert_custom_buttons()
-    {
-        $insert_custom_buttons = get_option('rsssl_insert_custom_buttons');
-        echo '<input id="rsssl_insert_custom_buttons" name="rsssl_insert_custom_buttons" size="40" type="checkbox" value="1"' . checked(1, $insert_custom_buttons, false) . " />";
-        RSSSL()->rsssl_help->get_help_tip(__("Enable to use the built in share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
-    }
+//    public function get_option_insert_custom_buttons()
+//    {
+//        $insert_custom_buttons = get_option('rsssl_insert_custom_buttons');
+//        echo '<input id="rsssl_insert_custom_buttons" name="rsssl_insert_custom_buttons" size="40" type="checkbox" value="1"' . checked(1, $insert_custom_buttons, false) . " />";
+//        RSSSL()->rsssl_help->get_help_tip(__("Enable to use the built in share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
+//    }
 
     public function get_option_buttons_on_post_types()
     {
