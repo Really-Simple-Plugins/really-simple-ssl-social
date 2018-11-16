@@ -659,8 +659,8 @@ class rsssl_soc_native
         }
         $html = file_get_contents($file);
 
-        $this->get_buttons();
-        $html = apply_filters('rsssl_soc_share_buttons', $html);
+        $button_html = $this->get_buttons();
+        $html = str_replace('{buttons}', $button_html, $html);
 
         if (get_option('rsssl_inline_or_left') === "left") {
             $html = str_replace('rsssl_soc', 'rsssl_soc rsssl_left', $html);
@@ -711,6 +711,7 @@ class rsssl_soc_native
         $html = file_get_contents($file);
 
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
+
         return $html;
     }
 
