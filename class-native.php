@@ -205,39 +205,6 @@ class rsssl_soc_native
     }
 
 
-    public function get_likes_ajax()
-    {
-        if (!isset($_GET['post_id'])) return;
-        $post_id = intval($_GET['post_id']);
-
-        if ($post_id == 0) {
-            $url = home_url();
-        } else {
-            $url = get_permalink($post_id);
-        }
-
-        if ($this->debug) $url = "https://wordpress.com";
-
-        if ($this->facebook) $fb_likes = $this->retrieve_shares_total('facebook', $url);
-        if ($this->twitter) $twitter_likes = $this->retrieve_shares_total('twitter', $url);
-        if ($this->google) $google_likes = $this->retrieve_shares_total('google', $url);
-        if ($this->linkedin) $linkedin_likes = $this->retrieve_shares_total('linkedin', $url);
-        if ($this->pinterest) $pinterest_likes = $this->retrieve_shares_total('pinterest', $url);
-        if ($this->yummly) $yummly_likes = $this->retrieve_shares_total('yummly', $url);
-
-        $out = array(
-            'facebook' => $this->convert_nr($fb_likes),
-            'twitter' => $this->convert_nr($twitter_likes),
-            'gplus' => $this->convert_nr($google_likes),
-            'linkedin' => $this->convert_nr($linkedin_likes),
-            'pinterest' => $this->convert_nr($pinterest_likes),
-            'yummly' => $this->convert_nr($yummly_likes),
-        );
-        die(json_encode($out));
-
-    }
-
-
     public function retrieve_shares_total($service, $url){
 
         //make sure the current home_url is https, as this is a really simple ssl add on.
