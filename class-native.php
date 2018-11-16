@@ -45,7 +45,6 @@ class rsssl_soc_native
 
     public function get_raw_counts($atts = [], $content = null, $tag = '')
     {
-
         // normalize attribute keys, lowercase
         $atts = array_change_key_case((array)$atts, CASE_LOWER);
         ob_start();
@@ -79,12 +78,22 @@ class rsssl_soc_native
         $this->yummly = (isset($services['yummly']) && $services['yummly']) ? true : false;
 
     }
+    /*
+     * if the type is passed, only retrieve shares for this type
+     *
+     *
+     * */
 
 
-    public function get_likes_total($service)
+    public function get_likes($post_id, $type = false)
     {
-        if (!isset($_GET['post_id'])) return;
-        $post_id = intval($_GET['post_id']);
+        $facebook = $type ? $type === 'facebook' : $this->facebook;
+        $twitter = $type ? $type === 'twitter' : $this->twitter;
+        $google = $type ? $type === 'google' : $this->google;
+        $linkedin = $type ? $type === 'linkedin' : $this->linkedin;
+        $pinterest = $type ? $type === 'pinterest' : $this->pinterest;
+        $yummly = $type ? $type === 'yummly' : $this->yummly;
+
 
         if ($post_id == 0) {
             $url = home_url();
@@ -118,7 +127,7 @@ class rsssl_soc_native
 
         //get likes for both http and https
         $fb_likes = 0;
-        if ($this->facebook) {
+        if ($facebook) {
             if ($get_http) $fb_likes = $this->retrieve_fb_likes($url_http);
             if ($get_https) $fb_likes += $this->retrieve_fb_likes($url_https);
             if ($get_httpwww) $fb_likes += $this->retrieve_fb_likes($url_httpwww);
@@ -126,7 +135,7 @@ class rsssl_soc_native
         }
 
         $twitter_likes = 0;
-        if ($this->twitter) {
+        if ($twitter) {
             if ($get_http) $twitter_likes = $this->retrieve_twitter_likes($url_http);
             if ($get_https) $twitter_likes += $this->retrieve_twitter_likes($url_https);
             if ($get_httpwww) $twitter_likes += $this->retrieve_twitter_likes($url_httpwww);
@@ -135,7 +144,7 @@ class rsssl_soc_native
 
         $google_likes = 0;
         //google seems to return the correct likes anyway.
-        if ($this->google) {
+        if ($google) {
             //$google_likes = $this->retrieve_google_likes($url_https);
             if ($get_http) $google_likes = $this->retrieve_google_likes($url_http);
             if ($get_https) $google_likes += $this->retrieve_google_likes($url_https);
@@ -144,7 +153,7 @@ class rsssl_soc_native
         }
 
         $linkedin_likes = 0;
-        if ($this->linkedin) {
+        if ($linkedin) {
             //only retrieve one domain, do not aggregate.
             if ($get_https) {
                 $linkedin_likes = $this->retrieve_linkedin_likes($url_https);
@@ -155,7 +164,7 @@ class rsssl_soc_native
 
         $pinterest_likes = 0;
 
-        if ($this->pinterest) {
+        if ($pinterest) {
             if ($get_http) $pinterest_likes = $this->retrieve_pinterest_likes($url_http);
             if ($get_https) $pinterest_likes += $this->retrieve_pinterest_likes($url_https);
             if ($get_httpwww) $pinterest_likes += $this->retrieve_pinterest_likes($url_httpwww);
@@ -164,7 +173,7 @@ class rsssl_soc_native
 
         $yummly_likes = 0;
 
-        if ($this->yummly) {
+        if ($yummly) {
             if ($get_http) $yummly_likes = $this->retrieve_yummly_likes($url_http);
             if ($get_https) $yummly_likes += $this->retrieve_yummly_likes($url_https);
             if ($get_httpwww) $yummly_likes += $this->retrieve_yummly_likes($url_httpwww);
@@ -179,6 +188,18 @@ class rsssl_soc_native
             'pinterest' => $this->convert_nr($pinterest_likes),
             'yummly' => $this->convert_nr($yummly_likes),
         );
+        die(json_encode($out));
+
+
+    }
+
+
+    public function get_likes_ajax($post_id = false)
+    {
+        if (!isset($_GET['post_id'])) return;
+        $post_id = intval($_GET['post_id']);
+        $out = $this->get_likes($post_id);
+
         die(json_encode($out));
 
     }
@@ -378,41 +399,37 @@ class rsssl_soc_native
 
         //get likes for both http and https
         $likes = 0;
-        if ($get_http) $likes = $this->get_cached_likes($type, $url_http);
-        if ($get_https) $likes += $this->get_cached_likes($type, $url_https);
-        if ($get_httpwww) $likes += $this->get_cached_likes($type, $url_httpwww);
-        if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww);
+        if ($get_http) $likes = $this->get_cached_likes($type, $url_http, $post_id);
+        if ($get_https) $likes += $this->get_cached_likes($type, $url_https, $post_id);
+        if ($get_httpwww) $likes += $this->get_cached_likes($type, $url_httpwww, $post_id);
+        if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww, $post_id);
 
         if ($likes == 0) $likes = "";
         return $likes;
 
     }
 
-    private function get_cached_likes($type, $url)
-    {
-        if ($type == "facebook") $share_cache = get_transient('rsssl_fb_shares');
-        if ($type == "twitter") $share_cache = get_transient('rsssl_twitter_shares');
-        if ($type == "google") $share_cache = get_transient('rsssl_google_shares');
-        if ($type == "linkedin") $share_cache = get_transient('rsssl_linkedin_shares');
-        if ($type == "pinterest") $share_cache = get_transient('rsssl_pinterest_shares');
-        if ($type == "yummly") $share_cache = get_transient('rsssl_yummly_shares');
+    private function get_cached_likes($type, $url, $post_id){
 
+        $share_cache = get_transient("rsssl_" . $type . "_shares");
         if (!$share_cache || !isset($share_cache[$url])) {
-            //try retrieving shares from api
-            $shares = $this->retrieve_shares_total($type, $url);
-            return $shares;
-        } else {
-            return $share_cache[$url];
+            $this->get_likes($post_id, $type);
+
+            $share_cache = get_transient("rsssl_" . $type . "_shares");
         }
+
+        if (!isset($share_cache[$url])) return 0;
+
+        return $share_cache[$url];
     }
 
 
     private function clear_cached_likes($url)
     {
 
-        $share_cache = get_transient('rsssl_fb_shares');
+        $share_cache = get_transient('rsssl_facebook_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
 
         $share_cache = get_transient('rsssl_twitter_shares');
         if ($share_cache) unset($share_cache[$url]);
@@ -456,35 +473,23 @@ class rsssl_soc_native
     }
 
     private function retrieve_fb_likes($url)
-    {
-        $shares = 0;
-        $share_cache = get_transient('rsssl_fb_shares');
-        if (!$share_cache) $share_cache = array();
-
-        //to prevent being locked in a continuous "too many requests situation, we stop for a hour after an invalid response
-        if (!get_transient('rsssl_hold_requests')) {
-            $fb_access_token = get_option('rsssl_soc_fb_access_token');
-            $auth = "";
-            if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
-            $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
-
-            //https://developers.facebook.com/tools/accesstoken/
-            if ($request["response"]["code"] == 200) {
-                $json = wp_remote_retrieve_body($request);
-                $output = json_decode($json);
-                $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
-            } else {
-                //error, wait with request again for some time.
-
-                //add to list not to request
-                set_transient('rsssl_hold_requests', true, HOUR_IN_SECONDS);
-            }
-            $share_cache[$url] = $shares;
-        }
-        set_transient('rsssl_fb_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
-
-        return $shares;
-    }
+     {
+         $shares = 0;
+         $share_cache = get_transient('rsssl_facebook_shares');
+         $fb_access_token = get_option('rsssl_soc_fb_access_token');
+         $auth = "";
+         if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
+         $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
+         //https://developers.facebook.com/tools/accesstoken/
+         if ($request["response"]["code"] == 200) {
+             $json = wp_remote_retrieve_body($request);
+             $output = json_decode($json);
+             $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
+         }
+         $share_cache[$url] = $shares;
+         set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+         return $shares;
+     }
 
     private function retrieve_twitter_likes($url)
     {
@@ -498,6 +503,7 @@ class rsssl_soc_native
             $shares = $output->count;
         }
         $share_cache[$url] = $shares;
+
         set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
         return intval($shares);
     }
@@ -661,7 +667,6 @@ class rsssl_soc_native
 
         $button_html = $this->get_buttons();
         $html = str_replace('{buttons}', $button_html, $html);
-
         if (get_option('rsssl_inline_or_left') === "left") {
             $html = str_replace('rsssl_soc', 'rsssl_soc rsssl_left', $html);
         }
@@ -704,12 +709,10 @@ class rsssl_soc_native
         $file = rsssl_soc_path . "templates/$service.php";
         $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$service.php";
         $shares = $this->get_cached_likes_total($service, $post_id);
-
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
         $html = file_get_contents($file);
-
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
         return $html;
@@ -728,11 +731,10 @@ class rsssl_soc_native
         if ($post) {
             $url = get_permalink($post);
         }
-
         $use_cache = true;
+        //check a transient as well, if the transient has expired, we will set set usecache to true, so it will retrieve the shares fresh.
+        $share_cache = get_transient('rsssl_facebook_shares');
 
-        //check a transient as well, if the transient has expired, we will set set usecache to false, so it will retrieve the shares fresh.
-        $share_cache = get_transient('rsssl_fb_shares');
         if ($this->debug || (defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
            $use_cache = false;
         }
