@@ -661,8 +661,6 @@ class rsssl_soc_native
         $html = "";
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
-            error_log("Service checked");
-            error_log($service);
             if ($service === 'whatsapp' && !wp_is_mobile()) continue;
             $html .= $this->get_button_html($service, $url, $post_id, $title);
         }
@@ -687,6 +685,16 @@ class rsssl_soc_native
         }
         $html = file_get_contents($file);
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
+
+            //Str_replace the FB template to either share or like, depending on the configured setting.
+            if (get_option('rsssl_fb_button_type') == 'shares') {
+                $html = str_replace("{fb_type}" , "share", $html);
+            } else {
+                $html = str_replace("{fb_type}" , "like", $html);
+            }
+
+            error_log("html in button html");
+            error_log($html);
 
         return $html;
     }

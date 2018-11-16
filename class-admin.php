@@ -146,11 +146,15 @@ class rsssl_soc_admin
             register_setting('rlrsssl_social_options', 'rsssl_button_position', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_retrieval_domains', array($this, 'options_validate_boolean_array'));
             register_setting('rlrsssl_social_options', 'rsssl_social_services', array($this, 'options_validate_boolean_array'));
+            register_setting('rlrsssl_social_options', 'rsssl_fb_button_type', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_inline_or_left', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_share_cache_time', array($this, 'options_validate'));
 
             add_settings_field('rsssl_buttons_theme', __("Share buttons theme", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_buttons_theme'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_social_services', __("Social services you want to use", "really-simple-ssl-soc"), array($this, 'get_option_social_services'), 'rlrsssl-social', 'rlrsssl_settings');
+
+            add_settings_field('rsssl_fb_button_type', __("Use shares or likes for Facebook button", "really-simple-ssl-soc"), array($this, 'get_option_fb_button_type'), 'rlrsssl-social', 'rlrsssl_settings');
+
             add_settings_field('rsssl_fb_access_token', __("Facebook app token", "really-simple-ssl-soc"), array($this, 'get_option_fb_access_token'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on", "really-simple-ssl-soc"), array($this, 'get_option_buttons_on_post_types'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares", "really-simple-ssl-soc"), array($this, 'get_option_retrieval_domains'), 'rlrsssl-social', 'rlrsssl_settings');
@@ -361,8 +365,9 @@ class rsssl_soc_admin
     public function get_option_social_services()
     {
         $services = get_option('rsssl_social_services');
+        error_log("SOCIAL SERVICES");
+        error_log(print_r($services, true));
         $facebook = isset($services['facebook']) ? $services['facebook'] : false;
-        //$facebook_like = isset($services['facebook-like']) ? $services['facebook-like'] : false;
         $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
         $twitter = isset($services['twitter']) ? $services['twitter'] : false;
         $google = isset($services['google']) ? $services['google'] : false;
@@ -373,9 +378,6 @@ class rsssl_soc_admin
         ?>
         <input type="checkbox" name="rsssl_social_services[facebook]"
                value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[facebook-like]"
-               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
         <br>
         <input type="checkbox" name="rsssl_social_services[linkedin]"
                value="1" <?php checked($linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc") ?>
@@ -405,8 +407,8 @@ class rsssl_soc_admin
       $rsssl_fb_button_type = get_option('rsssl_fb_button_type');
       ?>
       <select name="rsssl_fb_button_type">
-        <option value="share" <?php if ($rsssl_fb_button_type=="share") echo "selected"?>>Share
-        <option value="like" <?php if ($rsssl_fb_button_type=="like") echo "selected"?>>Like
+        <option value="shares" <?php if ($rsssl_fb_button_type=="shares") echo "selected"?>>Shares
+        <option value="likes" <?php if ($rsssl_fb_button_type=="likes") echo "selected"?>>Likes
       </select>
       <?php
       RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
