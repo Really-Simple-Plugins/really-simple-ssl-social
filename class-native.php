@@ -393,30 +393,32 @@ class rsssl_soc_native
 
     private function clear_cached_likes($url)
     {
+        //* 3600 to convert user input to hours
+        $expiration = (get_option('rsssl_share_cache_time') * 3600);
 
         $share_cache = get_transient('rsssl_facebook_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         $share_cache = get_transient('rsssl_twitter_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         $share_cache = get_transient('rsssl_google_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         $share_cache = get_transient('rsssl_linkedin_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         $share_cache = get_transient('rsssl_pinterest_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         $share_cache = get_transient('rsssl_yummly_shares');
         if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
     }
 
 
@@ -441,6 +443,7 @@ class rsssl_soc_native
 
     private function retrieve_fb_likes($url)
      {
+         $expiration = (get_option('rsssl_share_cache_time') * 3600);
          $shares = 0;
          $share_cache = get_transient('rsssl_facebook_shares');
          $fb_access_token = get_option('rsssl_soc_fb_access_token');
@@ -454,7 +457,7 @@ class rsssl_soc_native
              $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
          }
          $share_cache[$url] = $shares;
-         set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+         set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
          return $shares;
      }
 
@@ -462,6 +465,7 @@ class rsssl_soc_native
     {
         $share_cache = get_transient('rsssl_twitter_shares');
         if (!$share_cache) $share_cache = array();
+        $expiration = (get_option('rsssl_share_cache_time') * 3600);
         $request = wp_remote_get('http://opensharecount.com/count.json?url=' . $url);
         $json = wp_remote_retrieve_body($request);
         $output = json_decode($json);
@@ -471,7 +475,7 @@ class rsssl_soc_native
         }
         $share_cache[$url] = $shares;
 
-        set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
         return intval($shares);
     }
 
@@ -479,6 +483,7 @@ class rsssl_soc_native
     {
         $share_cache = get_transient('rsssl_google_shares');
         if (!$share_cache) $share_cache = array();
+        $expiration = (get_option('rsssl_share_cache_time') * 3600);
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
         curl_setopt($curl, CURLOPT_POST, true);
@@ -494,7 +499,7 @@ class rsssl_soc_native
         $shares = isset($json[0]['result']['metadata']['globalCounts']['count']) ? intval($json[0]['result']['metadata']['globalCounts']['count']) : 0;
 
         $share_cache[$url] = $shares;
-        set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         return intval($shares);
     }
@@ -503,12 +508,13 @@ class rsssl_soc_native
     {
         $share_cache = get_transient('rsssl_linkedin_shares');
         if (!$share_cache) $share_cache = array();
+        $expiration = (get_option('rsssl_share_cache_time') * 3600);
         $request = wp_remote_get('https://www.linkedin.com/countserv/count/share?url=' . urlencode($url) . '&format=json');
         $json = wp_remote_retrieve_body($request);
         $output = json_decode($json);
         $shares = $output->count;
         $share_cache[$url] = $shares;
-        set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         return intval($shares);
     }
@@ -521,6 +527,7 @@ class rsssl_soc_native
         $shares = 0;
         $share_cache = get_transient('rsssl_pinterest_shares');
         if (!$share_cache) $share_cache = array();
+        $expiration = (get_option('rsssl_share_cache_time') * 3600);
         $request = wp_remote_get('http://api.pinterest.com/v1/urls/count.json?&url=' . $url);
 
         $json = wp_remote_retrieve_body($request);
@@ -532,7 +539,7 @@ class rsssl_soc_native
             $shares = $output->count;
         }
         $share_cache[$url] = $shares;
-        set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_pinterest_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         return intval($shares);
     }
@@ -542,6 +549,7 @@ class rsssl_soc_native
         $shares = 0;
         $share_cache = get_transient('rsssl_yummly_shares');
         if (!$share_cache) $share_cache = array();
+        $expiration = (get_option('rsssl_share_cache_time') * 3600);
         $request = wp_remote_get('http://www.yummly.com/services/yum-count?url=%s' . $url);
         $json = wp_remote_retrieve_body($request);
 
@@ -551,7 +559,7 @@ class rsssl_soc_native
             $shares = $output->count;
         }
         $share_cache[$url] = $shares;
-        set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+        set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         return intval($shares);
     }

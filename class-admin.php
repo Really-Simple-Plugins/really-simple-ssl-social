@@ -87,6 +87,8 @@ class rsssl_soc_admin
 
         if (!class_exists('rsssl_admin')) return;
         add_action('admin_init', array($this, 'add_settings'), 50);
+        add_action('admin_init', array($this, 'listen_for_clear_share_cache'), 40);
+
     }
 
 
@@ -145,14 +147,18 @@ class rsssl_soc_admin
             register_setting('rlrsssl_social_options', 'rsssl_retrieval_domains', array($this, 'options_validate_boolean_array'));
             register_setting('rlrsssl_social_options', 'rsssl_social_services', array($this, 'options_validate_boolean_array'));
             register_setting('rlrsssl_social_options', 'rsssl_inline_or_left', array($this, 'options_validate'));
+            register_setting('rlrsssl_social_options', 'rsssl_share_cache_time', array($this, 'options_validate'));
 
             add_settings_field('rsssl_buttons_theme', __("Share buttons theme", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_buttons_theme'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_social_services', __("Social services you want to use", "really-simple-ssl-soc"), array($this, 'get_option_social_services'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_fb_access_token', __("Facebook app token", "really-simple-ssl-soc"), array($this, 'get_option_fb_access_token'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on", "really-simple-ssl-soc"), array($this, 'get_option_buttons_on_post_types'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares", "really-simple-ssl-soc"), array($this, 'get_option_retrieval_domains'), 'rlrsssl-social', 'rlrsssl_settings');
-
             add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
+
+            add_settings_field('rsssl_share_cache_time', __("Share cache time in hours", "really-simple-ssl-soc"), array($this, 'get_option_share_cache_time'), 'rlrsssl-social', 'rlrsssl_settings');
+
+            add_settings_field('id_clear_share_cache', __("Clear share cache", "really-simple-ssl"), array($this, 'get_option_clear_share_cache'), 'rlrsssl-social', 'rlrsssl_settings');
 
             if (get_option("rsssl_inline_or_left") == 'inline')
                 add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
@@ -189,7 +195,7 @@ class rsssl_soc_admin
             <option value="native" <?php if ($rsssl_button_type == "native") echo "selected" ?>><?php _e("Native sharing buttons", "really-simple-ssl-soc"); ?>
         </select>
             <?php
-        RSSSL()->rsssl_help->get_help_tip(__("The existing option recovers shares for your existing plugin buttons. The built-in buttons use the Really Simple SSL Social button. Native option shows the native sharing widgets for each platform.", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("The existing option recovers shares for your existing sharing plugin buttons. The built-in buttons use the Really Simple SSL Social button. Native option shows the native sharing widgets for each platform.", "really-simple-ssl-soc"));
 
     }
 
@@ -202,6 +208,7 @@ class rsssl_soc_admin
             <option value="blackwhite" <?php if ($rsssl_button_type == "blackwhite") echo "selected" ?>><?php _e("Black and white", "really-simple-ssl-soc"); ?>
         </select>
         <?php
+        RSSSL()->rsssl_help->get_help_tip(__("Choose the share button theme. The 'Color' theme uses colorfull buttons in the social networks style, while the XXX.", "really-simple-ssl-soc"));
     }
 
     public function get_option_start_date_social()
@@ -282,6 +289,50 @@ class rsssl_soc_admin
             <option value="left" <?php if ($rsssl_inline_or_left == "left") echo "selected" ?>>Left
         </select>
         <?php
+        RSSSL()->rsssl_help->get_help_tip(__("Show the buttons inline (at the top, bottom or both) in pages posts, or show buttons as a sidebar on the left side of your page.", "really-simple-ssl-soc"));
+    }
+
+    public function get_option_share_cache_time()
+    {
+        $share_cache_time = get_option('rsssl_share_cache_time');
+        echo '<input id="rsssl_share_cache_time" name="rsssl_share_cache_time" size="40" type="number" min="0" max="24" value="' . $share_cache_time . '" />';
+        RSSSL()->rsssl_help->get_help_tip(__("Set to a value between 1 and 24. Caching the shares will minimize the number of share retrieval request made to the social networks. Not employing caching can result in too many request (rate limiting) and thus shares not showing.", "really-simple-ssl-soc"));
+
+    }
+
+    public function get_option_clear_share_cache()
+    {
+
+        $token = wp_create_nonce('rsssl_clear_share_cache');
+        $clear_share_cache_link = admin_url("options-general.php?page=rlrsssl_really_simple_ssl&tab=social&action=clear_share_cache&token=" . $token);
+        ?>
+        <a class="button rsssl-button-deactivate-keep-ssl" href="
+             <?php echo $clear_share_cache_link ?>"><?php _e("Clear share cache", "really-simple-ssl-social") ?>
+        </a>
+        <?php
+        RSSSL()->rsssl_help->get_help_tip(__("Clicking this button will clear the cache, forcing the shares to be retrieved on next pageload.", "really-simple-ssl-soc"));
+    }
+
+
+     public function listen_for_clear_share_cache()
+    {
+        //check nonce
+        if (!isset($_GET['token']) || (!wp_verify_nonce($_GET['token'], 'rsssl_clear_share_cache'))) return;
+        //check for action
+        if (isset($_GET["action"]) && $_GET["action"] == 'clear_share_cache') {
+            $this->clear_share_cache();
+        }
+    }
+
+    public function clear_share_cache()
+    {
+        //Delete the transient directly, clear_cached_likes() in class native requires an URL.
+        delete_transient('rsssl_facebook_shares');
+        delete_transient('rsssl_twitter_shares');
+        delete_transient('rsssl_google_shares');
+        delete_transient('rsssl_linkedin_shares');
+        delete_transient('rsssl_pinterest_shares');
+        delete_transient('rsssl_yummly_shares');
     }
 
 
@@ -291,26 +342,27 @@ class rsssl_soc_admin
         return $tabs;
     }
 
-public function get_option_retrieval_domains() {
-  $domains = get_option('rsssl_retrieval_domains');
-  $http = isset($domains['http']) ? $domains['http'] : false;
-  $https = isset($domains['https']) ? $domains['https'] : false;
-  $httpwww = isset($domains['httpwww']) ? $domains['httpwww'] : false;
-  $httpswww = isset($domains['httpswww']) ? $domains['httpswww'] : false;
+    public function get_option_retrieval_domains() {
+      $domains = get_option('rsssl_retrieval_domains');
+      $http = isset($domains['http']) ? $domains['http'] : false;
+      $https = isset($domains['https']) ? $domains['https'] : false;
+      $httpwww = isset($domains['httpwww']) ? $domains['httpwww'] : false;
+      $httpswww = isset($domains['httpswww']) ? $domains['httpswww'] : false;
 
-  ?>
-  <input type="checkbox" name="rsssl_retrieval_domains[http]" value="1" <?php checked( $http, "1"); ?>/><?php _e("Retrieve http://domain.com", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_retrieval_domains[https]" value="1" <?php checked( $https, "1"); ?>/><?php _e("Retrieve https://domain.com", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_retrieval_domains[httpwww]" value="1" <?php checked( $httpwww, "1"); ?>/><?php _e("Retrieve http://www.domain.com", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_retrieval_domains[httpswww]" value="1" <?php checked( $httpswww, "1"); ?>/><?php _e("Retrieve https://www.domain.com", "really-simple-ssl-soc")?><br>
-  <?php
-  RSSSL()->rsssl_help->get_help_tip(__("Choose which domains you want to retrieve the shares for. Sometimes Facebook returns different shares for www and non www, but sometimes they are the same. Configure accordingly.", "really-simple-ssl-soc"));
-}
+      ?>
+      <input type="checkbox" name="rsssl_retrieval_domains[http]" value="1" <?php checked( $http, "1"); ?>/><?php _e("Retrieve http://domain.com", "really-simple-ssl-soc")?><br>
+      <input type="checkbox" name="rsssl_retrieval_domains[https]" value="1" <?php checked( $https, "1"); ?>/><?php _e("Retrieve https://domain.com", "really-simple-ssl-soc")?><br>
+      <input type="checkbox" name="rsssl_retrieval_domains[httpwww]" value="1" <?php checked( $httpwww, "1"); ?>/><?php _e("Retrieve http://www.domain.com", "really-simple-ssl-soc")?><br>
+      <input type="checkbox" name="rsssl_retrieval_domains[httpswww]" value="1" <?php checked( $httpswww, "1"); ?>/><?php _e("Retrieve https://www.domain.com", "really-simple-ssl-soc")?><br>
+      <?php
+      RSSSL()->rsssl_help->get_help_tip(__("Choose which domains you want to retrieve the shares for. Sometimes Facebook returns different shares for www and non www, but sometimes they are the same. Configure accordingly.", "really-simple-ssl-soc"));
+    }
 
     public function get_option_social_services()
     {
         $services = get_option('rsssl_social_services');
-        $facebook = isset($services['facebook']) ? $services['facebook'] : false;
+        $facebook_share = isset($services['facebook']) ? $services['facebook'] : false;
+        $facebook_like = isset($services['facebook']) ? $services['facebook'] : false;
         $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
         $twitter = isset($services['twitter']) ? $services['twitter'] : false;
         $google = isset($services['google']) ? $services['google'] : false;
@@ -320,10 +372,10 @@ public function get_option_retrieval_domains() {
 
         ?>
         <input type="checkbox" name="rsssl_social_services[facebook]"
-               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
+               value="1" <?php checked($facebook_share, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
         <br>
         <input type="checkbox" name="rsssl_social_services[facebook-like]"
-               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
+               value="1" <?php checked($facebook_like, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
         <br>
         <input type="checkbox" name="rsssl_social_services[linkedin]"
                value="1" <?php checked($linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc") ?>
@@ -349,29 +401,16 @@ public function get_option_retrieval_domains() {
     }
 
 
-public function get_option_fb_button_type() {
-  $rsssl_fb_button_type = get_option('rsssl_fb_button_type');
-  ?>
-  <select name="rsssl_fb_button_type">
-    <option value="share" <?php if ($rsssl_fb_button_type=="share") echo "selected"?>>Share
-    <option value="like" <?php if ($rsssl_fb_button_type=="like") echo "selected"?>>Like
-  </select>
-  <?php
-  RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
-}
-
-public function get_option_rsssl_use_30_styling() {
-  $rsssl_use_30_styling = get_option('rsssl_use_30_styling');
-
-    ?>
-    <label class="rsssl-switch">
-        <input id="rlrsssl_options" name="rsssl_use_30_styling" size="40" value="1"
-               type="checkbox" <?php checked(1, $rsssl_use_30_styling, true) ?> />
-        <span class="rsssl-slider rsssl-round"></span>
-    </label>
-    <?php
-    RSSSL()->rsssl_help->get_help_tip(__("Use the old or new look", "really-simple-ssl-soc"));
-}
+    public function get_option_fb_button_type() {
+      $rsssl_fb_button_type = get_option('rsssl_fb_button_type');
+      ?>
+      <select name="rsssl_fb_button_type">
+        <option value="share" <?php if ($rsssl_fb_button_type=="share") echo "selected"?>>Share
+        <option value="like" <?php if ($rsssl_fb_button_type=="like") echo "selected"?>>Like
+      </select>
+      <?php
+      RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
+    }
 
     public function plugin_settings_link($links){
 
