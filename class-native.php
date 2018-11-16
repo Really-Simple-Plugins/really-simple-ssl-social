@@ -33,7 +33,6 @@ class rsssl_soc_native
         add_shortcode('rsssl_share_count', array($this, 'get_raw_counts'));
 
         add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10, 3);
-        add_filter('rsssl_soc_share_buttons', array($this, 'social_share_buttons_html'), 10, 1);
         add_action('plugins_loaded', array($this, 'initialize'));
 
     }
@@ -79,8 +78,6 @@ class rsssl_soc_native
         $this->yummly = (isset($services['yummly']) && $services['yummly']) ? true : false;
 
     }
-
-
     /*
      * if the type is passed, only retrieve shares for this type
      *
@@ -208,6 +205,81 @@ class rsssl_soc_native
     }
 
 
+    public function retrieve_shares_total($service, $url){
+
+        //make sure the current home_url is https, as this is a really simple ssl add on.
+        $url_https = str_replace("http://", "https://", $url);
+
+        $url_https = str_replace("https://www.", "https://", $url_https);
+        $url_httpswww = str_replace("https://", "https://www.", $url_https);
+        $url_httpwww = str_replace("https://", "http://", $url_httpswww);
+        $url_http = str_replace("http://www.", "http://", $url_httpwww);
+
+        $domains = get_option('rsssl_retrieval_domains');
+        $get_http = isset($domains['http']) ? $domains['http'] : false;
+        $get_https = isset($domains['https']) ? $domains['https'] : false;
+        $get_httpwww = isset($domains['httpwww']) ? $domains['httpwww'] : false;
+        $get_httpswww = isset($domains['httpswww']) ? $domains['httpswww'] : false;
+
+        //if nothing set, set them all.
+        if (!$get_http && !$get_https && !$get_httpwww && !$get_httpswww) {
+            $get_http = true;
+            $get_https = true;
+            $get_httpwww = true;
+            $get_httpswww = true;
+        }
+
+        $shares = 0;
+        if ($service==='facebook') {
+            if ($get_http) $shares = $this->retrieve_fb_likes($url_http);
+            if ($get_https) $shares += $this->retrieve_fb_likes($url_https);
+            if ($get_httpwww) $shares += $this->retrieve_fb_likes($url_httpwww);
+            if ($get_httpswww) $shares += $this->retrieve_fb_likes($url_httpswww);
+        }
+
+        if ($service==='twitter') {
+            if ($get_http) $shares = $this->retrieve_twitter_likes($url_http);
+            if ($get_https) $shares += $this->retrieve_twitter_likes($url_https);
+            if ($get_httpwww) $shares += $this->retrieve_twitter_likes($url_httpwww);
+            if ($get_httpswww) $shares += $this->retrieve_twitter_likes($url_httpswww);
+        }
+
+        //google seems to return the correct likes anyway.
+        if ($service==='google') {
+            //$google_likes = $this->retrieve_google_likes($url_https);
+            if ($get_http) $shares = $this->retrieve_google_likes($url_http);
+            if ($get_https) $shares += $this->retrieve_google_likes($url_https);
+            if ($get_httpwww) $shares += $this->retrieve_google_likes($url_httpwww);
+            if ($get_httpswww) $shares += $this->retrieve_google_likes($url_httpswww);
+        }
+
+        if ($service==='linkedin') {
+            //only retrieve one domain, do not aggregate.
+            if ($get_https) {
+                $shares = $this->retrieve_linkedin_likes($url_https);
+            } else {
+                $shares = $this->retrieve_linkedin_likes($url_httpswww);
+            }
+        }
+
+        if ($service==='pinterest') {
+            if ($get_http) $shares = $this->retrieve_pinterest_likes($url_http);
+            if ($get_https) $shares += $this->retrieve_pinterest_likes($url_https);
+            if ($get_httpwww) $shares += $this->retrieve_pinterest_likes($url_httpwww);
+            if ($get_httpswww) $shares += $this->retrieve_pinterest_likes($url_httpswww);
+        }
+
+        if ($service==='yummly') {
+            if ($get_http) $shares = $this->retrieve_yummly_likes($url_http);
+            if ($get_https) $shares += $this->retrieve_yummly_likes($url_https);
+            if ($get_httpwww) $shares += $this->retrieve_yummly_likes($url_httpwww);
+            if ($get_httpswww) $shares += $this->retrieve_yummly_likes($url_httpswww);
+        }
+
+        return $shares;
+    }
+
+
     /*
 
       Clear the likes for a specific url
@@ -223,9 +295,7 @@ class rsssl_soc_native
 
         $post_id = intval($_GET['post_id']);
         $this->clear_likes($post_id);
-
-        echo 'success';
-        die();
+        die(json_encode('success'));
     }
 
     public function clear_likes($post_id)
@@ -306,8 +376,8 @@ class rsssl_soc_native
 
     }
 
-    private function get_cached_likes($type, $url, $post_id)
-    {
+    private function get_cached_likes($type, $url, $post_id){
+
         $share_cache = get_transient("rsssl_" . $type . "_shares");
         if (!$share_cache || !isset($share_cache[$url])) {
             $this->get_likes($post_id, $type);
@@ -319,6 +389,7 @@ class rsssl_soc_native
 
         return $share_cache[$url];
     }
+
 
     private function clear_cached_likes($url)
     {
@@ -369,32 +440,28 @@ class rsssl_soc_native
     }
 
     private function retrieve_fb_likes($url)
-    {
-        $shares = 0;
-        $share_cache = get_transient('rsssl_facebook_shares');
-
-        $fb_access_token = get_option('rsssl_soc_fb_access_token');
-
-        $auth = "";
-        if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
-        $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
-
-        //https://developers.facebook.com/tools/accesstoken/
-
-        if ($request["response"]["code"] == 200) {
-            $json = wp_remote_retrieve_body($request);
-            $output = json_decode($json);
-            $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
-        }
-        $share_cache[$url] = $shares;
-        set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
-
-        return $shares;
-    }
+     {
+         $shares = 0;
+         $share_cache = get_transient('rsssl_facebook_shares');
+         $fb_access_token = get_option('rsssl_soc_fb_access_token');
+         $auth = "";
+         if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
+         $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
+         //https://developers.facebook.com/tools/accesstoken/
+         if ($request["response"]["code"] == 200) {
+             $json = wp_remote_retrieve_body($request);
+             $output = json_decode($json);
+             $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
+         }
+         $share_cache[$url] = $shares;
+         set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", DAY_IN_SECONDS));
+         return $shares;
+     }
 
     private function retrieve_twitter_likes($url)
     {
         $share_cache = get_transient('rsssl_twitter_shares');
+        if (!$share_cache) $share_cache = array();
         $request = wp_remote_get('http://opensharecount.com/count.json?url=' . $url);
         $json = wp_remote_retrieve_body($request);
         $output = json_decode($json);
@@ -411,7 +478,7 @@ class rsssl_soc_native
     private function retrieve_google_likes($url)
     {
         $share_cache = get_transient('rsssl_google_shares');
-
+        if (!$share_cache) $share_cache = array();
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
         curl_setopt($curl, CURLOPT_POST, true);
@@ -435,6 +502,7 @@ class rsssl_soc_native
     private function retrieve_linkedin_likes($url)
     {
         $share_cache = get_transient('rsssl_linkedin_shares');
+        if (!$share_cache) $share_cache = array();
         $request = wp_remote_get('https://www.linkedin.com/countserv/count/share?url=' . urlencode($url) . '&format=json');
         $json = wp_remote_retrieve_body($request);
         $output = json_decode($json);
@@ -452,6 +520,7 @@ class rsssl_soc_native
     {
         $shares = 0;
         $share_cache = get_transient('rsssl_pinterest_shares');
+        if (!$share_cache) $share_cache = array();
         $request = wp_remote_get('http://api.pinterest.com/v1/urls/count.json?&url=' . $url);
 
         $json = wp_remote_retrieve_body($request);
@@ -472,6 +541,7 @@ class rsssl_soc_native
     {
         $shares = 0;
         $share_cache = get_transient('rsssl_yummly_shares');
+        if (!$share_cache) $share_cache = array();
         $request = wp_remote_get('http://www.yummly.com/services/yum-count?url=%s' . $url);
         $json = wp_remote_retrieve_body($request);
 
@@ -494,12 +564,16 @@ class rsssl_soc_native
 
     public function like_buttons_content_filter($content)
     {
+        error_log("Like buttons content filter");
         if ($this->show_buttons()) {
+            error_log("Show buttons true");
             // show the buttons
-            // not on homepage, but do show them on blogs overview page (is_front_page)
+            // not on homepage, but do show them on blogs overview page (is_home)
             // always when left is enabled.
             if ((is_home() || !is_front_page()) || get_option('rsssl_inline_or_left') == "left") {
+                error_log("is home, geen frontPage en optie is left");
                 $html = $this->generate_like_buttons();
+                error_log("Na generate like buttons");
                 $position = get_option('rsssl_button_position');
 
                 //position depending on setting
@@ -538,6 +612,7 @@ class rsssl_soc_native
         return false;
     }
 
+
     /*
 
         Generate like buttons to be used in either shortcode or content filter
@@ -547,111 +622,88 @@ class rsssl_soc_native
     public function generate_like_buttons($single = true)
     {
         $html = "";
-        $url = home_url();
-
-        global $post;
-        $post_id = 0;
-        $title = "";
-        if ($post) {
-            $url = get_permalink($post);
-            $post_id = $post->ID;
-            $title = $post->post_title;
-        }
-
-        $fb_share_url = 'https://www.facebook.com/share.php?u=';
-
-        if (get_option('rsssl_fb_button_type') == 'like') {
-            $fb_share_url = 'https://www.facebook.com/plugins/like.php?href=';
-        }
 
         //load template from theme directory if available
-
-        $old_or_new_look = get_option('rsssl_use_30_styling');
-
-        if ($old_or_new_look == FALSE) {
-            $file = rsssl_soc_path . 'templates/sharing-buttons.html';
-            $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons.html';
-        } else {
-            $file = rsssl_soc_path . 'templates/sharing-buttons-3.html';
-            $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . '/sharing-buttons-3.html';
-        }
+        $file = rsssl_soc_path . 'templates/template-wrap.php';
+        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . 'template-wrap.php';
 
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
         $html = file_get_contents($file);
 
-        $fb_shares = $this->get_cached_likes_total('facebook', $post_id);
-
-        $linkedin_shares = $this->get_cached_likes_total('linkedin', $post_id);
-        $twitter_shares = $this->get_cached_likes_total('twitter', $post_id);
-        $google_shares = $this->get_cached_likes_total('google', $post_id);
-        $pinterest_shares = $this->get_cached_likes_total('pinterest', $post_id);
-        $yummly_shares = $this->get_cached_likes_total('yummly', $post_id);
-
-        $html = str_replace(array("[POST_ID]", "[FB_SHARE_URL]", "[URL]", "[TITLE]"), array($post_id, $fb_share_url, $url, $title), $html);
-        $html = str_replace(array("[fb_shares]", "[linkedin_shares]", "[twitter_shares]", "[google_shares]", "[pinterest_shares]", "[yummly_shares]"), array($fb_shares, $linkedin_shares, $twitter_shares, $google_shares, $pinterest_shares, $yummly_shares), $html);
-        $html = apply_filters('rsssl_soc_share_buttons', $html);
-
-        if (get_option('rsssl_inline_or_left') == "left") {
+        $button_html = $this->get_buttons();
+        $html = str_replace('{buttons}', $button_html, $html);
+        if (get_option('rsssl_inline_or_left') === "left") {
             $html = str_replace('rsssl_soc', 'rsssl_soc rsssl_left', $html);
         }
 
         return $html;
     }
 
+    public function get_buttons(){
+        global $wp_query;
+        $url = home_url();
+        $post_id = 0;
+        $title = "";
+
+        if ($wp_query) {
+            $post = $wp_query->post;
+            $url = get_permalink($post);
+            $post_id = $post->ID;
+            $title = $post->post_title;
+        }
+
+        $html = "";
+        $services = get_option('rsssl_social_services');
+        foreach($services as $service => $checked){
+            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
+            $html .= $this->get_button_html($service, $url, $post_id, $title);
+        }
+
+        return $html;
+
+    }
 
     /*
-        Remove buttons that are not used currently
-    */
+     * Get the html for a specific service button
+     *
+     *
+     * */
 
-    public function social_share_buttons_html($html)
-    {
-        $services = get_option('rsssl_social_services');
+    public function get_button_html($service, $url, $post_id, $title){
 
-        $patterns = array();
-        if (!$this->facebook) $patterns[] = '/<a class="post-share facebook".*<\/a>/i';
-        if (!$this->linkedin) $patterns[] = '/<a class="post-share linkedin".*<\/a>/i';
-        if (!$this->twitter) $patterns[] = '/<a class="post-share twitter".*<\/a>/i';
-        if (!$this->google) $patterns[] = '/<a class="post-share gplus".*<\/a>/i';
-        if (!$this->pinterest) $patterns[] = '/<a class="post-share pinterest".*<\/a>/i';
-        if ((!$this->whatsapp) || (!wp_is_mobile())) $patterns[] = '/<a class="post-share whatsapp".*<\/a>/i';
-        if (!$this->yummly) $patterns[] = '/<a class="post-share yummly".*<\/a>/i';
-
-        $html = preg_replace($patterns, '', $html);
+        $file = rsssl_soc_path . "templates/$service.php";
+        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$service.php";
+        $shares = $this->get_cached_likes_total($service, $post_id);
+        if (file_exists($theme_file)) {
+            $file = $theme_file;
+        }
+        $html = file_get_contents($file);
+        $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
         return $html;
     }
 
-
     public function enqueue_scripts()
     {
+        $version = (strpos(home_url(), "localhost") === false) ? time() : rsssl_soc_version;
 
-        $version = (strpos(home_url(), "localhost") === false) ? time() : "";
-        $services = get_option('rsssl_social_services');
-        $old_or_new_look = get_option('rsssl_use_30_styling');
-
-        if ($old_or_new_look == FALSE) {
-            wp_enqueue_style('rsssl_social', plugin_dir_url(__FILE__) . 'assets/css/style.css', array(), rsssl_soc_version);
-            wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.js", array('jquery'), rsssl_soc_version, true);
-        } else {
-            wp_enqueue_style('rsssl_social', plugin_dir_url(__FILE__) . 'assets/css/style-3.css', array(), rsssl_soc_version);
-            wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), rsssl_soc_version);
-            wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes-3.js", array('jquery'), rsssl_soc_version, true);
-        }
+        wp_enqueue_style('rsssl_social', plugin_dir_url(__FILE__) . 'assets/css/style.css', array(), $version);
+        wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
+        wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.js", array('jquery'), $version, true);
 
         $url = home_url();
         global $post;
         if ($post) {
             $url = get_permalink($post);
         }
-
         $use_cache = true;
-
         //check a transient as well, if the transient has expired, we will set set usecache to true, so it will retrieve the shares fresh.
         $share_cache = get_transient('rsssl_facebook_shares');
+
         if ($this->debug || (defined('rsssl_social_no_cache') && rsssl_social_no_cache) || !$share_cache || !isset($share_cache[$url])) {
-            $use_cache = false;
+           $use_cache = false;
         }
 
         if ($this->pinterest) {

@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 3.0.9
+Stable tag: 3.0.11
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,12 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 3.0.11 =
+* Fix: preg_url should be replaced by normal
+
+= 3.0.10 =
+* Fix: settings link not implemented correctly
+
 = 3.0.9 =
 * Fix: exclude for Facebook crawlers not working correctly
 

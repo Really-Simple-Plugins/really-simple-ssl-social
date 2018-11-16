@@ -1,82 +1,162 @@
-.rsssl_soc{
-  margin:15px 0;
-}
 .rsssl_soc a.post-share {
-    display: block;
-    width: 105px;
-    height: 46px;
-    float: left;
-    margin: 10px 0px 0px 0px;
-    background: #3e599a url(../img/sidebar-share2.png) no-repeat 0 0;
-    text-decoration:none;
-    text-indent: 50px;
-    font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-    color: #ffffff;
-}
-
-@media screen and (min-width: 740px) {
-  .rsssl_soc{
     display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 55px;
+    height: 55px;
+    float: left;
+    pointer: cursor;
+    background: #3e599a no-repeat 0 0;
+    text-decoration:none;
+    font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    color: #fffff;
+}
+
+.rsssl_count {
+  color: #fff;
+}
+
+.rsssl_soc {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px;
+}
+
+.entry-content a {
+  border: 0;
+}
+
+.rsssl_left {
+  display: inline-block;
+  position: fixed;
+  left: 0;
+  top: 10%;
+  height: 500px;
+  width: 60px;
+  z-index: 10000;
+  padding-bottom: 0px;
+}
+
+@media screen and (max-width: 480px) {
+  .rsssl_left {
+  position: fixed;
+  top: auto;
+  height: auto;
+  display: flex;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 100%
+  z-index: 10000;
+  margin: 0;
   }
+.rsssl_soc {
+    display: flex;
+    flex-grow: 1;
+    margin-bottom: 0px;
+}
 }
 
-.rsssl_soc a.post-share:hover {
-    opacity: 0.8;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.rsssl_soc a.post-share span {
-    width: 30px;
-    height: 16px;
-    padding: 0;
-    margin: 14px 20px;
-    display: block;
-    float:right;
-    color: #ffffff;
-    vertical-align: middle;
-    font: 16px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-    text-align: center;
-    text-indent: 0;
-}
 .rsssl_soc a.post-share.facebook {
-    background: #3e599a url(../img/sidebar-share2.png) no-repeat 0 1px;
-    margin-right: 10px;
+    background: #3e599a no-repeat;
 }
-.rsssl_soc a.post-share.facebook span {
-    background-color: #3e599a;
+.rsssl_soc a.post-share.facebook:hover {
+    background: #5365ad no-repeat;
 }
+
 .rsssl_soc a.post-share.twitter {
-    background: #4b8cbe url(../img/sidebar-share2.png) no-repeat -0px -111px;
-    margin-right: 10px;
+    background: #4b8cbe no-repeat;
 }
-.rsssl_soc a.post-share.twitter span {
-    background-color: #4b8cbe;
+.rsssl_soc a.post-share.twitter:hover {
+    background: #6d9cd1 no-repeat;
 }
+
 .rsssl_soc a.post-share.linkedin {
-    background: #007bb5 url(../img/sidebar-share2.png) no-repeat -0px -206px;
-    margin-right: 10px;
+    background: #007bb5 no-repeat;
 }
+.rsssl_soc a.post-share.linkedin:hover {
+    background: #3f82b5 no-repeat;
+}
+
 .rsssl_soc a.post-share.gplus {
-    background: #b8382e url(../img/sidebar-share2.png) no-repeat -0px -50px;
-    margin-right: 10px;
+    background: #b8382e no-repeat;
 }
-.rsssl_soc a.post-share.gplus span {
-    background-color: #b8382e;
+.rsssl_soc a.post-share.gplus:hover {
+    background: #bd5044 no-repeat;
 }
+
 .rsssl_soc a.post-share.stumble {
-    background: #e15131 url(../img/sidebar-share2.png) no-repeat -0px -165px;
-    margin-right: 10px;
+    background: #e15131 no-repeat;
 }
-.rsssl_soc a.post-share.stumble span {
-    background-color: #e15131;
+.rsssl_soc a.post-share.stumble:hover {
+    background: #e66845 no-repeat;
 }
 
 .rsssl_soc a.post-share.pinterest {
-    background: #BD081C url(../img/sidebar-share2.png) no-repeat -0px -255px;
+    background: #bd081c no-repeat;
 }
-.rsssl_soc a.post-share.pinterest span {
-    background: #BD081C;
+.rsssl_soc a.post-share.pinterest:hover {
+    background: #cc464f no-repeat;
+}
+
+.rsssl_soc a.post-share.whatsapp {
+    background: #57be53 no-repeat;
+}
+.rsssl_soc a.post-share.whatsapp:hover {
+    background: #1ebea5 no-repeat;
+}
+
+.rsssl_soc a.post-share.yummly {
+    background: #df6131 no-repeat;
+}
+.rsssl_soc a.post-share.yummly:hover {
+    background: #c67453 no-repeat;
+}
+
+.rsssl_soc i.icon-facebook {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-twitter {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-google {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-stumbleupon {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-pinterest {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-linkedin {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-whatsapp {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+.rsssl_soc i.icon-food {
+    font-size: 1.6em;
+    margin-left: 11px;
+}
+
+.rsssl_likes_shares {
+  display: block;
+  margin-top: -29px;
+  text-align: center;
+  font-size: 0.8em;
+  width: 125%;
+}
+
+.rsssl_count {
+  height: 55px;
+}
+
+.pinterest {
+  cursor: pointer;
 }
