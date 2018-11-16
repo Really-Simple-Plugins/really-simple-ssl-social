@@ -255,78 +255,6 @@ class rsssl_soc_admin
         RSSSL()->rsssl_help->get_help_tip(__("Choose where you want to position the share button(s)", "really-simple-ssl-soc"));
     }
 
-
-    public function get_option_retrieval_domains()
-    {
-        $domains = get_option('rsssl_retrieval_domains');
-        $http = isset($domains['http']) ? $domains['http'] : false;
-        $https = isset($domains['https']) ? $domains['https'] : false;
-        $httpwww = isset($domains['httpwww']) ? $domains['httpwww'] : false;
-        $httpswww = isset($domains['httpswww']) ? $domains['httpswww'] : false;
-
-        ?>
-        <input type="checkbox" name="rsssl_retrieval_domains[http]"
-               value="1" <?php checked($http, "1"); ?>/><?php _e("Retrieve http://domain.com", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_retrieval_domains[https]"
-               value="1" <?php checked($https, "1"); ?>/><?php _e("Retrieve https://domain.com", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_retrieval_domains[httpwww]"
-               value="1" <?php checked($httpwww, "1"); ?>/><?php _e("Retrieve http://www.domain.com", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_retrieval_domains[httpswww]"
-               value="1" <?php checked($httpswww, "1"); ?>/><?php _e("Retrieve https://www.domain.com", "really-simple-ssl-soc") ?>
-        <br>
-        <?php
-        RSSSL()->rsssl_help->get_help_tip(__("Choose which domains you want to retrieve the shares for. Sometimes Facebook returns different shares for www and non www, but sometimes they are the same. Configure accordingly.", "really-simple-ssl-soc"));
-    }
-
-    public function get_option_social_services()
-    {
-        $services = get_option('rsssl_social_services');
-        $facebook = isset($services['facebook']) ? $services['facebook'] : false;
-        $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
-        $twitter = isset($services['twitter']) ? $services['twitter'] : false;
-        $google = isset($services['google']) ? $services['google'] : false;
-        $stumble = isset($services['stumble']) ? $services['stumble'] : false;
-        $pinterest = isset($services['pinterest']) ? $services['pinterest'] : false;
-        $whatsapp = isset($services['whatsapp']) ? $services['whatsapp'] : false;
-        $yummly = isset($services['yummly']) ? $services['yummly'] : false;
-
-        ?>
-        <input type="checkbox" name="rsssl_social_services[facebook]"
-               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[facebook-like]"
-               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[linkedin]"
-               value="1" <?php checked($linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[twitter]"
-               value="1" <?php checked($twitter, "1"); ?>/><?php _e("Twitter  share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[google]"
-               value="1" <?php checked($google, "1"); ?>/><?php _e("Google share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[stumble]"
-               value="1" <?php checked($stumble, "1"); ?>/><?php _e("Stumble share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[pinterest]"
-               value="1" <?php checked($pinterest, "1"); ?>/><?php _e("Pinterest share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[whatsapp]"
-               value="1" <?php checked($whatsapp, "1"); ?>/><?php _e("Whatsapp share button", "really-simple-ssl-soc") ?>
-        <br>
-        <input type="checkbox" name="rsssl_social_services[yummly]"
-               value="1" <?php checked($yummly, "1"); ?>/><?php _e("Yummly share button", "really-simple-ssl-soc") ?>
-        <br>
-
-        <?php
-        RSSSL()->rsssl_help->get_help_tip(__("Choose which social services you want to include sharing buttons.", "really-simple-ssl-soc"));
-    }
-
-
     public function get_option_replace_to_http_on_home()
     {
         $replace_to_http_on_home = get_option('rsssl_soc_replace_to_http_on_home');
@@ -363,19 +291,6 @@ class rsssl_soc_admin
         return $tabs;
     }
 
-public function get_option_button_position() {
-  $rsssl_button_position = get_option('rsssl_button_position');
-  ?>
-  <select name="rsssl_button_position">
-    <option value="top" <?php if ($rsssl_button_position=="top") echo "selected"?>>Top
-    <option value="bottom" <?php if ($rsssl_button_position=="bottom") echo "selected"?>>Bottom
-    <option value="both" <?php if ($rsssl_button_position=="both") echo "selected"?>>Both
-  </select>
-  <?php
-  RSSSL()->rsssl_help->get_help_tip(__("Choose where you want to position the share button(s)", "really-simple-ssl-soc"));
-}
-
-
 public function get_option_retrieval_domains() {
   $domains = get_option('rsssl_retrieval_domains');
   $http = isset($domains['http']) ? $domains['http'] : false;
@@ -392,28 +307,46 @@ public function get_option_retrieval_domains() {
   RSSSL()->rsssl_help->get_help_tip(__("Choose which domains you want to retrieve the shares for. Sometimes Facebook returns different shares for www and non www, but sometimes they are the same. Configure accordingly.", "really-simple-ssl-soc"));
 }
 
-public function get_option_social_services() {
-  $services = get_option('rsssl_social_services');
-  $facebook = isset($services['facebook']) ? $services['facebook'] : false;
-  $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
-  $twitter = isset($services['twitter']) ? $services['twitter'] : false;
-  $google = isset($services['google']) ? $services['google'] : false;
-  $pinterest = isset($services['pinterest']) ? $services['pinterest'] : false;
-  $whatsapp = isset($services['whatsapp']) ? $services['whatsapp'] : false;
-  $yummly = isset($services['yummly']) ? $services['yummly'] : false;
+    public function get_option_social_services()
+    {
+        $services = get_option('rsssl_social_services');
+        $facebook = isset($services['facebook']) ? $services['facebook'] : false;
+        $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
+        $twitter = isset($services['twitter']) ? $services['twitter'] : false;
+        $google = isset($services['google']) ? $services['google'] : false;
+        $pinterest = isset($services['pinterest']) ? $services['pinterest'] : false;
+        $whatsapp = isset($services['whatsapp']) ? $services['whatsapp'] : false;
+        $yummly = isset($services['yummly']) ? $services['yummly'] : false;
 
-  ?>
-  <input type="checkbox" name="rsssl_social_services[facebook]" value="1" <?php checked( $facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[linkedin]" value="1" <?php checked( $linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[twitter]" value="1" <?php checked( $twitter, "1"); ?>/><?php _e("Twitter  share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[google]" value="1" <?php checked( $google, "1"); ?>/><?php _e("Google share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[pinterest]" value="1" <?php checked( $pinterest, "1"); ?>/><?php _e("Pinterest share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[whatsapp]" value="1" <?php checked( $whatsapp, "1"); ?>/><?php _e("Whatsapp share button", "really-simple-ssl-soc")?><br>
-  <input type="checkbox" name="rsssl_social_services[yummly]" value="1" <?php checked( $yummly, "1"); ?>/><?php _e("Yummly share button", "really-simple-ssl-soc")?><br>
+        ?>
+        <input type="checkbox" name="rsssl_social_services[facebook]"
+               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[facebook-like]"
+               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[linkedin]"
+               value="1" <?php checked($linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[twitter]"
+               value="1" <?php checked($twitter, "1"); ?>/><?php _e("Twitter  share button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[google]"
+               value="1" <?php checked($google, "1"); ?>/><?php _e("Google share button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[pinterest]"
+               value="1" <?php checked($pinterest, "1"); ?>/><?php _e("Pinterest share button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[whatsapp]"
+               value="1" <?php checked($whatsapp, "1"); ?>/><?php _e("Whatsapp share button", "really-simple-ssl-soc") ?>
+        <br>
+        <input type="checkbox" name="rsssl_social_services[yummly]"
+               value="1" <?php checked($yummly, "1"); ?>/><?php _e("Yummly share button", "really-simple-ssl-soc") ?>
+        <br>
 
-  <?php
-  RSSSL()->rsssl_help->get_help_tip(__("Choose which social services you want to include sharing buttons.", "really-simple-ssl-soc"));
-}
+        <?php
+        RSSSL()->rsssl_help->get_help_tip(__("Choose which social services you want to include sharing buttons.", "really-simple-ssl-soc"));
+    }
 
 
 public function get_option_fb_button_type() {
@@ -427,29 +360,6 @@ public function get_option_fb_button_type() {
   RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
 }
 
-public function get_option_replace_to_http_on_home() {
-  $replace_to_http_on_home = get_option('rsssl_soc_replace_to_http_on_home');
-  echo '<input id="rsssl_soc_replace_to_http_on_home" name="rsssl_soc_replace_to_http_on_home" size="40" type="checkbox" value="1"' . checked( 1, $replace_to_http_on_home, false ) ." />";
-  RSSSL()->rsssl_help->get_help_tip(__("When you enable this, share buttons generated by Really Simple Social will be inserted, which will retrieve likes from both the http and the https domain.", "really-simple-ssl-soc"));
-}
-
-public function get_option_fb_access_token() {
-  $fb_access_token = get_option('rsssl_soc_fb_access_token');
-  echo '<input id="rsssl_soc_fb_access_token" name="rsssl_soc_fb_access_token" size="40" type="text" value="'.$fb_access_token.'" />';
-  //RSSSL()->rsssl_help->get_help_tip(__("To prevent rate limiting you need to create an app in facebook, then copy the user token here: https://developers.facebook.com/tools/accesstoken/", "really-simple-ssl-soc"));
-  echo '<p>'.__('To prevent rate limiting you need to create an app in facebook, then copy the app token which you can find here: https://developers.facebook.com/tools/accesstoken/','really-simple-ssl-soc')."</p>";
-}
-
-public function get_option_rsssl_inline_or_left() {
-  $rsssl_inline_or_left = get_option('rsssl_inline_or_left');
- ?>
-  <select name="rsssl_inline_or_left">
-    <option value="inline" <?php if ($rsssl_inline_or_left=="inline") echo "selected"?>>Inline
-    <option value="left" <?php if ($rsssl_inline_or_left=="left") echo "selected"?>>Left
-  </select>
- <?php
-}
-
 public function get_option_rsssl_use_30_styling() {
   $rsssl_use_30_styling = get_option('rsssl_use_30_styling');
 
@@ -461,11 +371,6 @@ public function get_option_rsssl_use_30_styling() {
     </label>
     <?php
     RSSSL()->rsssl_help->get_help_tip(__("Use the old or new look", "really-simple-ssl-soc"));
-}
-
-public function add_social_tab($tabs){
-  $tabs['social'] = __("Social","really-simple-ssl-pro");
-  return $tabs;
 }
 
     public function plugin_settings_link($links){

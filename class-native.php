@@ -564,16 +564,12 @@ class rsssl_soc_native
 
     public function like_buttons_content_filter($content)
     {
-        error_log("Like buttons content filter");
         if ($this->show_buttons()) {
-            error_log("Show buttons true");
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
             // always when left is enabled.
             if ((is_home() || !is_front_page()) || get_option('rsssl_inline_or_left') == "left") {
-                error_log("is home, geen frontPage en optie is left");
                 $html = $this->generate_like_buttons();
-                error_log("Na generate like buttons");
                 $position = get_option('rsssl_button_position');
 
                 //position depending on setting
