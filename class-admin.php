@@ -156,13 +156,13 @@ class rsssl_soc_admin
             add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares", "really-simple-ssl-soc"), array($this, 'get_option_retrieval_domains'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
 
+            if (get_option("rsssl_inline_or_left") == 'inline') {
+                add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
+            }
+
             add_settings_field('rsssl_share_cache_time', __("Share cache time in hours", "really-simple-ssl-soc"), array($this, 'get_option_share_cache_time'), 'rlrsssl-social', 'rlrsssl_settings');
 
             add_settings_field('id_clear_share_cache', __("Clear share cache", "really-simple-ssl"), array($this, 'get_option_clear_share_cache'), 'rlrsssl-social', 'rlrsssl_settings');
-
-            if (get_option("rsssl_inline_or_left") == 'inline')
-                add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
-
         }
 
     }
@@ -296,7 +296,7 @@ class rsssl_soc_admin
     {
         $share_cache_time = get_option('rsssl_share_cache_time');
         echo '<input id="rsssl_share_cache_time" name="rsssl_share_cache_time" size="40" type="number" min="0" max="24" value="' . $share_cache_time . '" />';
-        RSSSL()->rsssl_help->get_help_tip(__("Set to a value between 1 and 24. Caching the shares will minimize the number of share retrieval request made to the social networks. Not employing caching can result in too many request (rate limiting) and thus shares not showing.", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("Set to a value between 1 and 24. Caching the shares will minimize the number of share retrieval request made to the social networks. Not caching shares can result in too many request (rate limiting) and thus shares not showing. Share counts will automatically update after the amount of time specified", "really-simple-ssl-soc"));
 
     }
 
@@ -361,8 +361,8 @@ class rsssl_soc_admin
     public function get_option_social_services()
     {
         $services = get_option('rsssl_social_services');
-        $facebook_share = isset($services['facebook']) ? $services['facebook'] : false;
-        $facebook_like = isset($services['facebook']) ? $services['facebook'] : false;
+        $facebook = isset($services['facebook']) ? $services['facebook'] : false;
+        //$facebook_like = isset($services['facebook-like']) ? $services['facebook-like'] : false;
         $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
         $twitter = isset($services['twitter']) ? $services['twitter'] : false;
         $google = isset($services['google']) ? $services['google'] : false;
@@ -372,10 +372,10 @@ class rsssl_soc_admin
 
         ?>
         <input type="checkbox" name="rsssl_social_services[facebook]"
-               value="1" <?php checked($facebook_share, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
+               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook share button", "really-simple-ssl-soc") ?>
         <br>
         <input type="checkbox" name="rsssl_social_services[facebook-like]"
-               value="1" <?php checked($facebook_like, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
+               value="1" <?php checked($facebook, "1"); ?>/><?php _e("Facebook like button", "really-simple-ssl-soc") ?>
         <br>
         <input type="checkbox" name="rsssl_social_services[linkedin]"
                value="1" <?php checked($linkedin, "1"); ?>/><?php _e("Linkedin share button", "really-simple-ssl-soc") ?>

@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die("you do not have acces to this page!");
+defined('ABSPATH') or die("you do not have access to this page!");
 
 class rsssl_soc_native
 {
@@ -101,7 +101,7 @@ class rsssl_soc_native
             $url = get_permalink($post_id);
         }
 
-        if ($this->debug) $url = "https://wordpress.com";
+        if ($this->debug) $url = "https://www.wordpress.com";
 
         //make sure the current home_url is https, as this is a really simple ssl add on.
         $url_https = str_replace("http://", "https://", $url);
@@ -661,6 +661,8 @@ class rsssl_soc_native
         $html = "";
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
+            error_log("Service checked");
+            error_log($service);
             if ($service === 'whatsapp' && !wp_is_mobile()) continue;
             $html .= $this->get_button_html($service, $url, $post_id, $title);
         }
