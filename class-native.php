@@ -688,13 +688,14 @@ class rsssl_soc_native
 
             //Str_replace the FB template to either share or like, depending on the configured setting.
             if (get_option('rsssl_fb_button_type') == 'shares') {
-                $html = str_replace("{fb_type}" , "share", $html);
+                $html = str_replace("{like_or_share}" , "share", $html);
+                $html = str_replace("{height}" , "600", $html);
+                $html = str_replace("{width}" , "900", $html);
             } else {
-                $html = str_replace("{fb_type}" , "like", $html);
+                $html = str_replace("{like_or_share}" , "like", $html);
+                $html = str_replace("{height}" , "350", $html);
+                $html = str_replace("{width}" , "450", $html);
             }
-
-            error_log("html in button html");
-            error_log($html);
 
         return $html;
     }

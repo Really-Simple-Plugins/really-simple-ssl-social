@@ -365,8 +365,6 @@ class rsssl_soc_admin
     public function get_option_social_services()
     {
         $services = get_option('rsssl_social_services');
-        error_log("SOCIAL SERVICES");
-        error_log(print_r($services, true));
         $facebook = isset($services['facebook']) ? $services['facebook'] : false;
         $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
         $twitter = isset($services['twitter']) ? $services['twitter'] : false;
