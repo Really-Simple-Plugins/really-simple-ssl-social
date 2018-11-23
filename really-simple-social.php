@@ -26,7 +26,7 @@
      Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-  defined('ABSPATH') or die("you do not have acces to this page!");
+  defined('ABSPATH') or die("you do not have access to this page!");
 
   require_once(ABSPATH.'wp-admin/includes/plugin.php');
   $plugin_data = get_plugin_data( __FILE__ );  define('rsssl_soc_url', plugin_dir_url(__FILE__ ));

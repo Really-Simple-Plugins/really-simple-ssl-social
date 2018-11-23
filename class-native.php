@@ -641,7 +641,6 @@ class rsssl_soc_native
         if (get_option('rsssl_inline_or_left') === "left") {
             $html = str_replace('rsssl_soc', 'rsssl_soc rsssl_left', $html);
         }
-
         return $html;
     }
 
@@ -686,7 +685,7 @@ class rsssl_soc_native
         $html = file_get_contents($file);
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
-            //Str_replace the FB template to either share or like, depending on the configured setting.
+            //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
             if (get_option('rsssl_fb_button_type') == 'shares') {
                 $html = str_replace("{like_or_share}" , "share", $html);
                 $html = str_replace("{height}" , "600", $html);
@@ -696,6 +695,12 @@ class rsssl_soc_native
                 $html = str_replace("{height}" , "350", $html);
                 $html = str_replace("{width}" , "450", $html);
             }
+            //Only replace the label for the 'color-new' and 'dark' themes.
+            if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark')) {
+                $html = str_replace("{label}" , '<span class="rsssl-label">Share</span>', $html);
+            } else {
+                $html = str_replace("{label}", "", $html);
+            }
 
         return $html;
     }
@@ -704,7 +709,11 @@ class rsssl_soc_native
     {
         $version = (strpos(home_url(), "localhost") === false) ? time() : rsssl_soc_version;
 
-        wp_enqueue_style('rsssl_social', plugin_dir_url(__FILE__) . 'assets/css/style.css', array(), $version);
+        $theme = get_option('rsssl_buttons_theme');
+        error_log("Theme");
+        error_log($theme);
+        wp_enqueue_style('rsssl_social_buttons_color', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
+
         wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
         wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.js", array('jquery'), $version, true);
 

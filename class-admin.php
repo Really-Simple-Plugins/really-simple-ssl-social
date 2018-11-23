@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die("you do not have acces to this page!");
+defined('ABSPATH') or die("you do not have access to this page!");
 
 class rsssl_soc_admin
 {
@@ -205,11 +205,18 @@ class rsssl_soc_admin
 
     public function get_option_rsssl_buttons_theme()
     {
-        $rsssl_button_type = get_option('rsssl_buttons_theme');
+        $theme = get_option('rsssl_buttons_theme');
+        $options = array(
+                'color' => __('Color', 'really-simple-ssl-social'),
+                'color-new' => __('Color new', 'really-simple-ssl-social'),
+                'dark' => __('Dark', 'really-simple-ssl-social'),
+                'round' => __('Round', 'really-simple-ssl-social'),
+        );
         ?>
         <select name="rsssl_buttons_theme">
-            <option value="color" <?php if ($rsssl_button_type == "color") echo "selected" ?>><?php _e("Color", "really-simple-ssl-soc"); ?>
-            <option value="blackwhite" <?php if ($rsssl_button_type == "blackwhite") echo "selected" ?>><?php _e("Black and white", "really-simple-ssl-soc"); ?>
+            <?php foreach($options as $key => $name) {?>
+                <option value=<?php echo $key?> <?php if ($theme == $key) echo "selected" ?>><?php echo $name ?>
+            <?php }?>
         </select>
         <?php
         RSSSL()->rsssl_help->get_help_tip(__("Choose the share button theme. The 'Color' theme uses colorfull buttons in the social networks style, while the XXX.", "really-simple-ssl-soc"));

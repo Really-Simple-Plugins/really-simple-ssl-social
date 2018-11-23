@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
 
     $(document).on('click', '.post-share', function (e) {
         console.log("sharing");
-        var container = $(this).find('span');
+        var container = $(this).find('span.rsssl_likes_shares');
 
         var counter = container.html();
         if (counter.indexOf('k') >= 0 || counter.indexOf('m') >= 0) {

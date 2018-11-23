@@ -1,6 +1,8 @@
-<?php defined('ABSPATH') or die("you do not have acces to this page!"); ?>
+<?php defined('ABSPATH') or die("you do not have access to this page!"); ?>
 <a class="post-share pinterest" data-pin-save="false" data-pin-hover="true" data-pin-do="buttonBookmark"
-   data-pin-custom="true" href="https://www.pinterest.com/pin/create/button/">
-    <div class="rsssl_count"><i class="icon-pinterest"></i><span class="rsssl_likes_shares">{shares}<span>
+   data-pin-custom="true"
+   href="#"
+   onClick = "rssslPopupCenter('https://www.pinterest.com/pin/create/button','Pinterest','{width}','{height}'); return false;">
+    <div class="rsssl_count"><i class="icon-pinterest"></i>{label}<span class="rsssl_likes_shares">{shares}</span>
     </div>
 </a>

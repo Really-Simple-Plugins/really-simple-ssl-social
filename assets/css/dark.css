@@ -1,0 +1,85 @@
+.rsssl_soc {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px;
+}
+.rsssl_soc a.post-share {
+  margin-right: 10px;
+  display: flex;
+  width: 50px;
+  height: 50px;
+  float: left;
+  pointer: cursor;
+  background: #3e599a no-repeat 0 0;
+  text-decoration: none;
+  font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+  box-shadow: none;
+}
+.rsssl_soc .rsssl_count {
+  color: #ffffff;
+}
+.rsssl_soc .entry-content a {
+  border: 0;
+}
+.rsssl_soc .rsssl_left {
+  display: inline-block;
+  position: fixed;
+  left: 0;
+  top: 10%;
+  height: 500px;
+  width: 60px;
+  z-index: 10000;
+  padding-bottom: 0px;
+}
+@media screen and (max-width: 480px) {
+  .rsssl_soc {
+    display: flex;
+    flex-grow: 1;
+    margin-bottom: 0px;
+  }
+  .rsssl_soc .rsssl_left {
+    position: fixed;
+    top: auto;
+    height: auto;
+    display: flex;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    z-index: 10000;
+    margin: 0;
+  }
+}
+.rsssl_soc a.post-share {
+  text-overflow: unset;
+  background: #444444 no-repeat;
+  transition: all 0.2s ease-out;
+}
+.rsssl_soc a.post-share:hover {
+  display: block;
+  transition: all 0.2s ease-in;
+  background: #444444 no-repeat;
+  width: 110px;
+}
+.rsssl_soc a.post-share:hover .rsssl_likes_shares {
+  position: relative;
+  display: block;
+  float: right;
+}
+.rsssl_soc i {
+  font-size: 1.4em;
+  margin-left: 11px;
+}
+.rsssl_soc .pinterest {
+  cursor: pointer;
+}
+.rsssl_soc .rsssl_likes_shares {
+  display: none;
+  position: absolute;
+  color: #ffffff;
+}
+.rsssl_soc .rsssl-label {
+  color: #ffffff;
+}
+/*# sourceMappingURL=dark.css.map */

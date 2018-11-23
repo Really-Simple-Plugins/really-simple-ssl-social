@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die("you do not have acces to this page!");
+defined('ABSPATH') or die("you do not have access to this page!");
 if (!defined('REALLY_SIMPLE_SSL_URL')) define( 'REALLY_SIMPLE_SSL_URL', 'https://www.really-simple-ssl.com'); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 define( 'REALLY_SIMPLE_SSL_SOC', 'Really Simple SSL Social' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 

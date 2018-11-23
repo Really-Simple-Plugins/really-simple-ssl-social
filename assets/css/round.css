@@ -1,0 +1,109 @@
+.rsssl_soc a.post-share {
+    margin-right: 45px;
+    width: 35px;
+    height: 35px;
+    pointer: cursor;
+    border-spacing: 5px;
+    position: relative;
+    background: #444444 no-repeat;
+    border-radius: 50%;
+    text-decoration:none;
+    font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    box-shadow: none;
+}
+
+.rsssl_soc a.post-share:after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: #444444 2px solid;
+    border-radius: 50%;
+}
+
+.rsssl_count {
+    color: #fff;
+}
+
+.rsssl_soc {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
+.entry-content a {
+    border: 0;
+}
+
+.rsssl_left {
+    display: inline-block;
+    position: fixed;
+    left: 0;
+    top: 10%;
+    height: 500px;
+    width: 60px;
+    z-index: 10000;
+    padding-bottom: 0px;
+}
+
+@media screen and (max-width: 480px) {
+    .rsssl_left {
+        position: fixed;
+        top: auto;
+        height: auto;
+        display: flex;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        z-index: 10000;
+        margin: 0;
+    }
+    .rsssl_soc {
+        display: flex;
+        flex-grow: 1;
+        margin-bottom: 0px;
+    }
+}
+
+.rsssl_soc a.post-share.facebook:hover {
+    background: #5365ad no-repeat;
+}
+.rsssl_soc a.post-share.linkedin:hover {
+    background: #3f82b5 no-repeat;
+}
+.rsssl_soc a.post-share.twitter:hover {
+    background: #6d9cd1 no-repeat;
+}
+.rsssl_soc a.post-share.gplus:hover {
+    background: #bd5044 no-repeat;
+}
+.rsssl_soc a.post-share.pinterest:hover {
+    background: #cc464f no-repeat;
+}
+.rsssl_soc a.post-share.whatsapp:hover {
+    background: #1ebea5 no-repeat;
+}
+.rsssl_soc a.post-share.yummly:hover {
+    background: #c67453 no-repeat;
+}
+
+
+.rsssl_soc i {
+    font-size: 1.2em;
+    margin-left: 5px;
+}
+
+.rsssl_likes_shares {
+    font-size: 0.8em;
+    position: absolute;
+    margin-left: 15px;
+    color: #444444;
+}
+
+.rsssl_count {
+    margin-top: -5px;
+}
