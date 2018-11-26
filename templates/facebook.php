@@ -3,6 +3,7 @@
     href="#"
     onClick = "rssslPopupCenter('https://www.facebook.com/share.php?u={url}&width&layout=standard&action={like_or_share}&show_faces=true&share=true&height=80','Facebook','{width}','{height}'); return false;">
     <div class="rsssl_count">
+        {color_round}
         <i class="icon-facebook"></i>{label}<span class="rsssl_likes_shares">{shares}</span>
     </div>
 </a>

@@ -3,6 +3,8 @@
    data-pin-custom="true"
    href="#"
    onClick = "rssslPopupCenter('https://www.pinterest.com/pin/create/button','Pinterest','{width}','{height}'); return false;">
-    <div class="rsssl_count"><i class="icon-pinterest"></i>{label}<span class="rsssl_likes_shares">{shares}</span>
+    <div class="rsssl_count">
+        {color_round}
+        <i class="icon-pinterest"></i>{label}<span class="rsssl_likes_shares">{shares}</span>
     </div>
 </a>

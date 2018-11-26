@@ -56,6 +56,20 @@
     }
 }
 
+/*Handle linkedin icon/likes_shares div differently due to different dimensions. It's wider and less wide than the other icons.*/
+.rsssl_soc i.icon-linkedin {
+    position: absolute;
+    margin-top: -3px;
+}
+
+.rsssl_soc a.post-share.linkedin .rsssl_likes_shares {
+    margin-left: 35px;
+}
+.rsssl_soc a.post-share {
+    width: 60px;
+    margin-right: 10px;
+}
+
 .rsssl_soc a.post-share.facebook {
     background: #3e599a no-repeat;
 }
@@ -102,9 +116,6 @@
 .rsssl_soc i {
     font-size: 1.4em;
     margin-left: 5px;
-}
-.rsssl_soc i.icon-linkedin {
-    /*margin-bottom: 5px;*/
 }
 
 .rsssl_likes_shares {

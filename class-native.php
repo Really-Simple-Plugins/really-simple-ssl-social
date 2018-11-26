@@ -701,6 +701,11 @@ class rsssl_soc_native
             } else {
                 $html = str_replace("{label}", "", $html);
             }
+            //And insert a div for the new color theme
+            if (get_option('rsssl_buttons_theme') === 'color-new') {
+                $html = str_replace('{color_round}' , '<div class="rsssl-color-round"></div>' , $html);
+            } else
+                $html = str_replace('{color_round}' , "" , $html);
 
         return $html;
     }
