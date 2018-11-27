@@ -163,7 +163,7 @@ class rsssl_soc_admin
 
             add_settings_field('id_use_custom_css', __("Use custom CSS", "really-simple-ssl-soc"), array($this, 'get_option_use_custom_css'), 'rlrsssl-social', 'rlrsssl_settings');
 
-            if (get_option("rsssl_inline_or_left") == 'inline') {
+            if ((get_option("rsssl_buttons_theme") == 'color') || (get_option("rsssl_buttons_theme") == 'color-new') || (get_option("rsssl_buttons_theme") == 'dark') || (get_option("rsssl_buttons_theme") == 'round')) {
                 add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
             }
 

@@ -40,7 +40,6 @@ jQuery(document).ready(function ($) {
         if (isNaN(counter) || counter == '') counter = 0;
         counter++;
         container.html(counter);
-        console.log(counter);
 
         //now, clear the share cache for this url
         var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
@@ -84,5 +83,5 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    rsssl_soc_get_likes();
+    //rsssl_soc_get_likes();
 });

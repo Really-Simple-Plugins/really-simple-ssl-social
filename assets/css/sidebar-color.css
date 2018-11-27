@@ -1,0 +1,125 @@
+.rsssl_soc a.post-share {
+    display: flex;
+    min-width: 45px;
+    height: 45px;
+    float: left;
+    pointer: cursor;
+    background: #3e599a no-repeat 0 0;
+    text-decoration:none;
+    font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    box-shadow: none;
+}
+
+.rsssl_count {
+    color: #fff;
+}
+
+.rsssl_soc {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
+.entry-content a {
+    border: 0;
+}
+
+.rsssl_left {
+    display: inline-block;
+    position: fixed;
+    left: 0;
+    top: 10%;
+    height: 500px;
+    width: 60px;
+    z-index: 10000;
+    padding-bottom: 0px;
+}
+
+@media screen and (max-width: 480px) {
+    .rsssl_left {
+        position: fixed;
+        top: auto;
+        height: auto;
+        display: flex;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        z-index: 10000;
+        margin: 0;
+    }
+    .rsssl_soc {
+        display: flex;
+        flex-grow: 1;
+        margin-bottom: 0px;
+    }
+}
+
+/*Handle linkedin icon/likes_shares div differently due to different dimensions. It's wider and less wide than the other icons.*/
+.rsssl_soc i.icon-linkedin {
+    position: absolute;
+    margin-top: -3px;
+}
+
+.rsssl_soc a.post-share.linkedin .rsssl_likes_shares {
+    margin-left: 35px;
+}
+.rsssl_soc a.post-share {
+    width: 60px;
+    margin-right: 10px;
+}
+
+.rsssl_soc a.post-share.facebook {
+    background: #3e599a no-repeat;
+}
+.rsssl_soc a.post-share.facebook:hover {
+    background: #5365ad no-repeat;
+}
+.rsssl_soc a.post-share.twitter {
+    background: #4b8cbe no-repeat;
+}
+.rsssl_soc a.post-share.twitter:hover {
+    background: #6d9cd1 no-repeat;
+}
+.rsssl_soc a.post-share.linkedin {
+    background: #007bb5 no-repeat;
+}
+.rsssl_soc a.post-share.linkedin:hover {
+    background: #3f82b5 no-repeat;
+}
+.rsssl_soc a.post-share.gplus {
+    background: #b8382e no-repeat;
+}
+.rsssl_soc a.post-share.gplus:hover {
+    background: #bd5044 no-repeat;
+}
+.rsssl_soc a.post-share.pinterest {
+    background: #bd081c no-repeat;
+}
+.rsssl_soc a.post-share.pinterest:hover {
+    background: #cc464f no-repeat;
+}
+.rsssl_soc a.post-share.whatsapp {
+    background: #57be53 no-repeat;
+}
+.rsssl_soc a.post-share.whatsapp:hover {
+    background: #1ebea5 no-repeat;
+}
+.rsssl_soc a.post-share.yummly {
+    background: #df6131 no-repeat;
+}
+.rsssl_soc a.post-share.yummly:hover {
+    background: #c67453 no-repeat;
+}
+
+.rsssl_soc i {
+    font-size: 1.4em;
+    margin-left: 5px;
+}
+
+.rsssl_likes_shares {
+    position: absolute;
+    font-size: 0.8em;
+    margin-left: -3px;
+}

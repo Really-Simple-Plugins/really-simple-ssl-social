@@ -78,11 +78,16 @@ class rsssl_soc_native
         $this->yummly = (isset($services['yummly']) && $services['yummly']) ? true : false;
 
     }
-    /*
+
+
+    /**
+     *
      * if the type is passed, only retrieve shares for this type
      *
-     *
-     * */
+     * @param int $post_id
+     * @param bool $type
+     * @return array shares
+     */
 
 
     public function get_likes($post_id, $type = false)
@@ -93,7 +98,6 @@ class rsssl_soc_native
         $linkedin = $type ? $type === 'linkedin' : $this->linkedin;
         $pinterest = $type ? $type === 'pinterest' : $this->pinterest;
         $yummly = $type ? $type === 'yummly' : $this->yummly;
-
 
         if ($post_id == 0) {
             $url = home_url();
@@ -180,7 +184,7 @@ class rsssl_soc_native
             if ($get_httpswww) $yummly_likes += $this->retrieve_yummly_likes($url_httpswww);
         }
 
-        $out = array(
+        $shares = array(
             'facebook' => $this->convert_nr($fb_likes),
             'twitter' => $this->convert_nr($twitter_likes),
             'gplus' => $this->convert_nr($google_likes),
@@ -188,9 +192,8 @@ class rsssl_soc_native
             'pinterest' => $this->convert_nr($pinterest_likes),
             'yummly' => $this->convert_nr($yummly_likes),
         );
-        die(json_encode($out));
 
-
+        return $shares;
     }
 
 
@@ -575,8 +578,8 @@ class rsssl_soc_native
         if ($this->show_buttons()) {
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
-            // always when left is enabled.
-            if ((is_home() || !is_front_page()) || get_option('rsssl_inline_or_left') == "left") {
+            // always when a sidebar theme is used
+            //if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
                 $html = $this->generate_like_buttons();
                 $position = get_option('rsssl_button_position');
 
@@ -589,7 +592,7 @@ class rsssl_soc_native
                     $content = $html . $content;
                 }
 
-            }
+            //}
         }
 
         return $content;
@@ -634,7 +637,9 @@ class rsssl_soc_native
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
-        $html = file_get_contents($file);
+        ob_start();
+        require $file;
+        $html = ob_get_clean();
 
         $button_html = $this->get_buttons();
         $html = str_replace('{buttons}', $button_html, $html);
@@ -660,8 +665,10 @@ class rsssl_soc_native
         $html = "";
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
-            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
+//            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
             $html .= $this->get_button_html($service, $url, $post_id, $title);
+            error_log($post_id);
+            error_log(print_r($html,true));
         }
 
         return $html;
@@ -679,10 +686,15 @@ class rsssl_soc_native
         $file = rsssl_soc_path . "templates/$service.php";
         $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$service.php";
         $shares = $this->get_cached_likes_total($service, $post_id);
+        error_log(print_r($shares, true));
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
-        $html = file_get_contents($file);
+
+        ob_start();
+        require $file;
+        $html = ob_get_clean();
+
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
             //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
@@ -715,8 +727,7 @@ class rsssl_soc_native
         $version = (strpos(home_url(), "localhost") === false) ? time() : rsssl_soc_version;
 
         $theme = get_option('rsssl_buttons_theme');
-        error_log("Theme");
-        error_log($theme);
+
         wp_enqueue_style('rsssl_social_buttons_color', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
 
         wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
