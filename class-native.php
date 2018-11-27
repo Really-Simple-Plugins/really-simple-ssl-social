@@ -697,7 +697,7 @@ class rsssl_soc_native
             }
             //Only replace the label for the 'color-new' and 'dark' themes.
             if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark')) {
-                $html = str_replace("{label}" , '<span class="rsssl-label">Share</span>', $html);
+                $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
             } else {
                 $html = str_replace("{label}", "", $html);
             }

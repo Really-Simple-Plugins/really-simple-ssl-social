@@ -2,12 +2,13 @@
   display: flex;
   justify-content: center;
   padding-bottom: 15px;
+  /*Handle linkedin icon differently due to different dimensions. It's wider and less wide than the other icons.*/
 }
 .rsssl_soc a.post-share {
   margin-right: 10px;
   display: flex;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   float: left;
   pointer: cursor;
   background: #3e599a no-repeat 0 0;
@@ -17,39 +18,11 @@
 }
 .rsssl_soc .rsssl_count {
   color: #ffffff;
+  overflow: hidden;
+  margin-top: -3px;
 }
 .rsssl_soc .entry-content a {
   border: 0;
-}
-.rsssl_soc .rsssl_left {
-  display: inline-block;
-  position: fixed;
-  left: 0;
-  top: 10%;
-  height: 500px;
-  width: 60px;
-  z-index: 10000;
-  padding-bottom: 0px;
-}
-@media screen and (max-width: 480px) {
-  .rsssl_soc {
-    display: flex;
-    flex-grow: 1;
-    margin-bottom: 0px;
-  }
-  .rsssl_soc .rsssl_left {
-    position: fixed;
-    top: auto;
-    height: auto;
-    display: flex;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-width: 100%;
-    z-index: 10000;
-    margin: 0;
-  }
 }
 .rsssl_soc a.post-share {
   text-overflow: unset;
@@ -65,18 +38,18 @@
 }
 .rsssl_soc a.post-share:hover .rsssl_likes_shares {
   font-size: 0.9em;
-  margin-top: 3px;
-  margin-right: 5px;
+  margin-right: 15px;
   position: relative;
   display: block;
   float: right;
 }
 .rsssl_soc i {
   font-size: 1.4em;
-  margin-left: 11px;
+  margin-left: 5px;
+  float: left;
 }
-.rsssl_soc .pinterest {
-  cursor: pointer;
+.rsssl_soc .icon-linkedin {
+  margin-top: -3px;
 }
 .rsssl_soc .rsssl_likes_shares {
   display: none;

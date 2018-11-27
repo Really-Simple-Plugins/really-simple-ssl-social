@@ -220,6 +220,8 @@ class rsssl_soc_admin
                 'color-new' => __('Color new', 'really-simple-ssl-social'),
                 'dark' => __('Dark', 'really-simple-ssl-social'),
                 'round' => __('Round', 'really-simple-ssl-social'),
+                'sidebar-color' => __('Sidebar color', 'really-simple-ssl-social'),
+                'sidebar-dark' => __('Sidebar dark', 'really-simple-ssl-social'),
         );
         ?>
         <select name="rsssl_buttons_theme">

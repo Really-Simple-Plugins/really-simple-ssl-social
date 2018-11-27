@@ -10,6 +10,10 @@
     box-shadow: none;
 }
 
+.rsssl_soc a.post-share:hover {
+    opacity: 0.85;
+}
+
 .rsssl_count {
     color: #fff;
     margin-top: -10px;
@@ -109,17 +113,17 @@
 }
 
 .rsssl_likes_shares {
-    font-size: 1.3em;
-    position: absolute;
-    margin-left: 38px;
-    margin-top: -1px;
+    font-size: 1.2em;
+    float: right;
+    margin-right: 8px;
 }
 
 .rsssl-label {
+    float: left;
     position: absolute;
-    margin-top: -1px;
+    /*margin-top: -1px;*/
     font-size: 1.3em;
-    margin-left: 3px;
+    margin-left: 5px;
 }
 
 .rsssl-color-round {

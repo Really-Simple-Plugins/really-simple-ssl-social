@@ -37,38 +37,6 @@
     border: 0;
 }
 
-.rsssl_left {
-    display: inline-block;
-    position: fixed;
-    left: 0;
-    top: 10%;
-    height: 500px;
-    width: 60px;
-    z-index: 10000;
-    padding-bottom: 0px;
-}
-
-@media screen and (max-width: 480px) {
-    .rsssl_left {
-        position: fixed;
-        top: auto;
-        height: auto;
-        display: flex;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        max-width: 100%;
-        z-index: 10000;
-        margin: 0;
-    }
-    .rsssl_soc {
-        display: flex;
-        flex-grow: 1;
-        margin-bottom: 0px;
-    }
-}
-
 .rsssl_soc a.post-share.facebook:hover {
     background: #5365ad no-repeat;
 }
@@ -98,6 +66,7 @@
 }
 
 .rsssl_likes_shares {
+    font-weight: 500;
     font-size: 0.8em;
     position: absolute;
     margin-left: 15px;
