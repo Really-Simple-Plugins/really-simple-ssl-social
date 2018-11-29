@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die("you do not have acces to this page!");
+defined('ABSPATH') or die("you do not have access to this page!");
 
 class rsssl_soc_admin
 {
@@ -149,6 +149,7 @@ class rsssl_soc_admin
             register_setting('rlrsssl_social_options', 'rsssl_fb_button_type', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_inline_or_left', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_share_cache_time', array($this, 'options_validate'));
+            register_setting('rlrsssl_social_options', 'rsssl_soc_use_custom_css', array($this, 'options_validate_boolean'));
 
             add_settings_field('rsssl_buttons_theme', __("Share buttons theme", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_buttons_theme'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_social_services', __("Social services you want to use", "really-simple-ssl-soc"), array($this, 'get_option_social_services'), 'rlrsssl-social', 'rlrsssl_settings');
@@ -160,7 +161,9 @@ class rsssl_soc_admin
             add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares", "really-simple-ssl-soc"), array($this, 'get_option_retrieval_domains'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
 
-            if (get_option("rsssl_inline_or_left") == 'inline') {
+            add_settings_field('id_use_custom_css', __("Use custom CSS", "really-simple-ssl-soc"), array($this, 'get_option_use_custom_css'), 'rlrsssl-social', 'rlrsssl_settings');
+
+            if ((get_option("rsssl_buttons_theme") == 'color') || (get_option("rsssl_buttons_theme") == 'color-new') || (get_option("rsssl_buttons_theme") == 'dark') || (get_option("rsssl_buttons_theme") == 'round')) {
                 add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
             }
 
@@ -188,6 +191,12 @@ class rsssl_soc_admin
 
     }
 
+    public function enqueue_assets()
+    {
+        wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
+
+    }
+
     public function get_option_button_type()
     {
         $rsssl_button_type = get_option('rsssl_button_type');
@@ -205,11 +214,20 @@ class rsssl_soc_admin
 
     public function get_option_rsssl_buttons_theme()
     {
-        $rsssl_button_type = get_option('rsssl_buttons_theme');
+        $theme = get_option('rsssl_buttons_theme');
+        $options = array(
+                'color' => __('Color', 'really-simple-ssl-social'),
+                'color-new' => __('Color new', 'really-simple-ssl-social'),
+                'dark' => __('Dark', 'really-simple-ssl-social'),
+                'round' => __('Round', 'really-simple-ssl-social'),
+                'sidebar-color' => __('Sidebar color', 'really-simple-ssl-social'),
+                'sidebar-dark' => __('Sidebar dark', 'really-simple-ssl-social'),
+        );
         ?>
         <select name="rsssl_buttons_theme">
-            <option value="color" <?php if ($rsssl_button_type == "color") echo "selected" ?>><?php _e("Color", "really-simple-ssl-soc"); ?>
-            <option value="blackwhite" <?php if ($rsssl_button_type == "blackwhite") echo "selected" ?>><?php _e("Black and white", "really-simple-ssl-soc"); ?>
+            <?php foreach($options as $key => $name) {?>
+                <option value=<?php echo $key?> <?php if ($theme == $key) echo "selected" ?>><?php echo $name ?>
+            <?php }?>
         </select>
         <?php
         RSSSL()->rsssl_help->get_help_tip(__("Choose the share button theme. The 'Color' theme uses colorfull buttons in the social networks style, while the XXX.", "really-simple-ssl-soc"));
@@ -223,13 +241,6 @@ class rsssl_soc_admin
         echo '<input id="rsssl_soc_start_date_ssl" name="rsssl_soc_start_date_ssl" size="40" type="date" value="' . $start_date_social . '" />';
         RSSSL()->rsssl_help->get_help_tip(__("Enter the date on which you switched over to https. You can use the date format you use in the general WordPress settings.", "really-simple-ssl-soc"));
     }
-
-//    public function get_option_insert_custom_buttons()
-//    {
-//        $insert_custom_buttons = get_option('rsssl_insert_custom_buttons');
-//        echo '<input id="rsssl_insert_custom_buttons" name="rsssl_insert_custom_buttons" size="40" type="checkbox" value="1"' . checked(1, $insert_custom_buttons, false) . " />";
-//        RSSSL()->rsssl_help->get_help_tip(__("Enable to use the built in share buttons that retrieve the shares for both http and https domain. To get the sharecounts for Twitter, you can register at http://opensharecount.com/.", "really-simple-ssl-soc"));
-//    }
 
     public function get_option_buttons_on_post_types()
     {
@@ -290,7 +301,9 @@ class rsssl_soc_admin
         ?>
         <select name="rsssl_inline_or_left">
             <option value="inline" <?php if ($rsssl_inline_or_left == "inline") echo "selected" ?>>Inline
-            <option value="left" <?php if ($rsssl_inline_or_left == "left") echo "selected" ?>>Left
+            <?php if (get_option('rsssl_buttons_theme') === 'color') { ?>
+                <option value="left" <?php if ($rsssl_inline_or_left == "left") echo "selected" ?>>Left
+             <?php } ?>
         </select>
         <?php
         RSSSL()->rsssl_help->get_help_tip(__("Show the buttons inline (at the top, bottom or both) in pages posts, or show buttons as a sidebar on the left side of your page.", "really-simple-ssl-soc"));
@@ -365,8 +378,6 @@ class rsssl_soc_admin
     public function get_option_social_services()
     {
         $services = get_option('rsssl_social_services');
-        error_log("SOCIAL SERVICES");
-        error_log(print_r($services, true));
         $facebook = isset($services['facebook']) ? $services['facebook'] : false;
         $linkedin = isset($services['linkedin']) ? $services['linkedin'] : false;
         $twitter = isset($services['twitter']) ? $services['twitter'] : false;
@@ -414,12 +425,42 @@ class rsssl_soc_admin
       RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
     }
 
+    public function get_option_use_custom_css()
+    {
+        $rsssl_soc_use_custom_css = get_option('rsssl_soc_use_custom_css');
+        echo '<input id="rsssl_soc_use_custom_css" name="rsssl_soc_use_custom_css" size="40" type="checkbox" value="1"' . checked(1, $rsssl_soc_use_custom_css, false) . " />";
+        RSSSL()->rsssl_help->get_help_tip(__("When you enable this, share buttons generated by Really Simple Social will be inserted, which will retrieve likes from both the http and the https domain.", "really-simple-ssl-soc"));
+    }
+
     public function plugin_settings_link($links){
 
         $settings_link = '<a href="' . admin_url("options-general.php?page=rlrsssl_really_simple_ssl&tab=social") . '">' . __("Settings", "really-simple-ssl") . '</a>';
         array_unshift($links, $settings_link);
 
         return $links;
+    }
+
+    public
+    function css()
+    {
+        $fieldname = "editor";
+    ?>
+        <script>
+            var <?php echo esc_html($fieldname)?> =
+            ace.edit("<?php echo esc_html($fieldname)?>editor");
+            <?php echo esc_html($fieldname)?>.setTheme("ace/theme/monokai");
+            <?php echo esc_html($fieldname)?>.session.setMode("ace/mode/css");
+            jQuery(document).ready(function ($) {
+                var textarea = $('textarea[name="<?php echo esc_html($fieldname)?>"]');
+                <?php echo esc_html($fieldname)?>.
+                getSession().on("change", function () {
+                    textarea.val(<?php echo esc_html($fieldname)?>.getSession().getValue()
+                )
+                });
+            });
+        </script>
+        <textarea style="display:none" name="<?php echo esc_html($fieldname) ?>"><?php echo $fieldname ?></textarea>
+        <?php
     }
 
     /**

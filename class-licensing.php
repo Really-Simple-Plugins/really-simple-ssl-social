@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die("you do not have acces to this page!");
+defined('ABSPATH') or die("you do not have access to this page!");
 if (!defined('REALLY_SIMPLE_SSL_URL')) define( 'REALLY_SIMPLE_SSL_URL', 'https://www.really-simple-ssl.com'); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 define( 'REALLY_SIMPLE_SSL_SOC', 'Really Simple SSL Social' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 
@@ -36,6 +36,10 @@ static function this() {
 }
 
 public function show_notice_license(){
+//prevent showing the review on edit screen, as gutenberg removes the class which makes it editable.
+$screen = get_current_screen();
+if ( $screen->parent_base === 'edit' ) return;
+
 add_action('admin_print_footer_scripts', array($this, 'dismiss_license_notice_script'));
  $dismissed	= get_option('rsssl_soc_license_notice_dismissed');
  if (!$this->license_is_valid() && !$dismissed) { ?>
@@ -89,6 +93,10 @@ public function dismiss_license_notice_script() {
 
 
 public function show_multisite_notice_license(){
+//prevent showing the review on edit screen, as gutenberg removes the class which makes it editable.
+$screen = get_current_screen();
+if ( $screen->parent_base === 'edit' ) return;
+
 	if (is_multisite()) { ?>
  	<?php if (is_main_site(get_current_blog_id()) && !$this->license_is_valid()) { ?>
 

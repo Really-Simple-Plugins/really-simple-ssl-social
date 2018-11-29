@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
 
     $(document).on('click', '.post-share', function (e) {
         console.log("sharing");
-        var container = $(this).find('span');
+        var container = $(this).find('span.rsssl_likes_shares');
 
         var counter = container.html();
         if (counter.indexOf('k') >= 0 || counter.indexOf('m') >= 0) {
@@ -40,7 +40,6 @@ jQuery(document).ready(function ($) {
         if (isNaN(counter) || counter == '') counter = 0;
         counter++;
         container.html(counter);
-        console.log(counter);
 
         //now, clear the share cache for this url
         var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
@@ -84,5 +83,5 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    rsssl_soc_get_likes();
+    //rsssl_soc_get_likes();
 });

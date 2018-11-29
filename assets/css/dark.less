@@ -1,0 +1,69 @@
+.rsssl_soc {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px;
+
+  a.post-share {
+    margin-right: 10px;
+    display: flex;
+    width: 40px;
+    height: 40px;
+    float: left;
+    pointer: cursor;
+    background: #3e599a no-repeat 0 0;
+    text-decoration: none;
+    font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    box-shadow: none;
+  }
+
+  .rsssl_count {
+    color: #ffffff;
+    overflow: hidden;
+    margin-top: -3px;
+  }
+
+  .entry-content a {
+    border: 0;
+  }
+
+  a.post-share {
+    text-overflow: unset;
+    background: #444444 no-repeat;
+    transition: all 0.2s ease-out;
+  }
+  a.post-share:hover {
+    display: block;
+    transition: all 0.2s ease-in;
+    background: #444444 no-repeat;
+    width: 120px;
+    overflow: hidden;
+    .rsssl_likes_shares{
+      font-size: 0.9em;
+      margin-right: 15px;
+      position: relative;
+      display:block;
+      float: right;
+    }
+  }
+
+  i {
+      font-size: 1.4em;
+      margin-left: 5px;
+      float: left;
+  }
+
+  /*Handle linkedin icon differently due to different dimensions. It's wider and less wide than the other icons.*/
+  .icon-linkedin {
+    margin-top: -3px;
+  }
+
+  .rsssl_likes_shares {
+    display:none;
+    position: absolute;
+    color: #ffffff;
+  }
+
+  .rsssl-label {
+    color: #ffffff;
+  }
+}
