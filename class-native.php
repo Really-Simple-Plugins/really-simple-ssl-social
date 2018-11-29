@@ -579,7 +579,7 @@ class rsssl_soc_native
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
             // always when a sidebar theme is used
-            //if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
+            if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
                 $html = $this->generate_like_buttons();
                 $position = get_option('rsssl_button_position');
 
@@ -592,7 +592,7 @@ class rsssl_soc_native
                     $content = $html . $content;
                 }
 
-            //}
+            }
         }
 
         return $content;
@@ -643,9 +643,6 @@ class rsssl_soc_native
 
         $button_html = $this->get_buttons();
         $html = str_replace('{buttons}', $button_html, $html);
-        if (get_option('rsssl_inline_or_left') === "left") {
-            $html = str_replace('rsssl_soc', 'rsssl_soc rsssl_left', $html);
-        }
         return $html;
     }
 
@@ -708,7 +705,7 @@ class rsssl_soc_native
                 $html = str_replace("{width}" , "450", $html);
             }
             //Only replace the label for the 'color-new' and 'dark' themes.
-            if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark')) {
+            if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
                 $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
             } else {
                 $html = str_replace("{label}", "", $html);

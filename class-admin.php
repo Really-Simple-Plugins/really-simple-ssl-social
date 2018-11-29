@@ -34,7 +34,7 @@ class rsssl_soc_admin
     }
 
 
-    /*set the date to an inital value of today. */
+    /*set the date to an initial value of today. */
 
     public function install()
     {
@@ -43,6 +43,8 @@ class rsssl_soc_admin
             update_option("rsssl_soc_startdate", date(get_option('date_format')));
         }
 
+        //Set the default share cache time in hours
+        update_option('rsssl_share_cache_time' , '24');
 
         $rsssl_buttons_on_post_types = array('post' => true, 'page' => true);
         update_option("rsssl_buttons_on_post_types", $rsssl_buttons_on_post_types);
@@ -147,7 +149,7 @@ class rsssl_soc_admin
             register_setting('rlrsssl_social_options', 'rsssl_retrieval_domains', array($this, 'options_validate_boolean_array'));
             register_setting('rlrsssl_social_options', 'rsssl_social_services', array($this, 'options_validate_boolean_array'));
             register_setting('rlrsssl_social_options', 'rsssl_fb_button_type', array($this, 'options_validate'));
-            register_setting('rlrsssl_social_options', 'rsssl_inline_or_left', array($this, 'options_validate'));
+            //register_setting('rlrsssl_social_options', 'rsssl_inline_or_left', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_share_cache_time', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_soc_use_custom_css', array($this, 'options_validate_boolean'));
 
@@ -159,7 +161,7 @@ class rsssl_soc_admin
             add_settings_field('rsssl_fb_access_token', __("Facebook app token", "really-simple-ssl-soc"), array($this, 'get_option_fb_access_token'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_buttons_on_post_types', __("Which posttypes to use the buttons on", "really-simple-ssl-soc"), array($this, 'get_option_buttons_on_post_types'), 'rlrsssl-social', 'rlrsssl_settings');
             add_settings_field('rsssl_retrieval_domains', __("Domains to retrieve shares", "really-simple-ssl-soc"), array($this, 'get_option_retrieval_domains'), 'rlrsssl-social', 'rlrsssl_settings');
-            add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
+            //add_settings_field('rsssl_inline_or_left', __("Show buttons inline or as left sidebar", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_inline_or_left'), 'rlrsssl-social', 'rlrsssl_settings');
 
             add_settings_field('id_use_custom_css', __("Use custom CSS", "really-simple-ssl-soc"), array($this, 'get_option_use_custom_css'), 'rlrsssl-social', 'rlrsssl_settings');
 
@@ -291,22 +293,6 @@ class rsssl_soc_admin
         echo '<input id="rsssl_soc_fb_access_token" name="rsssl_soc_fb_access_token" size="40" type="text" value="' . $fb_access_token . '" />';
         //RSSSL()->rsssl_help->get_help_tip(__("To prevent rate limiting you need to create an app in facebook, then copy the user token here: https://developers.facebook.com/tools/accesstoken/", "really-simple-ssl-soc"));
         echo '<p>' . __('To prevent rate limiting you need to create an app in facebook, then copy the app token which you can find here: https://developers.facebook.com/tools/accesstoken/', 'really-simple-ssl-soc') . "</p>";
-    }
-
-
-
-    public function get_option_rsssl_inline_or_left()
-    {
-        $rsssl_inline_or_left = get_option('rsssl_inline_or_left');
-        ?>
-        <select name="rsssl_inline_or_left">
-            <option value="inline" <?php if ($rsssl_inline_or_left == "inline") echo "selected" ?>>Inline
-            <?php if (get_option('rsssl_buttons_theme') === 'color') { ?>
-                <option value="left" <?php if ($rsssl_inline_or_left == "left") echo "selected" ?>>Left
-             <?php } ?>
-        </select>
-        <?php
-        RSSSL()->rsssl_help->get_help_tip(__("Show the buttons inline (at the top, bottom or both) in pages posts, or show buttons as a sidebar on the left side of your page.", "really-simple-ssl-soc"));
     }
 
     public function get_option_share_cache_time()

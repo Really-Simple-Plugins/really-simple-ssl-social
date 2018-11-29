@@ -18,7 +18,7 @@
     text-decoration:none;
     font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
     box-shadow: none;
-    /*text-overflow: unset;*/
+    background: #444444 no-repeat;
     transition: all 0.2s ease-out;
     overflow: hidden;
 }
@@ -78,49 +78,6 @@
         flex-grow: 1;
         margin-bottom: 0px;
     }
-}
-
-.rsssl_soc a.post-share.facebook {
-    background: #3e599a no-repeat;
-}
-.rsssl_soc a.post-share.facebook:hover {
-    background: #5365ad no-repeat;
-}
-.rsssl_soc a.post-share.twitter {
-    background: #4b8cbe no-repeat;
-}
-.rsssl_soc a.post-share.twitter:hover {
-    background: #6d9cd1 no-repeat;
-}
-.rsssl_soc a.post-share.linkedin {
-    background: #007bb5 no-repeat;
-}
-.rsssl_soc a.post-share.linkedin:hover {
-    background: #3f82b5 no-repeat;
-}
-.rsssl_soc a.post-share.gplus {
-    background: #b8382e no-repeat;
-}
-.rsssl_soc a.post-share.gplus:hover {
-    background: #bd5044 no-repeat;
-}
-.rsssl_soc a.post-share.pinterest {
-    background: #bd081c no-repeat;
-}
-.rsssl_soc a.post-share.pinterest:hover {
-    background: #cc464f no-repeat;
-}
-.rsssl_soc a.post-share.whatsapp {
-    background: #57be53 no-repeat;
-}
-.rsssl_soc a.post-share.whatsapp:hover {
-    background: #1ebea5 no-repeat;
-}
-.rsssl_soc a.post-share.yummly {
-    background: #df6131 no-repeat;
-}
-.rsssl_soc a.post-share.yummly:hover {
-    background: #c67453 no-repeat;
 }
 
 .rsssl_likes_shares {
