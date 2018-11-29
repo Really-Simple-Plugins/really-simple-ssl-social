@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0 =
+* Tweak: no longer shows notices on Gutenberg edit screen
+
 = 3.0.11 =
 * Fix: preg_url should be replaced by normal
 
