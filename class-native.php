@@ -664,8 +664,6 @@ class rsssl_soc_native
         foreach($services as $service => $checked){
 //            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
             $html .= $this->get_button_html($service, $url, $post_id, $title);
-            error_log($post_id);
-            error_log(print_r($html,true));
         }
 
         return $html;
@@ -683,7 +681,6 @@ class rsssl_soc_native
         $file = rsssl_soc_path . "templates/$service.php";
         $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$service.php";
         $shares = $this->get_cached_likes_total($service, $post_id);
-        error_log(print_r($shares, true));
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
@@ -724,6 +721,10 @@ class rsssl_soc_native
         $version = (strpos(home_url(), "localhost") === false) ? time() : rsssl_soc_version;
 
         $theme = get_option('rsssl_buttons_theme');
+
+        if (is_admin()) {
+            wp_enqueue_style('rsssl_editor_style', plugin_dir_url(__FILE__) . "assets/css/editor.css", array(), $version);
+        }
 
         wp_enqueue_style('rsssl_social_buttons_color', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
 
