@@ -375,6 +375,7 @@ class rsssl_soc_native
         if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww, $post_id);
 
         if ($likes == 0) $likes = "";
+
         return $likes;
 
     }
@@ -461,7 +462,7 @@ class rsssl_soc_native
          }
          $share_cache[$url] = $shares;
          set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
-         return $shares;
+         return intval($shares);
      }
 
     private function retrieve_twitter_likes($url)
@@ -722,13 +723,20 @@ class rsssl_soc_native
 
         $theme = get_option('rsssl_buttons_theme');
 
-        if (is_admin()) {
-            wp_enqueue_style('rsssl_editor_style', plugin_dir_url(__FILE__) . "assets/css/editor.css", array(), $version);
-        }
-
-        wp_enqueue_style('rsssl_social_buttons_color', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
+        wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
 
         wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
+
+        //Add any custom CSS defined in the custom CSS settings section
+        $custom_css = get_option('rsssl_custom_css');
+
+        if ($custom_css) {
+            $custom_css = $this->sanitize_custom_css($custom_css);
+            if (!empty($custom_css)) {
+                wp_add_inline_style('rsssl_social_buttons_style', $custom_css);
+            }
+        }
+
         wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.js", array('jquery'), $version, true);
 
         $url = home_url();
@@ -754,6 +762,14 @@ class rsssl_soc_native
             'use_cache' => $use_cache,
         ));
 
+    }
+
+
+    public function sanitize_custom_css($css)
+    {
+        $css = preg_replace('/\/\*(.|\s)*?\*\//i', '', $css);
+        $css = trim($css);
+        return $css;
     }
 
 

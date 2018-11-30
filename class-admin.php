@@ -200,13 +200,7 @@ class rsssl_soc_admin
     {
         wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
 
-//        if (get_option('get_option_use_custom_css')) {
-//            $custom_css = $this->sanitize_custom_css(cmplz_get_value('custom_css'));
-//            ('sanitized css' . $custom_css);
-//            if (!empty($custom_css)) {
-//                wp_add_inline_style('rsssl-social', $custom_css);
-//            }
-//        }
+
 
     }
 
@@ -450,9 +444,6 @@ class rsssl_soc_admin
 
     public function get_option_rsssl_custom_css()
     {
-        error_log("show custom css");
-       // if (get_option('rsssl_use_custom_css')) {
-            error_log("custom css is true");
             ?>
             <div id="rsssl_custom_csseditor"
                               style="height: 200px; width: 100%"><?php echo get_option('rsssl_custom_css') ?></div>
@@ -472,7 +463,6 @@ class rsssl_soc_admin
             </script>
             <textarea style="display:none" name="rsssl_custom_css"><?php echo get_option('rsssl_custom_css') ?></textarea>
             <?php
-        //}
     }
 
     public function plugin_settings_link($links){
@@ -483,13 +473,6 @@ class rsssl_soc_admin
         return $links;
     }
 
-
-    public function sanitize_custom_css($css)
-    {
-        $css = preg_replace('/\/\*(.|\s)*?\*\//i', '', $css);
-        $css = trim($css);
-        return $css;
-    }
 
     /**
      * Insert some explanation above the form
