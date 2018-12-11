@@ -10,7 +10,7 @@ class rsssl_soc_native
     public $google;
     public $pinterest;
     public $yummly;
-    public $debug = false;
+    public $debug = true;
 
     function __construct()
     {
@@ -381,8 +381,9 @@ class rsssl_soc_native
     }
 
     private function get_cached_likes($type, $url, $post_id){
-
+        if ($this->debug) $url = "https://www.wordpress.com";
         $share_cache = get_transient("rsssl_" . $type . "_shares");
+
         if (!$share_cache || !isset($share_cache[$url])) {
             $this->get_likes($post_id, $type);
 
@@ -429,6 +430,7 @@ class rsssl_soc_native
     private function convert_nr($nr)
     {
 
+
         if ($nr >= 1000000) {
             return round($nr / 1000000, 1) . "m";
         }
@@ -462,6 +464,7 @@ class rsssl_soc_native
          }
          $share_cache[$url] = $shares;
          set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
+
          return intval($shares);
      }
 
@@ -689,7 +692,6 @@ class rsssl_soc_native
         ob_start();
         require $file;
         $html = ob_get_clean();
-
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
             //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
@@ -800,5 +802,21 @@ class rsssl_soc_native
         return ob_get_clean();
     }
 
+    public function show_native_widgets()
+    {
+    ?>
+        <!-- Load Facebook SDK for JavaScript -->
+
+        <script src="//connect.facebook.net/en_US/all.js#xfbml=1"></script>
+         <br><br>
+         <!-- Your share button code -->
+         <div class="fb-share-button"
+          data-href="<?php echo $domain?>"
+          data-layout="button_count">
+        </div>
+
+        <div class="fb-like" data-href="<?php echo $domain?>" data-layout="box_count" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+        <?php
+    }
 
 }//class closure
