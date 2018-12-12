@@ -35,6 +35,10 @@ class rsssl_soc_native
         add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10, 3);
         add_action('plugins_loaded', array($this, 'initialize'));
 
+        //if (get_option('rsssl_button_type') === 'native') {
+            add_action('wp_head', 'insert_native_widget_scripts');
+        //}
+
     }
 
     static function this()
@@ -105,7 +109,9 @@ class rsssl_soc_native
             $url = get_permalink($post_id);
         }
 
-        if ($this->debug) $url = "https://www.wordpress.com";
+        if ($this->debug) $url = "https://www.sharethis.com";
+
+        error_log($url);
 
         //make sure the current home_url is https, as this is a really simple ssl add on.
         $url_https = str_replace("http://", "https://", $url);
@@ -193,6 +199,8 @@ class rsssl_soc_native
             'yummly' => $this->convert_nr($yummly_likes),
         );
 
+        error_log("Shares in get likes");
+        error_log(print_r($shares, true));
         return $shares;
     }
 
@@ -278,7 +286,8 @@ class rsssl_soc_native
             if ($get_httpwww) $shares += $this->retrieve_yummly_likes($url_httpwww);
             if ($get_httpswww) $shares += $this->retrieve_yummly_likes($url_httpswww);
         }
-
+        error_log("Shares in shares total");
+        error_log(print_r($shares, true));
         return $shares;
     }
 
@@ -375,13 +384,14 @@ class rsssl_soc_native
         if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww, $post_id);
 
         if ($likes == 0) $likes = "";
-
+        error_log("likes get cached likes total");
+        error_log(print_r($likes, true));
         return $likes;
 
     }
 
     private function get_cached_likes($type, $url, $post_id){
-        if ($this->debug) $url = "https://www.wordpress.com";
+        if ($this->debug) $url = "https://www.sharethis.com";
         $share_cache = get_transient("rsssl_" . $type . "_shares");
 
         if (!$share_cache || !isset($share_cache[$url])) {
@@ -430,6 +440,7 @@ class rsssl_soc_native
     private function convert_nr($nr)
     {
 
+        error_log("nr convert nr" . $nr);
 
         if ($nr >= 1000000) {
             return round($nr / 1000000, 1) . "m";
@@ -456,6 +467,8 @@ class rsssl_soc_native
          $auth = "";
          if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
          $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
+//         error_log("FB request");
+//         error_log(print_r($request, true));
          //https://developers.facebook.com/tools/accesstoken/
          if ($request["response"]["code"] == 200) {
              $json = wp_remote_retrieve_body($request);
@@ -586,7 +599,6 @@ class rsssl_soc_native
             if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
                 $html = $this->generate_like_buttons();
                 $position = get_option('rsssl_button_position');
-
                 //position depending on setting
                 if ($position == 'bottom') {
                     $content = $content . $html;
@@ -632,6 +644,7 @@ class rsssl_soc_native
 
     public function generate_like_buttons($single = true)
     {
+        global $wp_query;
         $html = "";
 
         //load template from theme directory if available
@@ -645,8 +658,12 @@ class rsssl_soc_native
         require $file;
         $html = ob_get_clean();
 
-        $button_html = $this->get_buttons();
-        $html = str_replace('{buttons}', $button_html, $html);
+        $post = $wp_query->post;
+        $post_id = $post->ID;
+
+            $button_html = $this->get_buttons();
+            $html = str_replace(array('{buttons}', '{post_id}'), array($button_html, $post_id), $html);
+
         return $html;
     }
 
@@ -664,13 +681,30 @@ class rsssl_soc_native
         }
 
         $html = "";
+
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
 //            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
-            $html .= $this->get_button_html($service, $url, $post_id, $title);
+             $html .= $this->get_button_html($service, $url, $post_id, $title);
         }
 
         return $html;
+
+    }
+
+    public function get_native_buttons() {
+
+      $html = '<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div>';
+
+      $html .= '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+
+      $html .= '<script src="https://apis.google.com/js/platform.js" async defer></script><g:plus action="share"></g:plus>';
+
+      $html .= '<a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a>';
+
+      $html .= '<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share"></script>';
+
+      return $html;
 
     }
 
@@ -696,13 +730,9 @@ class rsssl_soc_native
 
             //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
             if (get_option('rsssl_fb_button_type') == 'shares') {
-                $html = str_replace("{like_or_share}" , "share", $html);
-                $html = str_replace("{height}" , "600", $html);
-                $html = str_replace("{width}" , "900", $html);
+                $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("share" , "600" , "900"), $html);
             } else {
-                $html = str_replace("{like_or_share}" , "like", $html);
-                $html = str_replace("{height}" , "350", $html);
-                $html = str_replace("{width}" , "450", $html);
+                $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
             }
             //Only replace the label for the 'color-new' and 'dark' themes.
             if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
@@ -789,7 +819,7 @@ class rsssl_soc_native
 
     /*
 
-      Genereate the editor html on a page with the shortcode.
+      Generate the editor html on a page with the shortcode.
 
     */
 
@@ -802,20 +832,26 @@ class rsssl_soc_native
         return ob_get_clean();
     }
 
-    public function show_native_widgets()
+    public function insert_native_widget_scripts()
     {
     ?>
-        <!-- Load Facebook SDK for JavaScript -->
+        <div id="fb-root"></div>
+        <script>
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = 'https://connect.facebook.net/nl_NL/sdk.js#xfbml=1&version=v3.2';
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
 
-        <script src="//connect.facebook.net/en_US/all.js#xfbml=1"></script>
-         <br><br>
-         <!-- Your share button code -->
-         <div class="fb-share-button"
-          data-href="<?php echo $domain?>"
-          data-layout="button_count">
-        </div>
+        <script
+                type="text/javascript"
+                async defer
+                src="//assets.pinterest.com/js/pinit.js"
+        ></script>
 
-        <div class="fb-like" data-href="<?php echo $domain?>" data-layout="box_count" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
         <?php
     }
 
