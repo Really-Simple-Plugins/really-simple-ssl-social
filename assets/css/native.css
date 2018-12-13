@@ -1,9 +1,18 @@
 .rsssl-soc-native-buttons {
     /*height: 35px;*/
-    display: flex;
-    /*vertical-align: middle;*/
+    display: block;
 }
 
 .rsssl-soc-native-item {
+    display: inline-block;
+    vertical-align: bottom;
     margin-right: 10px;
+}
+
+.rsssl-soc-native-item-pin span {
+    margin-bottom: 13px;
+}
+
+.fb_iframe_widget {
+    margin-bottom: 12px;
 }

@@ -710,7 +710,7 @@ class rsssl_soc_native
             $html .= '<div class="rsssl-soc-native-item"><g:plus action="share"></g:plus></div>';
         }
         if ($this->pinterest) {
-            $html .= '<div class="rsssl-soc-native-item"><a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a></div>';
+            $html .= '<div class="rsssl-soc-native-item rsssl-soc-native-item-pin"><a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a></div>';
         }
         if ($this->linkedin) {
             $html .= '<div class="rsssl-soc-native-item"><script type="IN/Share"></script></div>';
