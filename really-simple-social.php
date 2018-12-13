@@ -45,7 +45,7 @@
     $rsssl_soc_admin             = new rsssl_soc_admin;
   }
 
-  if (get_option('rsssl_button_type') === 'builtin') {
+  if ((get_option('rsssl_button_type') === 'builtin') || (get_option('rsssl_button_type') === 'native')){
     require_once( dirname( __FILE__ ) .  '/class-native.php' );
     $rsssl_soc_native             = new rsssl_soc_native;
   } else {

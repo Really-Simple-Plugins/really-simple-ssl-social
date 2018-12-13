@@ -10,7 +10,7 @@ class rsssl_soc_native
     public $google;
     public $pinterest;
     public $yummly;
-    public $debug = true;
+    public $debug = false;
 
     function __construct()
     {
@@ -111,8 +111,6 @@ class rsssl_soc_native
 
         if ($this->debug) $url = "https://www.sharethis.com";
 
-        error_log($url);
-
         //make sure the current home_url is https, as this is a really simple ssl add on.
         $url_https = str_replace("http://", "https://", $url);
 
@@ -199,8 +197,6 @@ class rsssl_soc_native
             'yummly' => $this->convert_nr($yummly_likes),
         );
 
-        error_log("Shares in get likes");
-        error_log(print_r($shares, true));
         return $shares;
     }
 
@@ -286,8 +282,7 @@ class rsssl_soc_native
             if ($get_httpwww) $shares += $this->retrieve_yummly_likes($url_httpwww);
             if ($get_httpswww) $shares += $this->retrieve_yummly_likes($url_httpswww);
         }
-        error_log("Shares in shares total");
-        error_log(print_r($shares, true));
+
         return $shares;
     }
 
@@ -384,8 +379,7 @@ class rsssl_soc_native
         if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww, $post_id);
 
         if ($likes == 0) $likes = "";
-        error_log("likes get cached likes total");
-        error_log(print_r($likes, true));
+
         return $likes;
 
     }
@@ -439,8 +433,6 @@ class rsssl_soc_native
 
     private function convert_nr($nr)
     {
-
-        error_log("nr convert nr" . $nr);
 
         if ($nr >= 1000000) {
             return round($nr / 1000000, 1) . "m";
@@ -592,17 +584,24 @@ class rsssl_soc_native
 
     public function like_buttons_content_filter($content)
     {
+        error_log("content filter");
         if ($this->show_buttons()) {
-            error_log("Show butt00ns");
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
             // always when a sidebar theme is used
             if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
-                //$html = $this->generate_like_buttons();
+
+                error_log(get_option('rsssl_button_type'));
+
+                if (get_option('rsssl_button_type') === 'native') {
+                    error_log("NATIVE");
+                    $html = $this->get_native_buttons();
+                } else {
+                    $html = $this->generate_like_buttons();
+                }
+
                 $position = get_option('rsssl_button_position');
 
-                $position = 'bottom';
-                $html = $this->get_native_buttons();
                 //position depending on setting
                 if ($position == 'bottom') {
                     $content = $content . $html;
@@ -698,21 +697,28 @@ class rsssl_soc_native
 
     public function get_native_buttons() {
 
-    ?> <div class="rsssl-soc-native-buttons"> <?php
+        $services = get_option('rsssl_social_services');
 
-      $html = '<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div>';
+        $html =  '<div class="rsssl-soc-native-buttons">';
 
-      $html .= '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+        if (isset($services['facebook'])) {
+            $html .= '<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div>';
+        }
+        if (isset($services['twitter'])) {
+            $html .= '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+        }
+        if (isset($services['google'])) {
+            $html .= '<script src="https://apis.google.com/js/platform.js" async defer></script><g:plus action="share"></g:plus>';
+        }
+        if (isset($services['pinterest'])) {
+            $html .= '<a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a>';
+        }
+        if (isset($services['linkedin'])) {
+            $html .= '<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share"></script>';
+        }
+        $html .= '</div>';
 
-      $html .= '<script src="https://apis.google.com/js/platform.js" async defer></script><g:plus action="share"></g:plus>';
-
-      $html .= '<a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a>';
-
-      $html .= '<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share"></script>';
-
-    ?> </div> <?php
-
-      return $html;
+        return $html;
 
     }
 
@@ -764,6 +770,12 @@ class rsssl_soc_native
         $theme = get_option('rsssl_buttons_theme');
 
         wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
+
+        if (get_option('rsssl_button_type') === 'native') {
+            error_log("NATIVE FOUND");
+            wp_register_style('rsssl_social_native_style', plugin_dir_url(__FILE__) . "assets/css/native.css", array(), $version);
+            wp_enqueue_style('rsssl_social_native_style');
+        }
 
         wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
 
@@ -843,22 +855,9 @@ class rsssl_soc_native
     public function insert_native_widget_scripts()
     {
     ?>
-        <div id="fb-root"></div>
-        <script>
-            (function(d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s); js.id = id;
-                js.src = 'https://connect.facebook.net/nl_NL/sdk.js#xfbml=1&version=v3.2';
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-        </script>
+        <div id="fb-root"></div><script>(function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = 'https://connect.facebook.net/nl_NL/sdk.js#xfbml=1&version=v3.2';fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script>
 
-        <script
-                type="text/javascript"
-                async defer
-                src="//assets.pinterest.com/js/pinit.js"
-        ></script>
+        <script type="text/javascript" async defer src="//assets.pinterest.com/js/pinit.js"></script>
 
         <?php
     }
