@@ -36,7 +36,7 @@ class rsssl_soc_native
         add_action('plugins_loaded', array($this, 'initialize'));
 
         //if (get_option('rsssl_button_type') === 'native') {
-            add_action('wp_head', 'insert_native_widget_scripts');
+            //add_action('wp_head', 'insert_native_widget_scripts');
         //}
 
     }
@@ -593,12 +593,16 @@ class rsssl_soc_native
     public function like_buttons_content_filter($content)
     {
         if ($this->show_buttons()) {
+            error_log("Show butt00ns");
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
             // always when a sidebar theme is used
             if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
-                $html = $this->generate_like_buttons();
+                //$html = $this->generate_like_buttons();
                 $position = get_option('rsssl_button_position');
+
+                $position = 'bottom';
+                $html = $this->get_native_buttons();
                 //position depending on setting
                 if ($position == 'bottom') {
                     $content = $content . $html;
@@ -694,6 +698,8 @@ class rsssl_soc_native
 
     public function get_native_buttons() {
 
+    ?> <div class="rsssl-soc-native-buttons"> <?php
+
       $html = '<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div>';
 
       $html .= '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
@@ -703,6 +709,8 @@ class rsssl_soc_native
       $html .= '<a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a>';
 
       $html .= '<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share"></script>';
+
+    ?> </div> <?php
 
       return $html;
 
