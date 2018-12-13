@@ -23,6 +23,7 @@ class rsssl_soc_native
         add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
         add_action('wp_ajax_nopriv_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
+        add_action('wp_footer', array($this, 'native_buttons_scripts'));
 
         //this hook can be used to clear the likes from another plugin.
         //do_action('rsssl_soc_clear_likes', $post_id);
@@ -697,30 +698,30 @@ class rsssl_soc_native
 
     public function get_native_buttons() {
 
-        $services = get_option('rsssl_social_services');
-
         $html =  '<div class="rsssl-soc-native-buttons">';
 
-        if (isset($services['facebook'])) {
-            $html .= '<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div>';
+        if ($this->facebook) {
+            $html .= '<div class="rsssl-soc-native-item"><div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div></div>';
         }
-        if (isset($services['twitter'])) {
-            $html .= '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+        if ($this->twitter) {
+            $html .= '<div class="rsssl-soc-native-item"><a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a></div>';
         }
-        if (isset($services['google'])) {
-            $html .= '<script src="https://apis.google.com/js/platform.js" async defer></script><g:plus action="share"></g:plus>';
+        if ($this->google) {
+            $html .= '<div class="rsssl-soc-native-item"><g:plus action="share"></g:plus></div>';
         }
-        if (isset($services['pinterest'])) {
-            $html .= '<a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a>';
+        if ($this->pinterest) {
+            $html .= '<div class="rsssl-soc-native-item"><a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a></div>';
         }
-        if (isset($services['linkedin'])) {
-            $html .= '<script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script><script type="IN/Share"></script>';
+        if ($this->linkedin) {
+            $html .= '<div class="rsssl-soc-native-item"><script type="IN/Share"></script></div>';
         }
         $html .= '</div>';
 
         return $html;
 
     }
+
+
 
     /*
      * Get the html for a specific service button
@@ -772,7 +773,6 @@ class rsssl_soc_native
         wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
 
         if (get_option('rsssl_button_type') === 'native') {
-            error_log("NATIVE FOUND");
             wp_register_style('rsssl_social_native_style', plugin_dir_url(__FILE__) . "assets/css/native.css", array(), $version);
             wp_enqueue_style('rsssl_social_native_style');
         }
@@ -808,12 +808,35 @@ class rsssl_soc_native
             wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(), "", true);
         }
 
+        if ($this->twitter) {
+            wp_enqueue_script('rsssl_twitter', "https://platform.twitter.com/widgets.js", array(), "", true);
+        }
+
+        if ($this->google) {
+            wp_enqueue_script('rsssl_google', "https://apis.google.com/js/platform.js", array(), "", true);
+        }
+
         wp_localize_script('rsssl_social', 'rsssl_soc_ajax', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'token' => wp_create_nonce('rsssl_social_nonce', 'token'),
             'use_cache' => $use_cache,
         ));
 
+    }
+
+    public function native_buttons_scripts() {
+        echo "<div id=\"fb-root\"></div>
+                  <script>
+                      (function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id)) return;
+                        js = d.createElement(s); js.id = id;
+                        js.src = \"https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0\";
+                        fjs.parentNode.insertBefore(js, fjs);
+                      }(document, 'script', 'facebook-jssdk'));
+                  </script>";
+
+        echo "<script src=\"//platform.linkedin.com/in.js\" type=\"text/javascript\"> lang: en_US</script>";
     }
 
 
@@ -850,16 +873,6 @@ class rsssl_soc_native
         echo $this->generate_like_buttons();
 
         return ob_get_clean();
-    }
-
-    public function insert_native_widget_scripts()
-    {
-    ?>
-        <div id="fb-root"></div><script>(function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = 'https://connect.facebook.net/nl_NL/sdk.js#xfbml=1&version=v3.2';fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script>
-
-        <script type="text/javascript" async defer src="//assets.pinterest.com/js/pinit.js"></script>
-
-        <?php
     }
 
 }//class closure

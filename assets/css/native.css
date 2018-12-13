@@ -1,5 +1,9 @@
 .rsssl-soc-native-buttons {
-    height: 35px;
+    /*height: 35px;*/
     display: flex;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
+}
+
+.rsssl-soc-native-item {
+    margin-right: 10px;
 }
