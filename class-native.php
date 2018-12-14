@@ -585,21 +585,15 @@ class rsssl_soc_native
 
     public function like_buttons_content_filter($content)
     {
-        error_log("content filter");
         if ($this->show_buttons()) {
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
             // always when a sidebar theme is used
             if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
 
-                error_log(get_option('rsssl_button_type'));
 
-                if (get_option('rsssl_button_type') === 'native') {
-                    error_log("NATIVE");
-                    $html = $this->get_native_buttons();
-                } else {
-                    $html = $this->generate_like_buttons();
-                }
+                $html = $this->generate_like_buttons();
+
 
                 $position = get_option('rsssl_button_position');
 
@@ -640,42 +634,20 @@ class rsssl_soc_native
     }
 
 
-    /*
-
-        Generate like buttons to be used in either shortcode or content filter
-
-    */
+    /**
+     * Generate like buttons to be used in either shortcode or content filter
+     *
+     * @param bool $single
+     * @return string
+     */
 
     public function generate_like_buttons($single = true)
     {
         global $wp_query;
-        $html = "";
-
-        //load template from theme directory if available
-        $file = rsssl_soc_path . 'templates/template-wrap.php';
-        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . 'template-wrap.php';
-
-        if (file_exists($theme_file)) {
-            $file = $theme_file;
-        }
-        ob_start();
-        require $file;
-        $html = ob_get_clean();
-
-        $post = $wp_query->post;
-        $post_id = $post->ID;
-
-            $button_html = $this->get_buttons();
-            $html = str_replace(array('{buttons}', '{post_id}'), array($button_html, $post_id), $html);
-
-        return $html;
-    }
-
-    public function get_buttons(){
-        global $wp_query;
         $url = home_url();
         $post_id = 0;
         $title = "";
+        $type = get_option('rsssl_button_type') === 'native' ? 'native' : 'builtin';
 
         if ($wp_query) {
             $post = $wp_query->post;
@@ -684,36 +656,37 @@ class rsssl_soc_native
             $title = $post->post_title;
         }
 
-        $html = "";
+        //load template from theme directory if available
+        $file = rsssl_soc_path . "templates/$type-template-wrap.php";
+        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . 'template-wrap.php';
 
+        if (file_exists($theme_file)) {
+            $file = $theme_file;
+        }
+
+        ob_start();
+        require $file;
+        $wrapper = ob_get_clean();
+
+
+        $button_html = "";
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
-//            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
-             $html .= $this->get_button_html($service, $url, $post_id, $title);
+            $button_html .= $this->get_button_html($service, $url, $post_id, $title, $type);
         }
 
-        return $html;
-
+        return str_replace(array('{buttons}', '{post_id}'), array($button_html, $post_id), $wrapper);
     }
 
-    public function get_native_buttons() {
 
-        $html =  '<div class="rsssl-soc-native-buttons">';
 
-        if ($this->facebook) {
-            $html .= '<div class="rsssl-soc-native-item"><div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Delen</a></div></div>';
-        }
-        if ($this->twitter) {
-            $html .= '<div class="rsssl-soc-native-item"><a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a></div>';
-        }
-        if ($this->google) {
-            $html .= '<div class="rsssl-soc-native-item"><g:plus action="share"></g:plus></div>';
-        }
-        if ($this->pinterest) {
-            $html .= '<div class="rsssl-soc-native-item rsssl-soc-native-item-pin"><a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark"></a></div>';
-        }
+
+
+    public function get_native_button_html($service, $url, $post_id, $title) {
+
+
         if ($this->linkedin) {
-            $html .= '<div class="rsssl-soc-native-item"><script type="IN/Share"></script></div>';
+            $html .= '<div class="rsssl-soc-native-item"><script type="IN/Share"></script><div class="rsssl-soc-share-count">{shares}</div></div>';
         }
         $html .= '</div>';
 
@@ -723,16 +696,19 @@ class rsssl_soc_native
 
 
 
-    /*
+    /**
      * Get the html for a specific service button
-     *
-     *
-     * */
+     * @param $service
+     * @param $url
+     * @param $post_id
+     * @param $title
+     * @return string
+     */
 
-    public function get_button_html($service, $url, $post_id, $title){
+    public function get_button_html($service, $url, $post_id, $title, $type="builtin"){
 
-        $file = rsssl_soc_path . "templates/$service.php";
-        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$service.php";
+        $file = rsssl_soc_path . "templates/$type-$service.php";
+        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$type-$service.php";
         $shares = $this->get_cached_likes_total($service, $post_id);
         if (file_exists($theme_file)) {
             $file = $theme_file;
@@ -743,23 +719,23 @@ class rsssl_soc_native
         $html = ob_get_clean();
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
-            //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
-            if (get_option('rsssl_fb_button_type') == 'shares') {
-                $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("share" , "600" , "900"), $html);
-            } else {
-                $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
-            }
-            //Only replace the label for the 'color-new' and 'dark' themes.
-            if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
-                $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
-            } else {
-                $html = str_replace("{label}", "", $html);
-            }
-            //And insert a div for the new color theme
-            if (get_option('rsssl_buttons_theme') === 'color-new') {
-                $html = str_replace('{color_round}' , '<div class="rsssl-color-round"></div>' , $html);
-            } else
-                $html = str_replace('{color_round}' , "" , $html);
+        //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
+        if (get_option('rsssl_fb_button_type') == 'shares') {
+            $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("share" , "600" , "900"), $html);
+        } else {
+            $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
+        }
+        //Only replace the label for the 'color-new' and 'dark' themes.
+        if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
+            $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
+        } else {
+            $html = str_replace("{label}", "", $html);
+        }
+        //And insert a div for the new color theme
+        if (get_option('rsssl_buttons_theme') === 'color-new') {
+            $html = str_replace('{color_round}' , '<div class="rsssl-color-round"></div>' , $html);
+        } else
+            $html = str_replace('{color_round}' , "" , $html);
 
         return $html;
     }
