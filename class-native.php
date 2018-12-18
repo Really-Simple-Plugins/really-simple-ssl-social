@@ -678,24 +678,6 @@ class rsssl_soc_native
         return str_replace(array('{buttons}', '{post_id}'), array($button_html, $post_id), $wrapper);
     }
 
-
-
-
-
-    public function get_native_button_html($service, $url, $post_id, $title) {
-
-
-        if ($this->linkedin) {
-            $html .= '<div class="rsssl-soc-native-item"><script type="IN/Share"></script><div class="rsssl-soc-share-count">{shares}</div></div>';
-        }
-        $html .= '</div>';
-
-        return $html;
-
-    }
-
-
-
     /**
      * Get the html for a specific service button
      * @param $service
