@@ -10,7 +10,7 @@ class rsssl_soc_native
     public $google;
     public $pinterest;
     public $yummly;
-    public $debug = true;
+    public $debug = false;
 
     function __construct()
     {
@@ -35,10 +35,6 @@ class rsssl_soc_native
 
         add_filter('script_loader_tag', array($this, 'filter_pinterest_script'), 10, 3);
         add_action('plugins_loaded', array($this, 'initialize'));
-
-        //if (get_option('rsssl_button_type') === 'native') {
-            //add_action('wp_head', 'insert_native_widget_scripts');
-        //}
 
     }
 
@@ -462,15 +458,14 @@ class rsssl_soc_native
          $expiration = (get_option('rsssl_share_cache_time') * 3600);
          $shares = 0;
          $share_cache = get_transient('rsssl_facebook_shares');
-         //if (!$share_cache) $share_cache = array();
+         if (!$share_cache) $share_cache = array();
          $fb_access_token = get_option('rsssl_soc_fb_access_token');
          $auth = "";
          if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
          $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
-         error_log("FB request");
-         error_log(print_r($request, true));
 //         https://developers.facebook.com/tools/accesstoken/
          if ($request["response"]["code"] == 200) {
+             error_log("response code === 200");
              $json = wp_remote_retrieve_body($request);
              $output = json_decode($json);
              $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
