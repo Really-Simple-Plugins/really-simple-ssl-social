@@ -205,7 +205,7 @@ class rsssl_soc_admin
         wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
 
         if (is_admin()) {
-            wp_enqueue_script('rsssl-soc-admin', rsssl_soc_url . 'assets/js/admin.js', array(), rsssl_soc_version, false);
+            wp_enqueue_script('rsssl-soc-admin', rsssl_soc_url . 'assets/js/admin.min.js', array(), rsssl_soc_version, false);
         }
     }
 
@@ -215,12 +215,12 @@ class rsssl_soc_admin
 
             ?>
         <select name="rsssl_button_type">
-            <option value="existing" <?php if ($rsssl_button_type == "existing") echo "selected" ?>><?php _e("Recover shares for existing buttons", "really-simple-ssl-soc"); ?>
-            <option value="builtin" <?php if ($rsssl_button_type == "builtin") echo "selected" ?>> <?php _e("Built-in buttons", "really-simple-ssl-soc"); ?>
-            <option value="native" <?php if ($rsssl_button_type == "native") echo "selected" ?>><?php _e("Native sharing buttons", "really-simple-ssl-soc"); ?>
+            <option value="existing" <?php if ($rsssl_button_type == "existing") echo "selected" ?>><?php _e("Recover shares for existing sharing buttons", "really-simple-ssl-soc"); ?>
+            <option value="builtin" <?php if ($rsssl_button_type == "builtin") echo "selected" ?>> <?php _e("Really Simple Social Built-in buttons", "really-simple-ssl-soc"); ?>
+            <option value="native" <?php if ($rsssl_button_type == "native") echo "selected" ?>><?php _e("Social networks native sharing buttons with recovered counts", "really-simple-ssl-soc"); ?>
         </select>
             <?php
-        RSSSL()->rsssl_help->get_help_tip(__("The existing option recovers shares for your existing sharing plugin buttons. The built-in buttons use the Really Simple SSL Social button. Native option shows the native sharing widgets for each platform.", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("The existing option recovers shares for your existing sharing plugin buttons. The built-in buttons use the Really Simple SSL Social buttons. Native option shows the native sharing widgets for each platform.", "really-simple-ssl-soc"));
 
     }
 
@@ -242,7 +242,7 @@ class rsssl_soc_admin
             <?php }?>
         </select>
         <?php
-        RSSSL()->rsssl_help->get_help_tip(__("Choose the share button theme. The 'Color' theme uses colorfull buttons in the social networks style, while the XXX.", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("Choose the share buttons theme.", "really-simple-ssl-soc"));
     }
 
     public function get_option_start_date_social()
@@ -281,9 +281,9 @@ class rsssl_soc_admin
         $rsssl_button_position = get_option('rsssl_button_position');
         ?>
         <select name="rsssl_button_position" class="native builtin button_type">
-            <option value="top" <?php if ($rsssl_button_position == "top") echo "selected" ?>>Top
-            <option value="bottom" <?php if ($rsssl_button_position == "bottom") echo "selected" ?>>Bottom
-            <option value="both" <?php if ($rsssl_button_position == "both") echo "selected" ?>>Both
+            <option value="top" <?php if ($rsssl_button_position == "top") echo "selected" ?>><?php echo __("Top", "really-simple-ssl-soc"); ?>
+            <option value="bottom" <?php if ($rsssl_button_position == "bottom") echo "selected" ?>><?php echo __("Bottom", "really-simple-ssl-soc"); ?>
+            <option value="both" <?php if ($rsssl_button_position == "both") echo "selected" ?>><?php echo __("Both", "really-simple-ssl-soc"); ?>
         </select>
         <?php
         RSSSL()->rsssl_help->get_help_tip(__("Choose where you want to position the share button(s)", "really-simple-ssl-soc"));
@@ -309,7 +309,7 @@ class rsssl_soc_admin
     {
         $share_cache_time = get_option('rsssl_share_cache_time');
         echo '<input id="rsssl_share_cache_time" name="rsssl_share_cache_time" class="builtin button_type" size="40" type="number" min="0" max="24" value="' . $share_cache_time . '" />';
-        RSSSL()->rsssl_help->get_help_tip(__("Set to a value between 1 and 24. Caching the shares will minimize the number of share retrieval request made to the social networks. Not caching shares can result in too many request (rate limiting) and thus shares not showing. Share counts will automatically update after the amount of time specified", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("Set to a value between 1 and 24. Caching the shares will minimize the number of share retrieval request made to the social networks. Not caching shares can result in too many request (rate limiting) and thus shares not showing. Share counts will automatically update after the specified amount of time", "really-simple-ssl-soc"));
 
     }
 
@@ -407,7 +407,7 @@ class rsssl_soc_admin
         <br>
 
         <?php
-        RSSSL()->rsssl_help->get_help_tip(__("Choose which social services you want to include sharing buttons.", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("Choose for which social services you want to include sharing buttons.", "really-simple-ssl-soc"));
     }
 
 
@@ -415,11 +415,11 @@ class rsssl_soc_admin
       $rsssl_fb_button_type = get_option('rsssl_fb_button_type');
       ?>
       <select name="rsssl_fb_button_type" class="builtin native button_type">
-        <option value="shares" <?php if ($rsssl_fb_button_type=="shares") echo "selected"?>>Shares
-        <option value="likes" <?php if ($rsssl_fb_button_type=="likes") echo "selected"?>>Likes
+        <option value="shares" <?php if ($rsssl_fb_button_type=="shares") echo "selected"?>><?php echo __("Shares", "really-simple-ssl-soc"); ?>
+        <option value="likes" <?php if ($rsssl_fb_button_type=="likes") echo "selected"?>><?php echo __("Likes", "really-simple-ssl-soc"); ?>
       </select>
       <?php
-      RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
+      RSSSL()->rsssl_help->get_help_tip(__("Choose if you want to use the share or the like functionality for the Facebook button", "really-simple-ssl-soc"));
     }
 
     public function get_option_use_custom_css()
@@ -445,7 +445,7 @@ class rsssl_soc_admin
         </script>
         <?php
         echo '<input id="rsssl_use_custom_css" name="rsssl_use_custom_css" class="builtin button_type" size="40" type="checkbox" value="1"' . checked(1, $rsssl_use_custom_css, false) . " />";
-        RSSSL()->rsssl_help->get_help_tip(__("Insert any custom CSS for the sharing buttons here", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("Insert any custom CSS for the sharing buttons after enabling this option", "really-simple-ssl-soc"));
     }
 
     public function get_option_rsssl_custom_css()

@@ -737,7 +737,7 @@ class rsssl_soc_native
             wp_enqueue_style('rsssl_social_native_style');
         }
 
-        wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
+        wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.min.css', array(), $version);
 
         //Add any custom CSS defined in the custom CSS settings section
         $custom_css = get_option('rsssl_custom_css');
@@ -749,7 +749,7 @@ class rsssl_soc_native
             }
         }
 
-        wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.js", array('jquery'), $version, true);
+        wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.min.js", array('jquery'), $version, true);
 
         $url = home_url();
         global $post;
