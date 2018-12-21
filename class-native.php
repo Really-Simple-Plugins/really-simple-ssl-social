@@ -639,22 +639,29 @@ class rsssl_soc_native
     /**
      * Generate like buttons to be used in either shortcode or content filter
      *
-     * @param bool $single
+     * @param int $post_id
      * @return string
      */
 
-    public function generate_like_buttons($single = true)
+    public function generate_like_buttons($post_id = false)
     {
         global $wp_query;
         $url = home_url();
-        $post_id = 0;
         $title = "";
         $type = get_option('rsssl_button_type') === 'native' ? 'native' : 'builtin';
 
-        if ($wp_query) {
-            $post = $wp_query->post;
+        if ($post_id) {
+            $post = get_post($post_id);
+        } else {
+            $post_id = 0;
+            if ($wp_query) {
+                $post = $wp_query->post;
+                if ($post) $post_id = $post->ID;
+            }
+        }
+
+        if ($post) {
             $url = get_permalink($post);
-            $post_id = $post->ID;
             $title = $post->post_title;
         }
 
@@ -669,7 +676,6 @@ class rsssl_soc_native
         ob_start();
         require $file;
         $wrapper = ob_get_clean();
-
 
         $button_html = "";
         $services = get_option('rsssl_social_services');

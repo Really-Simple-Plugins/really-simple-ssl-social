@@ -1,5 +1,5 @@
 {
-  "name": "really-simple-ssl-social-cgb-guten-block",
+  "name": "really-simple-ssl-social",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "autoprefixer": "^7.2.4",
+    "axios": "^0.18.0",
     "babel-core": "^6.25.0",
     "babel-eslint": "^8.2.1",
     "babel-loader": "^7.1.1",
