@@ -437,6 +437,8 @@ class rsssl_soc_native
     private function convert_nr($nr)
     {
 
+        error_log("Nr start convert" . $nr);
+
         if ($nr >= 1000000) {
             return round($nr / 1000000, 1) . "m";
         }
@@ -448,6 +450,8 @@ class rsssl_soc_native
         if ($nr == 0) {
             return '';
         }
+
+        error_log("Nr end convert" . $nr);
 
         return $nr;
 
@@ -737,7 +741,7 @@ class rsssl_soc_native
             wp_enqueue_style('rsssl_social_native_style');
         }
 
-        wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.min.css', array(), $version);
+        wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
 
         //Add any custom CSS defined in the custom CSS settings section
         $custom_css = get_option('rsssl_custom_css');

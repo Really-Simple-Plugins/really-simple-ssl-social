@@ -204,7 +204,7 @@ class rsssl_soc_admin
     {
         wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
 
-        if (is_admin()) {
+        if (is_admin() && $this->is_settings_page()) {
             wp_enqueue_script('rsssl-soc-admin', rsssl_soc_url . 'assets/js/admin.min.js', array(), rsssl_soc_version, false);
         }
     }
@@ -242,7 +242,7 @@ class rsssl_soc_admin
             <?php }?>
         </select>
         <?php
-        RSSSL()->rsssl_help->get_help_tip(__("Choose the share buttons theme.", "really-simple-ssl-soc"));
+        RSSSL()->rsssl_help->get_help_tip(__("Choose the share buttons theme", "really-simple-ssl-soc"));
     }
 
     public function get_option_start_date_social()
@@ -494,6 +494,11 @@ class rsssl_soc_admin
         ?>
         <p><?php _e('Settings for Really Simple SSL Social', 'really-simple-ssl-soc'); ?></p>
         <?php
+    }
+
+    public function is_settings_page()
+    {
+        return (isset($_GET['page']) && $_GET['page'] == 'really-simple-ssl') ? true : false;
     }
 
 }//class closure
