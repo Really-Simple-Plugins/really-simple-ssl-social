@@ -595,9 +595,7 @@ class rsssl_soc_native
             // always when a sidebar theme is used
             if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
 
-
                 $html = $this->generate_like_buttons();
-
 
                 $position = get_option('rsssl_button_position');
 
