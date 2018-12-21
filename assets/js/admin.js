@@ -14,7 +14,6 @@ jQuery(document).ready(function ($) {
         });
 
         var selected = $('select[name=rsssl_button_type]').val();
-        console.log(selected);
         $('.'+selected).each(function(){
             console.log(selected);
             $(this).closest('tr').show();
@@ -29,17 +28,20 @@ jQuery(document).ready(function ($) {
 
     });
 
-    function rsssl_check_custom_css() {
-        if ($('option[name=rsssl_buttons_theme]').val("sidebar-dark") ||( $('option[name=rsssl_buttons_theme]').val("sidebar-color") ) ) {
+    function rsssl_uses_sidebar_theme() {
+
+        if ( ($('select[name=rsssl_buttons_theme]').val() === 'sidebar-dark' ) || ($('select[name=rsssl_buttons_theme]').val() === 'sidebar-color') ) {
+            console.log("sidebar");
             $('select[name=rsssl_button_position]').closest('tr').hide();
         } else {
+            console.log("no sidebar");
             $('select[name=rsssl_button_position]').closest('tr').show();
         }
     }
 
-    rsssl_check_custom_css();
-    $(document).on("click", "#rsssl_use_custom_css", function () {
-        rsssl_check_custom_css();
+    rsssl_uses_sidebar_theme();
+    $(document).on("change", 'select[name=rsssl_buttons_theme]', function () {
+        rsssl_uses_sidebar_theme();
     })
 
 });

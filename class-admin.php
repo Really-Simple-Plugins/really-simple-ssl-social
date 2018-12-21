@@ -148,7 +148,9 @@ class rsssl_soc_admin
 
         //if ((get_option("rsssl_buttons_theme") == 'color') || (get_option("rsssl_buttons_theme") == 'color-new') || (get_option("rsssl_buttons_theme") == 'dark') || (get_option("rsssl_buttons_theme") == 'round') || (get_option('rsssl_button_type') === 'native')) {
             register_setting('rlrsssl_social_options', 'rsssl_button_position', array($this, 'options_validate'));
-            add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
+        add_settings_field('rsssl_buttons_theme', __("Share buttons theme", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_buttons_theme'), 'rlrsssl-social', 'rlrsssl_settings');
+
+        add_settings_field('rsssl_button_position', __("Position of buttons", "really-simple-ssl-soc"), array($this, 'get_option_button_position'), 'rlrsssl-social', 'rlrsssl_settings');
         //}
 
        // if (get_option('rsssl_button_type') === 'builtin') {
@@ -163,8 +165,6 @@ class rsssl_soc_admin
             register_setting('rlrsssl_social_options', 'rsssl_share_cache_time', array($this, 'options_validate'));
             register_setting('rlrsssl_social_options', 'rsssl_use_custom_css', array($this, 'options_validate_boolean'));
             register_setting('rlrsssl_social_options', 'rsssl_custom_css', array($this, 'options_validate'));
-
-            add_settings_field('rsssl_buttons_theme', __("Share buttons theme", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_buttons_theme'), 'rlrsssl-social', 'rlrsssl_settings');
 
             add_settings_field('rsssl_fb_button_type', __("Use shares or likes for Facebook button", "really-simple-ssl-soc"), array($this, 'get_option_fb_button_type'), 'rlrsssl-social', 'rlrsssl_settings');
 
