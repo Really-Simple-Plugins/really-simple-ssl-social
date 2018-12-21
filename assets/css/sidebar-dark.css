@@ -1,0 +1,88 @@
+/*Sidebar*/
+.rsssl_soc {
+    display: inline-block;
+    position: fixed;
+    left: 0;
+    top: 30%;
+    height: 500px;
+    width: 45px;
+    z-index: 10000;
+    padding-bottom: 0px;
+}
+
+/*Buttons in sidebar*/
+.rsssl_soc a.post-share {
+    width: 40px;
+    height: 40px;
+    float: left;
+    pointer: cursor;
+    text-decoration:none;
+    font: 15px/46px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    box-shadow: none;
+    background: #444444 no-repeat;
+    transition: all 0.2s ease-out;
+    overflow: hidden;
+}
+
+.rsssl_soc a.post-share:hover {
+    display: block;
+    transition: all 0.2s ease-in;
+    background: #444444 no-repeat;
+    width: 120px;
+    overflow: hidden;
+}
+.rsssl_soc a.post-share:hover .rsssl_likes_shares{
+    font-size: 0.9em;
+    margin-right: 15px;
+    position: relative;
+    display:block;
+    float: right;
+}
+
+.rsssl_count {
+    margin-top: -3px;
+    color: #fff;
+    overflow: hidden;
+}
+
+.rsssl_soc i {
+    font-size: 1.4em;
+    margin-left: 5px;
+    float: left;
+}
+
+/*Give linkedin special treatment due to different icon dimensions*/
+.icon-linkedin {
+    margin-top: -2px;
+}
+
+.entry-content a {
+    border: 0;
+}
+
+@media screen and (max-width: 480px) {
+    .rsssl_soc {
+        position: fixed;
+        top: auto;
+        height: auto;
+        display: flex;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        z-index: 10000;
+        margin: 0;
+    }
+    .rsssl_soc {
+        display: flex;
+        flex-grow: 1;
+        margin-bottom: 0px;
+    }
+}
+
+.rsssl_likes_shares {
+    display:none;
+    position: absolute;
+    color: #ffffff;
+}

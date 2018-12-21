@@ -23,6 +23,7 @@ class rsssl_soc_native
         add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
         add_action('wp_ajax_nopriv_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
+        add_action('wp_footer', array($this, 'native_buttons_scripts'));
 
         //this hook can be used to clear the likes from another plugin.
         //do_action('rsssl_soc_clear_likes', $post_id);
@@ -105,7 +106,7 @@ class rsssl_soc_native
             $url = get_permalink($post_id);
         }
 
-        if ($this->debug) $url = "https://www.wordpress.com";
+        if ($this->debug) $url = "https://www.sharethis.com";
 
         //make sure the current home_url is https, as this is a really simple ssl add on.
         $url_https = str_replace("http://", "https://", $url);
@@ -192,6 +193,9 @@ class rsssl_soc_native
             'pinterest' => $this->convert_nr($pinterest_likes),
             'yummly' => $this->convert_nr($yummly_likes),
         );
+
+        error_log("Shares na convert nr");
+        error_log(print_r($shares, true));
 
         return $shares;
     }
@@ -375,13 +379,18 @@ class rsssl_soc_native
         if ($get_httpswww) $likes += $this->get_cached_likes($type, $url_httpswww, $post_id);
 
         if ($likes == 0) $likes = "";
+
+        error_log("Get cached likes");
+        error_log(print_r($likes, true));
+
         return $likes;
 
     }
 
     private function get_cached_likes($type, $url, $post_id){
-
+        if ($this->debug) $url = "https://www.sharethis.com";
         $share_cache = get_transient("rsssl_" . $type . "_shares");
+
         if (!$share_cache || !isset($share_cache[$url])) {
             $this->get_likes($post_id, $type);
 
@@ -449,19 +458,24 @@ class rsssl_soc_native
          $expiration = (get_option('rsssl_share_cache_time') * 3600);
          $shares = 0;
          $share_cache = get_transient('rsssl_facebook_shares');
+         if (!$share_cache) $share_cache = array();
          $fb_access_token = get_option('rsssl_soc_fb_access_token');
          $auth = "";
          if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
          $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
-         //https://developers.facebook.com/tools/accesstoken/
+//         https://developers.facebook.com/tools/accesstoken/
          if ($request["response"]["code"] == 200) {
+             error_log("response code === 200");
              $json = wp_remote_retrieve_body($request);
              $output = json_decode($json);
              $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
          }
+         error_log("Share cache");
+         error_log(print_r($share_cache, true));
          $share_cache[$url] = $shares;
          set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
-         return $shares;
+
+         return intval($shares);
      }
 
     private function retrieve_twitter_likes($url)
@@ -579,8 +593,10 @@ class rsssl_soc_native
             // show the buttons
             // not on homepage, but do show them on blogs overview page (is_home)
             // always when a sidebar theme is used
-            //if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
+            if ((is_home() || !is_front_page()) || (get_option('rsssl_buttons_theme') == "sidebar-color") || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
+
                 $html = $this->generate_like_buttons();
+
                 $position = get_option('rsssl_button_position');
 
                 //position depending on setting
@@ -592,7 +608,7 @@ class rsssl_soc_native
                     $content = $html . $content;
                 }
 
-            //}
+            }
         }
 
         return $content;
@@ -620,73 +636,70 @@ class rsssl_soc_native
     }
 
 
-    /*
+    /**
+     * Generate like buttons to be used in either shortcode or content filter
+     *
+     * @param int $post_id
+     * @return string
+     */
 
-        Generate like buttons to be used in either shortcode or content filter
-
-    */
-
-    public function generate_like_buttons($single = true)
+    public function generate_like_buttons($post_id = false)
     {
-        $html = "";
+        global $wp_query;
+        $url = home_url();
+        $title = "";
+        $type = get_option('rsssl_button_type') === 'native' ? 'native' : 'builtin';
+
+        if ($post_id) {
+            $post = get_post($post_id);
+        } else {
+            $post_id = 0;
+            if ($wp_query) {
+                $post = $wp_query->post;
+                if ($post) $post_id = $post->ID;
+            }
+        }
+
+        if ($post) {
+            $url = get_permalink($post);
+            $title = $post->post_title;
+        }
 
         //load template from theme directory if available
-        $file = rsssl_soc_path . 'templates/template-wrap.php';
+        $file = rsssl_soc_path . "templates/$type-template-wrap.php";
         $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . 'template-wrap.php';
 
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
+
         ob_start();
         require $file;
-        $html = ob_get_clean();
+        $wrapper = ob_get_clean();
 
-        $button_html = $this->get_buttons();
-        $html = str_replace('{buttons}', $button_html, $html);
-        if (get_option('rsssl_inline_or_left') === "left") {
-            $html = str_replace('rsssl_soc', 'rsssl_soc rsssl_left', $html);
-        }
-        return $html;
-    }
-
-    public function get_buttons(){
-        global $wp_query;
-        $url = home_url();
-        $post_id = 0;
-        $title = "";
-
-        if ($wp_query) {
-            $post = $wp_query->post;
-            $url = get_permalink($post);
-            $post_id = $post->ID;
-            $title = $post->post_title;
-        }
-
-        $html = "";
+        $button_html = "";
         $services = get_option('rsssl_social_services');
         foreach($services as $service => $checked){
-//            if ($service === 'whatsapp' && !wp_is_mobile()) continue;
-            $html .= $this->get_button_html($service, $url, $post_id, $title);
-            error_log($post_id);
-            error_log(print_r($html,true));
+            $button_html .= $this->get_button_html($service, $url, $post_id, $title, $type);
         }
 
-        return $html;
-
+        return str_replace(array('{buttons}', '{post_id}'), array($button_html, $post_id), $wrapper);
     }
 
-    /*
+    /**
      * Get the html for a specific service button
-     *
-     *
-     * */
+     * @param $service
+     * @param $url
+     * @param $post_id
+     * @param $title
+     * @return string
+     */
 
-    public function get_button_html($service, $url, $post_id, $title){
+    public function get_button_html($service, $url, $post_id, $title, $type="builtin"){
 
-        $file = rsssl_soc_path . "templates/$service.php";
-        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$service.php";
+        $file = rsssl_soc_path . "templates/$type-$service.php";
+        $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$type-$service.php";
         $shares = $this->get_cached_likes_total($service, $post_id);
-        error_log(print_r($shares, true));
         if (file_exists($theme_file)) {
             $file = $theme_file;
         }
@@ -694,30 +707,25 @@ class rsssl_soc_native
         ob_start();
         require $file;
         $html = ob_get_clean();
-
         $html = str_replace(array("{post_id}", "{url}", "{title}", '{shares}'), array($post_id, $url, $title, $shares), $html);
 
-            //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
-            if (get_option('rsssl_fb_button_type') == 'shares') {
-                $html = str_replace("{like_or_share}" , "share", $html);
-                $html = str_replace("{height}" , "600", $html);
-                $html = str_replace("{width}" , "900", $html);
-            } else {
-                $html = str_replace("{like_or_share}" , "like", $html);
-                $html = str_replace("{height}" , "350", $html);
-                $html = str_replace("{width}" , "450", $html);
-            }
-            //Only replace the label for the 'color-new' and 'dark' themes.
-            if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark')) {
-                $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
-            } else {
-                $html = str_replace("{label}", "", $html);
-            }
-            //And insert a div for the new color theme
-            if (get_option('rsssl_buttons_theme') === 'color-new') {
-                $html = str_replace('{color_round}' , '<div class="rsssl-color-round"></div>' , $html);
-            } else
-                $html = str_replace('{color_round}' , "" , $html);
+        //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
+        if (get_option('rsssl_fb_button_type') == 'shares') {
+            $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("share" , "600" , "900"), $html);
+        } else {
+            $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
+        }
+        //Only replace the label for the 'color-new' and 'dark' themes.
+        if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
+            $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
+        } else {
+            $html = str_replace("{label}", "", $html);
+        }
+        //And insert a div for the new color theme
+        if (get_option('rsssl_buttons_theme') === 'color-new') {
+            $html = str_replace('{color_round}' , '<div class="rsssl-color-round"></div>' , $html);
+        } else
+            $html = str_replace('{color_round}' , "" , $html);
 
         return $html;
     }
@@ -728,9 +736,25 @@ class rsssl_soc_native
 
         $theme = get_option('rsssl_buttons_theme');
 
-        wp_enqueue_style('rsssl_social_buttons_color', plugin_dir_url(__FILE__) . "assets/css/$theme.css", array(), $version);
+        wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.min.css", array(), $version);
+
+        if (get_option('rsssl_button_type') === 'native') {
+            wp_register_style('rsssl_social_native_style', plugin_dir_url(__FILE__) . "assets/css/native.min.css", array(), $version);
+            wp_enqueue_style('rsssl_social_native_style');
+        }
 
         wp_enqueue_style('rsssl_social_fontello', plugin_dir_url(__FILE__) . 'assets/font/fontello-icons/css/fontello.css', array(), $version);
+
+        //Add any custom CSS defined in the custom CSS settings section
+        $custom_css = get_option('rsssl_custom_css');
+
+        if ($custom_css) {
+            $custom_css = $this->sanitize_custom_css($custom_css);
+            if (!empty($custom_css)) {
+                wp_add_inline_style('rsssl_social_buttons_style', $custom_css);
+            }
+        }
+
         wp_enqueue_script('rsssl_social', plugin_dir_url(__FILE__) . "assets/js/likes.js", array('jquery'), $version, true);
 
         $url = home_url();
@@ -750,12 +774,43 @@ class rsssl_soc_native
             wp_enqueue_script('rsssl_pinterest', "//assets.pinterest.com/js/pinit.js", array(), "", true);
         }
 
+        if ($this->twitter) {
+            wp_enqueue_script('rsssl_twitter', "https://platform.twitter.com/widgets.js", array(), "", true);
+        }
+
+        if ($this->google) {
+            wp_enqueue_script('rsssl_google', "https://apis.google.com/js/platform.js", array(), "", true);
+        }
+
         wp_localize_script('rsssl_social', 'rsssl_soc_ajax', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'token' => wp_create_nonce('rsssl_social_nonce', 'token'),
             'use_cache' => $use_cache,
         ));
 
+    }
+
+    public function native_buttons_scripts() {
+        echo "<div id=\"fb-root\"></div>
+                  <script>
+                      (function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id)) return;
+                        js = d.createElement(s); js.id = id;
+                        js.src = \"https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0\";
+                        fjs.parentNode.insertBefore(js, fjs);
+                      }(document, 'script', 'facebook-jssdk'));
+                  </script>";
+
+        echo "<script src=\"//platform.linkedin.com/in.js\" type=\"text/javascript\"> lang: en_US</script>";
+    }
+
+
+    public function sanitize_custom_css($css)
+    {
+        $css = preg_replace('/\/\*(.|\s)*?\*\//i', '', $css);
+        $css = trim($css);
+        return $css;
     }
 
 
@@ -773,7 +828,7 @@ class rsssl_soc_native
 
     /*
 
-      Genereate the editor html on a page with the shortcode.
+      Generate the editor html on a page with the shortcode.
 
     */
 
@@ -785,6 +840,5 @@ class rsssl_soc_native
 
         return ob_get_clean();
     }
-
 
 }//class closure

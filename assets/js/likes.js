@@ -83,5 +83,4 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    //rsssl_soc_get_likes();
 });

@@ -32,13 +32,12 @@
 .rsssl_soc a.post-share:hover {
   display: block;
   transition: all 0.2s ease-in;
-  background: #444444 no-repeat;
   width: 120px;
   overflow: hidden;
 }
 .rsssl_soc a.post-share:hover .rsssl_likes_shares {
   font-size: 0.9em;
-  margin-right: 15px;
+  margin-right: 5px;
   position: relative;
   display: block;
   float: right;
@@ -59,4 +58,3 @@
 .rsssl_soc .rsssl-label {
   color: #ffffff;
 }
-/*# sourceMappingURL=dark.css.map */

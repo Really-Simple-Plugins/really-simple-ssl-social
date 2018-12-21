@@ -1,7 +1,7 @@
 .rsssl_soc a.post-share {
     border-radius: 25px;
     margin-right: 10px;
-    min-width: 90px;
+    width: 100px;
     height: 25px;
     pointer: cursor;
     background: #3e599a no-repeat 0 0;
