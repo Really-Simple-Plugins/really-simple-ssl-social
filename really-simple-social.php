@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Really Simple SSL social
  * Plugin URI: https://www.really-simple-ssl.com/pro
- * Description: Add on for Really Simple SSL
+ * Description: Social sharing plugin. Can be used as an add on for Really Simple SSL or as a standalone plugin
  * Version: 4.0
  * Text Domain: really-simple-ssl-social
  * Domain Path: /languages
@@ -46,12 +46,22 @@ if (is_admin()) {
     $rsssl_soc_admin = new rsssl_soc_admin;
 }
 
-if ((get_option('rsssl_button_type') === 'builtin') || (get_option('rsssl_button_type') === 'native')) {
+$core_plugin = '/really-simple-ssl/rlrsssl-really-simple-ssl.php';
+if (!is_plugin_active($core_plugin)) {
+    require_once(dirname(__FILE__) . '/class-mixed-content-fixer.php');
+    $rsssl_soc_mixed_content_fixer = new rsssl_soc_mixed_content_fixer;
+
+}
+
+require_once(dirname(__FILE__) . '/class-help.php');
+$rsssl_soc_help = new rsssl_soc_help;
+
+//if ((get_option('rsssl_button_type') === 'builtin') || (get_option('rsssl_button_type') === 'native')) {
     require_once plugin_dir_path(__FILE__) . 'src/init.php';
     require_once(dirname(__FILE__) . '/rest-api/rest-api.php');
     require_once(dirname(__FILE__) . '/class-native.php');
     $rsssl_soc_native = new rsssl_soc_native;
-} else {
+//} else {
     require_once(dirname(__FILE__) . '/class-social.php');
     $rsssl_soc_social = new rsssl_soc_social;
-}
+//}
