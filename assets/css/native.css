@@ -1,6 +1,7 @@
 .rsssl-soc-native-buttons {
     /*height: 35px;*/
-    display: block;
+    display: flex;
+    align-items: center;
 }
 
 .rsssl-soc-native-item {
@@ -26,4 +27,16 @@
 
 .fb_iframe_widget {
     margin-bottom: 12px;
+}
+
+/*Just force Google to be inline with rest of buttons*/
+
+#___plus_0 {
+    display: -webkit-box !important;
+    margin-bottom: 5px !important;
+}
+
+#___plus_1 {
+    display: -webkit-box !important;
+    margin-bottom: 5px !important;
 }

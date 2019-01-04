@@ -8,5 +8,5 @@ import axios from 'axios';
  */
 export const getButtons = (post_id) => {
     //domain.com/wp-json/complianz/v1/data/doctypes
-    return axios.get(complianz.site_url+`/wp-json/rsssl/v1/buttons/id/${post_id}`);
+    return axios.get(rsssl_social.site_url+`/wp-json/rsssl/v1/buttons/id/${post_id}`);
 };

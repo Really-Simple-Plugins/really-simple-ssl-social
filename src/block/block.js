@@ -50,7 +50,7 @@ class selectButtons extends Component {
 	render() {
 		const { className, attributes: {} = {} } = this.props;
 
-		let output = __('Loading...', 'complianz');
+		let output = __('Loading...', 'really-simple-ssl-soc');
 		let id = 'rsssl-social-share-buttons';
 
 		// //load content
