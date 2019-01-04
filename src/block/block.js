@@ -36,13 +36,13 @@ class selectButtons extends Component {
 		this.getDocuments();
 	}
 
-	getDocuments(args = {}) {
+	getDocuments( args = { } ) {
 
-		return (api.getButtons(wp.data.select("core/editor").getCurrentPostId())).then( ( response ) => {
+		return (api.getButtons(wp.data.select("core/editor").getCurrentPostId( ) ) ).then( ( response ) => {
 
 			let html = response.data;
 				//this.state.documents = documents;
-				this.setState({ html });
+				this.setState( { html } );
 
 		});
 	}
