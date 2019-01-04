@@ -14,9 +14,7 @@ jQuery(document).ready(function ($) {
         });
 
         var selected = $('select[name=rsssl_button_type]').val();
-        console.log(selected);
         $('.'+selected).each(function(){
-            console.log(selected);
             $(this).closest('tr').show();
         });
     }
@@ -40,6 +38,19 @@ jQuery(document).ready(function ($) {
     rsssl_check_custom_css();
     $(document).on("click", "#rsssl_use_custom_css", function () {
         rsssl_check_custom_css();
-    })
+    });
+
+    function rsssl_show_button_position() {
+        if ($('select[name=rsssl_sitewide_or_block]').val() ==="sitewide") {
+            $('select[name=rsssl_button_position]').closest('tr').show();
+        } else {
+            $('select[name=rsssl_button_position]').closest('tr').hide();
+        }
+    }
+
+    rsssl_show_button_position();
+    $(document).on("change", "#sitewide_or_block", function () {
+        rsssl_show_button_position();
+    });
 
 });

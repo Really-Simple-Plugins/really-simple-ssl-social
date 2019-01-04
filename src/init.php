@@ -62,7 +62,7 @@ function rsssl_social_editor_assets() { // phpcs:ignore
     //https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/
     //wp package install git@github.com:wp-cli/i18n-command.git
     //wp i18n make-pot . config/languages/complianz.pot --exclude="pro-assets, core/assets"
-    wp_set_script_translations( 'rsssl-social-block', 'really-simple-ssl-social' , cmplz_path . 'config/languages');
+    wp_set_script_translations( 'rsssl-social-block', 'really-simple-ssl-social' , rsssl_soc_path . 'config/languages');
 
     // Styles.
     $theme = get_option('rsssl_buttons_theme');
@@ -97,9 +97,12 @@ function rsssl_social_editor_assets() { // phpcs:ignore
  */
 function rsssl_social_render_document_block($attributes, $content)
 {
-
-    $html = 'front end';
-
+    $html = '';
+    global $post;
+    if ($post) {
+        global $rsssl_soc_native;
+        $html = $rsssl_soc_native->generate_like_buttons($post->ID);
+    }
 
     return $html;
 }

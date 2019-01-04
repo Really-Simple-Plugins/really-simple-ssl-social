@@ -56,12 +56,14 @@ if (!is_plugin_active($core_plugin)) {
 require_once(dirname(__FILE__) . '/class-help.php');
 $rsssl_soc_help = new rsssl_soc_help;
 
-//if ((get_option('rsssl_button_type') === 'builtin') || (get_option('rsssl_button_type') === 'native')) {
+if ((get_option('rsssl_button_type') === 'builtin') || (get_option('rsssl_button_type') === 'native')) {
+
     require_once plugin_dir_path(__FILE__) . 'src/init.php';
     require_once(dirname(__FILE__) . '/rest-api/rest-api.php');
+
     require_once(dirname(__FILE__) . '/class-native.php');
     $rsssl_soc_native = new rsssl_soc_native;
-//} else {
+} else {
     require_once(dirname(__FILE__) . '/class-social.php');
     $rsssl_soc_social = new rsssl_soc_social;
-//}
+}
