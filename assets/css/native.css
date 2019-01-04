@@ -1,6 +1,7 @@
 .rsssl-soc-native-buttons {
     /*height: 35px;*/
-    display: block;
+    display: flex;
+    align-items: center;
 }
 
 .rsssl-soc-native-item {
