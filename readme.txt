@@ -26,6 +26,10 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 
 == Changelog ==
 = 4.0 =
+* Added more share button themes: color, color-new, round, dark, color sidebar and dark sidebar
+* Added the ability to show native sharing buttons with API count
+* Added Gutenberg support, buttons can be added as block
+* Plugin is now able to run as stand-alone, without requiring Really Simple SSL free
 * Tweak: no longer shows notices on Gutenberg edit screen
 
 = 3.0.11 =
