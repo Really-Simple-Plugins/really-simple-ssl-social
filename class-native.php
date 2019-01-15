@@ -104,7 +104,7 @@ class rsssl_soc_native
             $url = get_permalink($post_id);
         }
 
-        if ($this->debug) $url = "https://www.sharethis.com";
+        if ($this->debug) $url = "https://www.wordpress.org";
 
         //make sure the current home_url is https, as this is a really simple ssl add on.
         $url_https = str_replace("http://", "https://", $url);
@@ -332,7 +332,7 @@ class rsssl_soc_native
     }
 
     private function get_cached_likes($type, $url, $post_id){
-        if ($this->debug) $url = "https://www.sharethis.com";
+        if ($this->debug) $url = "https://www.wordpress.org";
         $share_cache = get_transient("rsssl_" . $type . "_shares");
 
         if (!$share_cache || !isset($share_cache[$url])) {
