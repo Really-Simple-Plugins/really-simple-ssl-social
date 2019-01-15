@@ -546,11 +546,11 @@ class rsssl_soc_admin
             if (get_option('rsssl_insert_custom_buttons') == 1) {
                 update_option('rsssl_button_type', 'builtin');
                 update_option('rsssl_buttons_theme', 'color');
+                update_option('rsssl_share_cache_time' , '24');
             } else {
                 update_option('rsssl_button_type', 'existing');
             }
 
-            update_option('rsssl_share_cache_time' , '24');
             update_option('rsssl-soc-current-version', rsssl_soc_version);
         }
     }
