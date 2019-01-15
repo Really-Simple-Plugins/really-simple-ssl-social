@@ -170,9 +170,6 @@ class rsssl_soc_native
             'yummly' => $this->convert_nr($yummly_likes),
         );
 
-        error_log("Shares na convert nr");
-        error_log(print_r($shares, true));
-
         return $shares;
     }
 
@@ -330,9 +327,6 @@ class rsssl_soc_native
 
         if ($likes == 0) $likes = "";
 
-        error_log("Get cached likes");
-        error_log(print_r($likes, true));
-
         return $likes;
 
     }
@@ -407,13 +401,10 @@ class rsssl_soc_native
          $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
 //         https://developers.facebook.com/tools/accesstoken/
          if ($request["response"]["code"] == 200) {
-             error_log("response code === 200");
              $json = wp_remote_retrieve_body($request);
              $output = json_decode($json);
              $shares = $output->engagement->reaction_count + $output->engagement->comment_count + $output->engagement->share_count + $output->engagement->comment_plugin_count;
          }
-         error_log("Share cache");
-         error_log(print_r($share_cache, true));
          $share_cache[$url] = $shares;
          set_transient('rsssl_facebook_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
