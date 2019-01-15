@@ -50,7 +50,7 @@ class rsssl_soc_native
         $atts = array_change_key_case((array)$atts, CASE_LOWER);
         ob_start();
 
-        $types = array('facebook', 'linkedin', 'twitter', 'google', 'pinterest', 'yummly');
+        $types = array('facebook', 'twitter', 'pinterest', 'yummly');
         global $post;
         $post_id = false;
         if ($post) $post_id = $post->ID;
@@ -95,8 +95,6 @@ class rsssl_soc_native
     {
         $facebook = $type ? $type === 'facebook' : $this->facebook;
         $twitter = $type ? $type === 'twitter' : $this->twitter;
-        $google = $type ? $type === 'google' : $this->google;
-        $linkedin = $type ? $type === 'linkedin' : $this->linkedin;
         $pinterest = $type ? $type === 'pinterest' : $this->pinterest;
         $yummly = $type ? $type === 'yummly' : $this->yummly;
 
@@ -147,26 +145,6 @@ class rsssl_soc_native
             if ($get_httpswww) $twitter_likes += $this->retrieve_twitter_likes($url_httpswww);
         }
 
-        $google_likes = 0;
-        //google seems to return the correct likes anyway.
-        if ($google) {
-            //$google_likes = $this->retrieve_google_likes($url_https);
-            if ($get_http) $google_likes = $this->retrieve_google_likes($url_http);
-            if ($get_https) $google_likes += $this->retrieve_google_likes($url_https);
-            if ($get_httpwww) $google_likes += $this->retrieve_google_likes($url_httpwww);
-            if ($get_httpswww) $google_likes += $this->retrieve_google_likes($url_httpswww);
-        }
-
-        $linkedin_likes = 0;
-        if ($linkedin) {
-            //only retrieve one domain, do not aggregate.
-            if ($get_https) {
-                $linkedin_likes = $this->retrieve_linkedin_likes($url_https);
-            } else {
-                $linkedin_likes = $this->retrieve_linkedin_likes($url_httpswww);
-            }
-        }
-
         $pinterest_likes = 0;
 
         if ($pinterest) {
@@ -188,8 +166,6 @@ class rsssl_soc_native
         $shares = array(
             'facebook' => $this->convert_nr($fb_likes),
             'twitter' => $this->convert_nr($twitter_likes),
-            'gplus' => $this->convert_nr($google_likes),
-            'linkedin' => $this->convert_nr($linkedin_likes),
             'pinterest' => $this->convert_nr($pinterest_likes),
             'yummly' => $this->convert_nr($yummly_likes),
         );
@@ -249,24 +225,6 @@ class rsssl_soc_native
             if ($get_https) $shares += $this->retrieve_twitter_likes($url_https);
             if ($get_httpwww) $shares += $this->retrieve_twitter_likes($url_httpwww);
             if ($get_httpswww) $shares += $this->retrieve_twitter_likes($url_httpswww);
-        }
-
-        //google seems to return the correct likes anyway.
-        if ($service==='google') {
-            //$google_likes = $this->retrieve_google_likes($url_https);
-            if ($get_http) $shares = $this->retrieve_google_likes($url_http);
-            if ($get_https) $shares += $this->retrieve_google_likes($url_https);
-            if ($get_httpwww) $shares += $this->retrieve_google_likes($url_httpwww);
-            if ($get_httpswww) $shares += $this->retrieve_google_likes($url_httpswww);
-        }
-
-        if ($service==='linkedin') {
-            //only retrieve one domain, do not aggregate.
-            if ($get_https) {
-                $shares = $this->retrieve_linkedin_likes($url_https);
-            } else {
-                $shares = $this->retrieve_linkedin_likes($url_httpswww);
-            }
         }
 
         if ($service==='pinterest') {
@@ -363,14 +321,6 @@ class rsssl_soc_native
             $get_httpswww = true;
         }
 
-        //do not aggregate for linkedin
-        if ($type === "linkedin") {
-            $get_http = false;
-            $get_httpwww = false;
-            //only get one of the two:
-            $get_httpswww = !$get_https;
-        }
-
         //get likes for both http and https
         $likes = 0;
         if ($get_http) $likes = $this->get_cached_likes($type, $url_http, $post_id);
@@ -415,14 +365,6 @@ class rsssl_soc_native
         $share_cache = get_transient('rsssl_twitter_shares');
         if ($share_cache) unset($share_cache[$url]);
         set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
-
-        $share_cache = get_transient('rsssl_google_shares');
-        if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
-
-        $share_cache = get_transient('rsssl_linkedin_shares');
-        if ($share_cache) unset($share_cache[$url]);
-        set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
 
         $share_cache = get_transient('rsssl_pinterest_shares');
         if ($share_cache) unset($share_cache[$url]);
@@ -495,47 +437,6 @@ class rsssl_soc_native
         set_transient('rsssl_twitter_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
         return intval($shares);
     }
-
-    private function retrieve_google_likes($url)
-    {
-        $share_cache = get_transient('rsssl_google_shares');
-        if (!$share_cache) $share_cache = array();
-        $expiration = (get_option('rsssl_share_cache_time') * 3600);
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"' . rawurldecode($url) . '","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-        $curl_results = curl_exec($curl);
-        curl_close($curl);
-
-        $json = json_decode($curl_results, true);
-
-        $shares = isset($json[0]['result']['metadata']['globalCounts']['count']) ? intval($json[0]['result']['metadata']['globalCounts']['count']) : 0;
-
-        $share_cache[$url] = $shares;
-        set_transient('rsssl_google_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
-
-        return intval($shares);
-    }
-
-    private function retrieve_linkedin_likes($url)
-    {
-        $share_cache = get_transient('rsssl_linkedin_shares');
-        if (!$share_cache) $share_cache = array();
-        $expiration = (get_option('rsssl_share_cache_time') * 3600);
-        $request = wp_remote_get('https://www.linkedin.com/countserv/count/share?url=' . urlencode($url) . '&format=json');
-        $json = wp_remote_retrieve_body($request);
-        $output = json_decode($json);
-        $shares = $output->count;
-        $share_cache[$url] = $shares;
-        set_transient('rsssl_linkedin_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
-
-        return intval($shares);
-    }
-
 
 //https://vk.com/share.php?act=count&url=https://really-simple-ssl.com
 
