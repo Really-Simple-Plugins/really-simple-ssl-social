@@ -94,28 +94,33 @@ class rsssl_soc_admin
 
     public function init()
     {
+        if (!current_user_can('manage_options')) return;
 
         if (!class_exists('rsssl_admin') && (!class_exists('rsssl_soc_admin'))) return;
         add_action('admin_init', array($this, 'add_settings'), 50);
         add_action('admin_init', array($this, 'listen_for_clear_share_cache'), 40);
+        add_action('admin_init', array($this, 'check_upgrade'), 30 );
 
     }
 
-
     public function options_validate($input)
     {
+        if (!current_user_can('manage_options')) return '';
+
         $validated_input = sanitize_text_field($input);
         return $validated_input;
     }
 
     public function options_validate_boolean($input)
     {
+        if (!current_user_can('manage_options')) return '';
 
         return $input ? true : false;
     }
 
     public function options_validate_boolean_array($input)
     {
+        if (!current_user_can('manage_options')) return '';
 
         if (is_array($input)) {
             $input = array_map(array($this, 'options_validate_boolean'), $input);
@@ -531,6 +536,22 @@ class rsssl_soc_admin
         ?>
         <p><?php _e('Settings for Really Simple SSL Social', 'really-simple-ssl-soc'); ?></p>
         <?php
+    }
+
+    public function check_upgrade()
+    {
+        $prev_version = get_option('rsssl-soc-current-version', '1.0.0');
+
+        if (version_compare($prev_version, '4.0', '<')) {
+            if (get_option('rsssl_insert_custom_buttons') == 1) {
+                update_option('rsssl_button_type', 'builtin');
+                update_option('rsssl_buttons_theme', 'color');
+            } else {
+                update_option('rsssl_button_type', 'existing');
+            }
+
+            update_option('rsssl-soc-current-version', rsssl_soc_version);
+        }
     }
 
 
