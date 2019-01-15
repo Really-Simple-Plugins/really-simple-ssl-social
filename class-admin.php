@@ -550,6 +550,7 @@ class rsssl_soc_admin
                 update_option('rsssl_button_type', 'existing');
             }
 
+            update_option('rsssl_share_cache_time' , '24');
             update_option('rsssl-soc-current-version', rsssl_soc_version);
         }
     }
