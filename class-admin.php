@@ -255,10 +255,10 @@ class rsssl_soc_admin
     {
         $theme = get_option('rsssl_buttons_theme');
         $options = array(
-                'color' => __('Color', 'really-simple-ssl-social'),
-                'color-new' => __('Color new', 'really-simple-ssl-social'),
-                'dark' => __('Dark', 'really-simple-ssl-social'),
-                'round' => __('Round', 'really-simple-ssl-social'),
+                'color' => __('Color square', 'really-simple-ssl-social'),
+                'color-new' => __('Color rounded', 'really-simple-ssl-social'),
+                'dark' => __('Dark square', 'really-simple-ssl-social'),
+                'round' => __('Dark round', 'really-simple-ssl-social'),
                 'sidebar-color' => __('Sidebar color', 'really-simple-ssl-social'),
                 'sidebar-dark' => __('Sidebar dark', 'really-simple-ssl-social'),
         );
