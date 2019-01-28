@@ -27,7 +27,6 @@
 */
 
 defined('ABSPATH') or die("you do not have access to this page!");
-
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 $plugin_data = get_plugin_data(__FILE__);
 define('rsssl_soc_url', plugin_dir_url(__FILE__));
@@ -36,6 +35,8 @@ define('rsssl_soc_plugin', plugin_basename(__FILE__));
 
 define('rsssl_soc_version', $plugin_data['Version']);
 define('rsssl_soc_plugin_file', __FILE__);
+
+require_once(plugin_dir_path(__FILE__) . 'functions.php');
 
 if (!defined('REALLY_SIMPLE_SSL_URL')) define('REALLY_SIMPLE_SSL_URL', 'https://www.really-simple-ssl.com');
 
@@ -58,7 +59,9 @@ $rsssl_soc_help = new rsssl_soc_help;
 
 if ((get_option('rsssl_button_type') === 'builtin') || (get_option('rsssl_button_type') === 'native')) {
 
-    require_once plugin_dir_path(__FILE__) . 'src/init.php';
+    if (rsssl_uses_gutenberg()) {
+        require_once plugin_dir_path(__FILE__) . 'src/init.php';
+    }
     require_once(dirname(__FILE__) . '/rest-api/rest-api.php');
 
     require_once(dirname(__FILE__) . '/class-native.php');
