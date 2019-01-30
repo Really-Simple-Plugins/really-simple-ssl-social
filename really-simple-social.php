@@ -51,7 +51,6 @@ $core_plugin = '/really-simple-ssl/rlrsssl-really-simple-ssl.php';
 if (!is_plugin_active($core_plugin)) {
     require_once(dirname(__FILE__) . '/class-mixed-content-fixer.php');
     $rsssl_soc_mixed_content_fixer = new rsssl_soc_mixed_content_fixer;
-
 }
 
 require_once(dirname(__FILE__) . '/class-help.php');
