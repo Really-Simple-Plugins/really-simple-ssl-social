@@ -219,6 +219,9 @@ class rsssl_soc_social
     public
     function fix_social($html)
     {
+
+        error_log("Fix social");
+
         if ($this->use_http()) {
 
             $http_url = str_replace("https://", "http://", home_url());
@@ -312,14 +315,22 @@ class rsssl_soc_social
 
             $html = apply_filters('rsssl_social_use_http_urls', $html);
             //verification
-            $html = str_replace('data-rsssl', 'data-rssslsocial=1 data-rsssl', $html);
+
+            if (is_plugin_active('/really-simple-ssl/rlrsssl-really-simple-ssl.php') ) {
+                $html = str_replace('data-rsssl', 'data-rssslsocial=1 data-rsssl', $html);
+            } else {
+                $html = str_replace('<body', '<body data-rssslsocial=1', $html);
+            }
         } else {
-            //verifciation of not doing anything
-            $html = str_replace('data-rsssl', 'data-rssslsocial=0 data-rsssl', $html);
+            if (is_plugin_active('/really-simple-ssl/rlrsssl-really-simple-ssl.php') ) {
+                //verifciation of not doing anything
+                $html = str_replace('data-rsssl', 'data-rssslsocial=0 data-rsssl', $html);
+            } else {
+                $html = str_replace('<body', '<body data-rssslsocial=0', $html);
+            }
         }
 
         return $html;
     }
-
 
 }//class closure
