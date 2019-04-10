@@ -214,28 +214,45 @@ class rsssl_soc_admin
     {
         if (!current_user_can($this->capability)) return;
 
-        if (isset ($_GET['tab'])) $this->rsssl_soc_admin_tabs($_GET['tab']); else $this->rsssl_soc_admin_tabs('configuration');
-        if (isset ($_GET['tab'])) $tab = $_GET['tab']; else $tab = 'configuration';
+        //If free is not active, add a license tab
+        if (!defined('rsssl_plugin')) {
+            if (isset ($_GET['tab'])) $this->rsssl_soc_admin_tabs($_GET['tab']); else $this->rsssl_soc_admin_tabs('configuration');
+            if (isset ($_GET['tab'])) $tab = $_GET['tab']; else $tab = 'configuration';
 
-        switch ($tab) {
-            case 'configuration' :
-
-                ?>
-                <form action="options.php" method="post">
-                    <?php
-                    settings_fields('rlrsssl_social_options');
-                    do_settings_sections('rlrsssl-social');
+            switch ($tab) {
+                case 'configuration' :
                     ?>
+                    <form action="options.php" method="post">
+                        <?php
+                        settings_fields('rlrsssl_social_options');
+                        do_settings_sections('rlrsssl-social');
+                        ?>
 
-                    <input class="button button-primary" name="Submit" type="submit"
-                           value="<?php echo __("Save", "really-simple-ssl"); ?>"/>
-                </form>
+                        <input class="button button-primary" name="Submit" type="submit"
+                               value="<?php echo __("Save", "really-simple-ssl"); ?>"/>
+                    </form>
+                    <?php
+                    break;
+                default:
+                    echo '';
+            }
+            if (!defined('rsssl_plugin')) {
+                do_action("show_tab_{$tab}");
+            }
+        } else {
+            //If free is active we only have to populate the social page
+            ?>
+            <form action="options.php" method="post">
                 <?php
-                break;
-            default:
-                echo '';
+                settings_fields('rlrsssl_social_options');
+                do_settings_sections('rlrsssl-social');
+                ?>
+
+                <input class="button button-primary" name="Submit" type="submit"
+                       value="<?php echo __("Save", "really-simple-ssl"); ?>"/>
+            </form>
+            <?php
         }
-        do_action("show_tab_{$tab}");
     }
 
     /**
@@ -311,7 +328,7 @@ class rsssl_soc_admin
                 <?php }?>
         </select>
         <?php
-        rsssl_soc_help::get_help_tip(__("Choose the share button theme. The 'Color' theme uses colorfull buttons in the social networks style, while the XXX.", "really-simple-ssl-soc"));
+        rsssl_soc_help::get_help_tip(__("Choose the share button theme.", "really-simple-ssl-soc"));
     }
 
     public function get_option_start_date_social()
