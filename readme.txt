@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 4.0
+Stable tag: 4.0.1
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0.1 =
+* Fix: fixed an issue where the licensing tab wouldn't appear when plugin is used as standalone plugin
+
 = 4.0 =
 * Added more share button themes: color rounded, color square, dark round, dark square, color sidebar and dark sidebar
 * Added the ability to show native sharing buttons with API count
