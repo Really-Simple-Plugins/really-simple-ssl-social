@@ -184,21 +184,58 @@ class rsssl_soc_admin
 
     }
 
+    /**
+     * Create tabs on the settings page
+     *
+     * @since  2.1
+     *
+     * @access public
+     *
+     */
+
+    public function rsssl_soc_admin_tabs($current = 'homepage')
+    {
+        $tabs = array(
+            'configuration' => __("Configuration", "really-simple-ssl")
+        );
+
+        $tabs = apply_filters("rsssl_tabs", $tabs);
+
+        echo '<h2 class="nav-tab-wrapper">';
+
+        foreach ($tabs as $tab => $name) {
+            $class = ($tab == $current) ? ' nav-tab-active' : '';
+            echo "<a class='nav-tab$class' href='?page=rlrsssl_really_simple_ssl&tab=$tab'>$name</a>";
+        }
+        echo '</h2>';
+    }
+
     public function add_social_page()
     {
+        if (!current_user_can($this->capability)) return;
 
-        ?>
-            <form action="options.php" method="post">
-                <?php
-                settings_fields('rlrsssl_social_options');
-                do_settings_sections('rlrsssl-social');
+        if (isset ($_GET['tab'])) $this->rsssl_soc_admin_tabs($_GET['tab']); else $this->rsssl_soc_admin_tabs('configuration');
+        if (isset ($_GET['tab'])) $tab = $_GET['tab']; else $tab = 'configuration';
+
+        switch ($tab) {
+            case 'configuration' :
+
                 ?>
+                <form action="options.php" method="post">
+                    <?php
+                    settings_fields('rlrsssl_social_options');
+                    do_settings_sections('rlrsssl-social');
+                    ?>
 
-                <input class="button button-primary" name="Submit" type="submit"
-                       value="<?php echo __("Save", "really-simple-ssl"); ?>"/>
-            </form>
-        <?php
-
+                    <input class="button button-primary" name="Submit" type="submit"
+                           value="<?php echo __("Save", "really-simple-ssl"); ?>"/>
+                </form>
+                <?php
+                break;
+            default:
+                echo '';
+        }
+        do_action("show_tab_{$tab}");
     }
 
     /**
@@ -245,13 +282,13 @@ class rsssl_soc_admin
     {
         $rsssl_button_type = get_option('rsssl_button_type');
 
-            ?>
+        ?>
         <select name="rsssl_button_type">
             <option value="existing" <?php if ($rsssl_button_type == "existing") echo "selected" ?>><?php _e("Recover shares for existing buttons", "really-simple-ssl-soc"); ?>
             <option value="builtin" <?php if ($rsssl_button_type == "builtin") echo "selected" ?>> <?php _e("Built-in buttons", "really-simple-ssl-soc"); ?>
             <option value="native" <?php if ($rsssl_button_type == "native") echo "selected" ?>><?php _e("Native sharing buttons", "really-simple-ssl-soc"); ?>
         </select>
-            <?php
+        <?php
         rsssl_soc_help::get_help_tip(__("The existing option recovers shares for your existing sharing plugin buttons. The built-in buttons use the Really Simple SSL Social button. Native option shows the native sharing widgets for each platform.", "really-simple-ssl-soc"));
 
     }
@@ -260,18 +297,18 @@ class rsssl_soc_admin
     {
         $theme = get_option('rsssl_buttons_theme');
         $options = array(
-                'color' => __('Color square', 'really-simple-ssl-social'),
-                'color-new' => __('Color rounded', 'really-simple-ssl-social'),
-                'dark' => __('Dark square', 'really-simple-ssl-social'),
-                'round' => __('Dark round', 'really-simple-ssl-social'),
-                'sidebar-color' => __('Sidebar color', 'really-simple-ssl-social'),
-                'sidebar-dark' => __('Sidebar dark', 'really-simple-ssl-social'),
+            'color' => __('Color square', 'really-simple-ssl-social'),
+            'color-new' => __('Color rounded', 'really-simple-ssl-social'),
+            'dark' => __('Dark square', 'really-simple-ssl-social'),
+            'round' => __('Dark round', 'really-simple-ssl-social'),
+            'sidebar-color' => __('Sidebar color', 'really-simple-ssl-social'),
+            'sidebar-dark' => __('Sidebar dark', 'really-simple-ssl-social'),
         );
         ?>
         <select name="rsssl_buttons_theme" class="builtin button_type">
             <?php foreach($options as $key => $name) {?>
-                <option value=<?php echo $key?> <?php if ($theme == $key) echo "selected" ?>><?php echo $name ?>
-            <?php }?>
+            <option value=<?php echo $key?> <?php if ($theme == $key) echo "selected" ?>><?php echo $name ?>
+                <?php }?>
         </select>
         <?php
         rsssl_soc_help::get_help_tip(__("Choose the share button theme. The 'Color' theme uses colorfull buttons in the social networks style, while the XXX.", "really-simple-ssl-soc"));
@@ -358,7 +395,7 @@ class rsssl_soc_admin
         rsssl_soc_help::get_help_tip(__("Clicking this button will clear the cache, forcing the shares to be retrieved on next pageload.", "really-simple-ssl-soc"));
     }
 
-     public function listen_for_clear_share_cache()
+    public function listen_for_clear_share_cache()
     {
         //check nonce
         if (!isset($_GET['token']) || (!wp_verify_nonce($_GET['token'], 'rsssl_clear_share_cache'))) return;
@@ -387,18 +424,18 @@ class rsssl_soc_admin
     }
 
     public function get_option_retrieval_domains() {
-      $domains = get_option('rsssl_retrieval_domains');
-      $http = isset($domains['http']) ? $domains['http'] : false;
-      $https = isset($domains['https']) ? $domains['https'] : false;
-      $httpwww = isset($domains['httpwww']) ? $domains['httpwww'] : false;
-      $httpswww = isset($domains['httpswww']) ? $domains['httpswww'] : false;
+        $domains = get_option('rsssl_retrieval_domains');
+        $http = isset($domains['http']) ? $domains['http'] : false;
+        $https = isset($domains['https']) ? $domains['https'] : false;
+        $httpwww = isset($domains['httpwww']) ? $domains['httpwww'] : false;
+        $httpswww = isset($domains['httpswww']) ? $domains['httpswww'] : false;
 
-      ?>
-      <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[http]" value="1" <?php checked( $http, "1"); ?>/><?php _e("Retrieve http://domain.com", "really-simple-ssl-soc")?><br>
-      <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[https]" value="1" <?php checked( $https, "1"); ?>/><?php _e("Retrieve https://domain.com", "really-simple-ssl-soc")?><br>
-      <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[httpwww]" value="1" <?php checked( $httpwww, "1"); ?>/><?php _e("Retrieve http://www.domain.com", "really-simple-ssl-soc")?><br>
-      <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[httpswww]" value="1" <?php checked( $httpswww, "1"); ?>/><?php _e("Retrieve https://www.domain.com", "really-simple-ssl-soc")?><br>
-      <?php
+        ?>
+        <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[http]" value="1" <?php checked( $http, "1"); ?>/><?php _e("Retrieve http://domain.com", "really-simple-ssl-soc")?><br>
+        <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[https]" value="1" <?php checked( $https, "1"); ?>/><?php _e("Retrieve https://domain.com", "really-simple-ssl-soc")?><br>
+        <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[httpwww]" value="1" <?php checked( $httpwww, "1"); ?>/><?php _e("Retrieve http://www.domain.com", "really-simple-ssl-soc")?><br>
+        <input type="checkbox" class="button_type native builtin" name="rsssl_retrieval_domains[httpswww]" value="1" <?php checked( $httpswww, "1"); ?>/><?php _e("Retrieve https://www.domain.com", "really-simple-ssl-soc")?><br>
+        <?php
         rsssl_soc_help::get_help_tip(__("Choose which domains you want to retrieve the shares for. Sometimes Facebook returns different shares for www and non www, but sometimes they are the same. Configure accordingly.", "really-simple-ssl-soc"));
     }
 
@@ -442,13 +479,13 @@ class rsssl_soc_admin
 
 
     public function get_option_fb_button_type() {
-      $rsssl_fb_button_type = get_option('rsssl_fb_button_type');
-      ?>
-      <select name="rsssl_fb_button_type" class="builtin native button_type">
-        <option value="shares" <?php if ($rsssl_fb_button_type=="shares") echo "selected"?>>Shares
-        <option value="likes" <?php if ($rsssl_fb_button_type=="likes") echo "selected"?>>Likes
-      </select>
-      <?php
+        $rsssl_fb_button_type = get_option('rsssl_fb_button_type');
+        ?>
+        <select name="rsssl_fb_button_type" class="builtin native button_type">
+            <option value="shares" <?php if ($rsssl_fb_button_type=="shares") echo "selected"?>>Shares
+            <option value="likes" <?php if ($rsssl_fb_button_type=="likes") echo "selected"?>>Likes
+        </select>
+        <?php
         rsssl_soc_help::get_help_tip(__("Choose if you want to use the share or the like functionality of Facebook", "really-simple-ssl-soc"));
     }
 
@@ -492,25 +529,25 @@ class rsssl_soc_admin
 
     public function get_option_rsssl_custom_css()
     {
-            ?>
-            <div id="rsssl_custom_csseditor"
-                              style="height: 200px; width: 100%"><?php echo get_option('rsssl_custom_css') ?></div>
-            <script>
-                var rsssl_custom_css =
+        ?>
+        <div id="rsssl_custom_csseditor"
+             style="height: 200px; width: 100%"><?php echo get_option('rsssl_custom_css') ?></div>
+        <script>
+            var rsssl_custom_css =
                 ace.edit("rsssl_custom_csseditor");
-                rsssl_custom_css.setTheme("ace/theme/monokai");
-                rsssl_custom_css.session.setMode("ace/mode/css");
-                jQuery(document).ready(function ($) {
-                    var textarea = $('textarea[name="rsssl_custom_css"]');
-                    rsssl_custom_css.
-                    getSession().on("change", function () {
-                        textarea.val(rsssl_custom_css.getSession().getValue()
+            rsssl_custom_css.setTheme("ace/theme/monokai");
+            rsssl_custom_css.session.setMode("ace/mode/css");
+            jQuery(document).ready(function ($) {
+                var textarea = $('textarea[name="rsssl_custom_css"]');
+                rsssl_custom_css.
+                getSession().on("change", function () {
+                    textarea.val(rsssl_custom_css.getSession().getValue()
                     )
-                    });
                 });
-            </script>
-            <textarea style="display:none" name="rsssl_custom_css"><?php echo get_option('rsssl_custom_css') ?></textarea>
-            <?php
+            });
+        </script>
+        <textarea style="display:none" name="rsssl_custom_css"><?php echo get_option('rsssl_custom_css') ?></textarea>
+        <?php
     }
 
     public function plugin_settings_link($links){
