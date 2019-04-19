@@ -165,8 +165,10 @@ class rsssl_soc_admin
         register_setting('rlrsssl_social_options', 'rsssl_retrieval_domains', array($this, 'options_validate_boolean_array'));
         register_setting('rlrsssl_social_options', 'rsssl_fb_button_type', array($this, 'options_validate'));
         register_setting('rlrsssl_social_options', 'rsssl_share_cache_time', array($this, 'options_validate'));
-        register_setting('rlrsssl_social_options', 'rsssl_use_custom_css', array($this, 'options_validate_boolean'));
-        register_setting('rlrsssl_social_options', 'rsssl_custom_css', array($this, 'options_validate'));
+        if (!defined("RSSSL_SOC_NO_ACE")) {
+            register_setting('rlrsssl_social_options', 'rsssl_use_custom_css', array($this, 'options_validate_boolean'));
+            register_setting('rlrsssl_social_options', 'rsssl_custom_css', array($this, 'options_validate'));
+        }
 
         add_settings_field('rsssl_buttons_theme', __("Share buttons theme", "really-simple-ssl-soc"), array($this, 'get_option_rsssl_buttons_theme'), 'rlrsssl-social', 'rlrsssl_settings');
 
@@ -278,7 +280,9 @@ class rsssl_soc_admin
 
     public function enqueue_assets()
     {
-        wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
+        if (!defined("RSSSL_SOC_NO_ACE")) {
+            wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
+        }
 
         if (is_admin()) {
             wp_register_style('rlrsssl-soc-css', trailingslashit(rsssl_soc_url) . '/assets/css/rsssl-soc-admin.css', "", rsssl_soc_version);
