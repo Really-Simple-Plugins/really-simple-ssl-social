@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 4.0.1
+Stable tag: 4.0.2
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,10 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0.2 =
+* Fix: native like button now shows correctly when using the native buttons with like option
+* Tweak: added constant RSSSL_SOC_NO_ACE to prevent ace CSS editor from loading
+
 = 4.0.1 =
 * Fix: fixed an issue where the licensing tab wouldn't appear when plugin is used as standalone plugin
 

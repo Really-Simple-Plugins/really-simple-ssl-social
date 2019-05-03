@@ -590,6 +590,7 @@ class rsssl_soc_native
     public function get_button_html($service, $url, $post_id, $title, $type="builtin"){
 
         $file = rsssl_soc_path . "templates/$type-$service.php";
+
         $theme_file = get_stylesheet_directory() . '/' . dirname(rsssl_soc_plugin) . "/$type-$service.php";
         $shares = $this->get_cached_likes_total($service, $post_id);
         if (file_exists($theme_file)) {
