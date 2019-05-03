@@ -25,7 +25,7 @@ class rsssl_soc_admin
 
         $plugin = rsssl_soc_plugin;
         add_filter("plugin_action_links_$plugin", array($this, 'plugin_settings_link'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
 
         add_action('admin_init', array($this, 'init'), 15);
 
@@ -278,17 +278,21 @@ class rsssl_soc_admin
             array($this, 'add_social_page')); //function
     }
 
-    public function enqueue_assets()
+    public function enqueue_admin_assets($hook)
     {
-        if (!defined("RSSSL_SOC_NO_ACE")) {
-            wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
-        }
+        //script to check for ad blockers
+        if (isset($_GET['page']) && $_GET['page']=='rlrsssl_really_simple_ssl') {
 
-        if (is_admin()) {
-            wp_register_style('rlrsssl-soc-css', trailingslashit(rsssl_soc_url) . '/assets/css/rsssl-soc-admin.css', "", rsssl_soc_version);
-            wp_enqueue_style('rlrsssl-soc-css');
-            if ($this->is_settings_page()) {
-                wp_enqueue_script('rsssl-soc-admin', rsssl_soc_url . 'assets/js/admin.min.js', array(), rsssl_soc_version, false);
+            if (!defined("RSSSL_SOC_NO_ACE")) {
+                wp_enqueue_script('rsssl-soc-ace', rsssl_soc_url . "assets/ace/ace.js", array(), 1, false);
+            }
+
+            if (is_admin()) {
+                wp_register_style('rlrsssl-soc-css', trailingslashit(rsssl_soc_url) . '/assets/css/rsssl-soc-admin.css', "", rsssl_soc_version);
+                wp_enqueue_style('rlrsssl-soc-css');
+                if ($this->is_settings_page()) {
+                    wp_enqueue_script('rsssl-soc-admin', rsssl_soc_url . 'assets/js/admin.min.js', array(), rsssl_soc_version, false);
+                }
             }
         }
 
