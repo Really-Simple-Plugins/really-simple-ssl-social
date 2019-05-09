@@ -608,6 +608,11 @@ class rsssl_soc_native
         } else {
             $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
         }
+
+        if ($service['whatsapp']) {
+            $html = str_replace(array('{url}'), array($url), $html);
+        }
+
         //Only replace the label for the 'color-new' and 'dark' themes.
         if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
             $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);

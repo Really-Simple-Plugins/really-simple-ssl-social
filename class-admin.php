@@ -132,6 +132,8 @@ class rsssl_soc_admin
 
     public function add_settings()
     {
+
+        //Whether a setting is shown for a button type depends on the class it is given in the get_option function.
         if (!class_exists("rsssl_admin") && (!class_exists('rsssl_soc_admin'))) return;
 
         add_settings_section('rlrsssl_settings', __("Settings", "really-simple-ssl"), array($this, 'section_text'), 'rlrsssl-social');
@@ -402,7 +404,7 @@ class rsssl_soc_admin
     public function get_option_share_cache_time()
     {
         $share_cache_time = get_option('rsssl_share_cache_time');
-        echo '<input id="rsssl_share_cache_time" name="rsssl_share_cache_time" class="builtin button_type" size="40" type="number" min="0" max="24" value="' . $share_cache_time . '" />';
+        echo '<input id="rsssl_share_cache_time" name="rsssl_share_cache_time" class="builtin native button_type" size="40" type="number" min="0" max="24" value="' . $share_cache_time . '" />';
         rsssl_soc_help::get_help_tip(__("Set to a value between 1 and 24. Caching the shares will minimize the number of share retrieval request made to the social networks. Not caching shares can result in too many request (rate limiting) and thus shares not showing. Share counts will automatically update after the amount of time specified", "really-simple-ssl-soc"));
 
     }

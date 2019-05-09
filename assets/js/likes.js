@@ -19,6 +19,48 @@ function rssslPopupCenter(url, title, w, h) {
 jQuery(document).ready(function ($) {
     'use strict';
 
+    var monitor = setInterval(function(){
+        var elem = document.activeElement;
+        if(elem && elem.tagName == 'IFRAME'){
+            // alert('Clicked');
+            console.log("sharing");
+
+            //var wrapper = $(this).closest('div.rsssl-soc-native-item');
+            var wrapper = $(document).closest('div.rsssl-soc-native-item');
+
+            console.log("Wrapper");
+            console.log(wrapper);
+            //if (!wrapper.length) return;
+            var container = wrapper.find('.rsssl_likes_shares');
+
+            var counter = container.html();
+            return;
+            if (counter.indexOf('k') >= 0 || counter.indexOf('m') >= 0) {
+                return;
+            }
+
+            if (isNaN(counter) || counter == '') counter = 0;
+            counter++;
+            container.html(counter);
+
+            //now, clear the share cache for this url
+            var post_id = $(this).closest('.rsssl_soc').data('rsssl_post_id');
+            $.ajax({
+                type: "GET",
+                url: rsssl_soc_ajax.ajaxurl,
+                dataType: 'json',
+                data: ({
+                    action: 'rsssl_clear_likes',
+                    post_id: post_id,
+                }),
+                success: function (data) {
+                    console.log('successfully cleared cached shares!');
+                }
+            });
+            clearInterval(monitor);
+        }
+    }, 3500);
+
 //Shows the pinterest overlay when clicking on the icon
     $(document).on('click', '.pinterest .rsssl_count', function (e) {
         PinUtils.pinAny();
