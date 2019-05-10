@@ -31,13 +31,18 @@
 .native-wa {
     height: 22px;
     width: 60px;
-    /*border: 1px solid black;*/
-    background-color: #00E676;
-    border-radius: 5%;
+    background-color: #25D366;
+    border-radius: 6px;
 }
 
-.native-wa a {
-    margin-top: -9px;
+.native-wa:hover {
+    opacity: 0.8;
+}
+
+.icon-whatsapp{
+    color: #ffffff;
+    font-size: 0.9em;
+    margin-top: -5px;
 }
 
 .rsssl_likes_shares {
@@ -57,9 +62,4 @@
 #___plus_1 {
     display: -webkit-box !important;
     margin-bottom: 5px !important;
-}
-
-.icon-whatsapp{
-    color: #ffffff;
-    font-size: 0.9em;
 }
