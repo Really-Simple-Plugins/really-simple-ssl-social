@@ -634,7 +634,9 @@ class rsssl_soc_native
 
         $theme = get_option('rsssl_buttons_theme');
 
-        wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.min.css", array(), $version);
+        if (!get_option('rsssl_button_type') === 'native') {
+            wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.min.css", array(), $version);
+        }
 
         if (get_option('rsssl_button_type') === 'native') {
             wp_register_style('rsssl_social_native_style', plugin_dir_url(__FILE__) . "assets/css/native.min.css", array(), $version);

@@ -20,21 +20,16 @@ jQuery(document).ready(function ($) {
     'use strict';
 
     var monitor = setInterval(function(){
-        var elem = document.activeElement;
-        if(elem && elem.tagName == 'IFRAME'){
-            // alert('Clicked');
-            console.log("sharing");
+        var elem = $(document.activeElement);
 
-            //var wrapper = $(this).closest('div.rsssl-soc-native-item');
-            var wrapper = $(document).closest('div.rsssl-soc-native-item');
+        if(elem && elem.prop('tagName') == 'IFRAME'){
 
-            console.log("Wrapper");
-            console.log(wrapper);
+            var wrapper = elem.closest('.rsssl-soc-native-item');
+
             //if (!wrapper.length) return;
             var container = wrapper.find('.rsssl_likes_shares');
 
             var counter = container.html();
-            return;
             if (counter.indexOf('k') >= 0 || counter.indexOf('m') >= 0) {
                 return;
             }
