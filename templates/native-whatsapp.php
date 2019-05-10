@@ -1,11 +1,13 @@
 <?php
-?> <div class="rsssl-soc-native-item"> <?php
+?> <div class="rsssl-soc-native-item native-wa"> <?php
 if (isMobileDevice()) { ?>
-    <a href="whatsapp://send?text={url}><i class="icon-whatsapp">Share</a>
+    <a href="whatsapp://send?text={url}>
+        <div class="rsssl_count"><i class="icon-whatsapp"></i></div>
+    </a>
 <?php } else { ?>
-    <a href="whatsapp://send?text={url}" data-action="share/whatsapp/share"><i class="icon-whatsapp">Share</i>
-</a>
-    <div class="rsssl_count"><i class="icon-whatsapp"></i></div>
+    <a href="whatsapp://send?text={url}" data-action="share/whatsapp/share">
+        <i class="icon-whatsapp"></i>
+    </a>
     <?php } ?>
 </div>
 

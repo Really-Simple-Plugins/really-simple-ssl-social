@@ -1,18 +1,20 @@
 .rsssl-soc-native-buttons {
-    /*height: 35px;*/
+    height: 30px;
     display: flex;
     align-items: center;
 }
 
 .rsssl-soc-native-item {
-    display: inline-block;
-    vertical-align: bottom;
+    display: flex;
     margin-right: 35px;
+    justify-content: center;
+    text-align: center;
 }
 
-.rsssl-soc-native-item-pin span {
-    margin-bottom: 13px;
+.rsssl-soc-native-item a {
+    text-decoration: none;
 }
+
 .rsssl-soc-share-count {
     display: inline-block;
     font-size: 15px;
@@ -21,12 +23,8 @@
     margin-left: 6px;
 }
 
-.rsssl-soc-share-count-pin {
-    margin-top: 8px;
-}
-
 .fb_iframe_widget {
-    margin-bottom: 12px;
+    margin-bottom: 17px;
 }
 
 /*Just force Google to be inline with rest of buttons*/
@@ -39,4 +37,9 @@
 #___plus_1 {
     display: -webkit-box !important;
     margin-bottom: 5px !important;
+}
+
+.icon-whatsapp{
+    color: #00E676;
+    font-size: 0.9em;
 }
