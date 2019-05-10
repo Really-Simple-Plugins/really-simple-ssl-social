@@ -1,18 +1,20 @@
 .rsssl-soc-native-buttons {
-    /*height: 35px;*/
+    height: 30px;
     display: flex;
     align-items: center;
 }
 
 .rsssl-soc-native-item {
-    display: inline-block;
-    vertical-align: bottom;
+    display: flex;
     margin-right: 35px;
+    justify-content: center;
+    text-align: center;
 }
 
-.rsssl-soc-native-item-pin span {
-    margin-bottom: 13px;
+.rsssl-soc-native-item a {
+    text-decoration: none;
 }
+
 .rsssl-soc-share-count {
     display: inline-block;
     font-size: 15px;
@@ -21,14 +23,35 @@
     margin-left: 6px;
 }
 
-.rsssl-soc-share-count-pin {
+.fb_iframe_widget {
+    margin-bottom: 17px;
+}
+
+/*Lets style our own WhatsApp button, because doesn't have one*/
+.native-wa {
+    height: 22px;
+    width: 60px;
+    background-color: #25D366;
+    border-radius: 6px;
+}
+
+.native-wa:hover {
+    opacity: 0.8;
+}
+
+.icon-whatsapp{
+    color: #ffffff;
+    font-size: 0.9em;
+    margin-top: -5px;
+}
+
+.rsssl_likes_shares {
+    font-weight: 500;
+    position: absolute;
+    margin-left: 35px;
+    color: #444444;
     margin-top: 8px;
 }
-
-.fb_iframe_widget {
-    margin-bottom: 12px;
-}
-
 /*Just force Google to be inline with rest of buttons*/
 
 #___plus_0 {

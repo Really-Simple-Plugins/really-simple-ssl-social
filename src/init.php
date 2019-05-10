@@ -66,7 +66,9 @@ function rsssl_social_editor_assets() { // phpcs:ignore
 
     // Styles.
     $theme = get_option('rsssl_buttons_theme');
-    wp_enqueue_style('rsssl_social_buttons_style', rsssl_soc_url . "assets/css/$theme.min.css", array(), rsssl_soc_version);
+    if (!get_option('rsssl_button_type') === 'native') {
+        wp_enqueue_style('rsssl_social_buttons_style', rsssl_soc_url . "assets/css/$theme.min.css", array(), rsssl_soc_version);
+    }
 
     if (get_option('rsssl_button_type') === 'native') {
         wp_register_style('rsssl_social_native_style', rsssl_soc_url . "assets/css/native.min.css", array(), rsssl_soc_version);

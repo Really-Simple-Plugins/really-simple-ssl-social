@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 4.0.2
+Stable tag: 4.0.3
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,12 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0.3=
+* Added WhatsApp and Yummly buttons to native theme
+* Tweak: added share cache time option to native buttons
+* Fix: sharecount now refreshes when native FB button is clicked
+* Fix: built-in button CSS is no longer enqueued when using native buttons
+
 = 4.0.2 =
 * Fix: native like button now shows correctly when using the native buttons with like option
 * Tweak: added constant RSSSL_SOC_NO_ACE to prevent ace CSS editor from loading
