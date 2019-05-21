@@ -2,6 +2,8 @@
     height: 30px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 
 .rsssl-soc-native-item {
@@ -23,9 +25,9 @@
     margin-left: 6px;
 }
 
-.fb_iframe_widget {
-    margin-bottom: 17px;
-}
+/*.fb_iframe_widget {*/
+/*    margin-bottom: 17px;*/
+/*}*/
 
 /*Lets style our own WhatsApp button, because doesn't have one*/
 .native-wa {
@@ -50,7 +52,7 @@
     position: absolute;
     margin-left: 35px;
     color: #444444;
-    margin-top: 8px;
+    /*margin-top: 8px;*/
 }
 /*Just force Google to be inline with rest of buttons*/
 
