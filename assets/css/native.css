@@ -55,7 +55,7 @@
 
 .rsssl_likes_shares {
     font-weight: 500;
-    position: absolute;
+    /*position: absolute;*/
     margin-left: 35px;
     color: #444444;
     /*margin-top: 8px;*/
