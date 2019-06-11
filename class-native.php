@@ -511,6 +511,9 @@ class rsssl_soc_native
     {
         //$post_type = "rsssl_homepage";
 
+        //Do not insert the share buttons in an excerpt, only on a single page
+        if (!is_single()) return false;
+
         global $post;
         $post_id = 0;
         if ($post) {
