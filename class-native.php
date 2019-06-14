@@ -612,7 +612,7 @@ class rsssl_soc_native
             $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
         }
 
-        if ($service['whatsapp']) {
+        if (isset($service['whatsapp'])) {
             $html = str_replace(array('{url}'), array($url), $html);
         }
 
