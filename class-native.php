@@ -18,7 +18,7 @@ class rsssl_soc_native
             wp_die(sprintf(__('%s is a singleton class and you cannot create a second instance.', 'really-simple-ssl-soc'), get_class($this)));
 
         self::$_this = $this;
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 100);
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts') );
         add_action('wp_ajax_nopriv_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
@@ -637,8 +637,9 @@ class rsssl_soc_native
 
         $theme = get_option('rsssl_buttons_theme');
 
-        if (!get_option('rsssl_button_type') === 'native') {
-            wp_enqueue_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.min.css", array(), $version);
+        if (get_option('rsssl_button_type') != 'native') {
+            wp_register_style('rsssl_social_buttons_style', plugin_dir_url(__FILE__) . "assets/css/$theme.min.css", array(), $version);
+            wp_enqueue_style('rsssl_social_buttons_style');
         }
 
         if (get_option('rsssl_button_type') === 'native') {
