@@ -81,7 +81,8 @@ function rsssl_social_editor_assets() { // phpcs:ignore
     $custom_css = get_option('rsssl_custom_css');
 
     if ($custom_css) {
-        $custom_css = $this->sanitize_custom_css($custom_css);
+        global $rsssl_soc_native;
+        $custom_css = $rsssl_soc_native->sanitize_custom_css($custom_css);
         if (!empty($custom_css)) {
             wp_add_inline_style('rsssl_social_buttons_style', $custom_css);
         }
