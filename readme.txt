@@ -30,6 +30,7 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 * Tweak: added share cache time option to native buttons
 * Fix: sharecount now refreshes when native FB button is clicked
 * Fix: built-in button CSS is no longer enqueued when using native buttons
+* Fix: fixed a bug where custom CSS was not applied
 
 = 4.0.2 =
 * Fix: native like button now shows correctly when using the native buttons with like option
