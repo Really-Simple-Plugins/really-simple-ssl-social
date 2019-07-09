@@ -162,13 +162,22 @@ class rsssl_soc_social
         $use_http = TRUE;
         $have_post = false;
 
-        if (is_front_page()) {
+	    //if (is_front_page() || is_home()) {
+		    if (is_front_page()) {
             if (get_option('rsssl_soc_replace_to_http_on_home')) {
                 return true;
             } else {
                 return false;
             }
         }
+
+	    if (is_home()) {
+		    if (get_option('rsssl_soc_replace_to_http_on_blogoverview')) {
+			    return true;
+		    } else {
+			    return false;
+		    }
+	    }
 
         //if an id was passed, get post by id
         if ($post_id) {
