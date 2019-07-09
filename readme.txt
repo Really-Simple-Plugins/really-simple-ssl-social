@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 4.0.3
+Stable tag: 4.0.4
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0.4 =
+* Added option to recover shares on blog overview (archive) pages
+
 = 4.0.3=
 * Added WhatsApp and Yummly buttons to native theme
 * Tweak: added share cache time option to native buttons
