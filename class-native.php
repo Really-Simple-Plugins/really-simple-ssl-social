@@ -398,7 +398,7 @@ class rsssl_soc_native
          $fb_access_token = get_option('rsssl_soc_fb_access_token');
          $auth = "";
          if ($fb_access_token) $auth = '&access_token=' . $fb_access_token;
-         $request = wp_remote_get('https://graph.facebook.com/v2.9/?fields=engagement&id=' . $url . $auth);
+         $request = wp_remote_get('https://graph.facebook.com/v3.3/?fields=engagement&id=' . $url . $auth);
 //         https://developers.facebook.com/tools/accesstoken/
          if ($request["response"]["code"] == 200) {
              $json = wp_remote_retrieve_body($request);

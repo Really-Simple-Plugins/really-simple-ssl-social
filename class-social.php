@@ -171,14 +171,6 @@ class rsssl_soc_social
             }
         }
 
-	    if (is_home()) {
-		    if (get_option('rsssl_soc_replace_to_http_on_blogoverview')) {
-			    return true;
-		    } else {
-			    return false;
-		    }
-	    }
-
         //if an id was passed, get post by id
         if ($post_id) {
             $post = get_post($post_id);
