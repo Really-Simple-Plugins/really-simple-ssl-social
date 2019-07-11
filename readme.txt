@@ -26,6 +26,7 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 
 == Changelog ==
 = 4.0.4 =
+* Updated Facebook API to v3.3
 * Added option to recover shares on blog overview (archive) pages
 
 = 4.0.3=
