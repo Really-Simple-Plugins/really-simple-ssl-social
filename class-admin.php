@@ -145,12 +145,9 @@ class rsssl_soc_admin
         register_setting('rlrsssl_social_options', 'rsssl_soc_start_date_ssl', array($this, 'options_validate'));
 
         register_setting('rlrsssl_social_options', 'rsssl_soc_replace_to_http_on_home', array($this, 'options_validate_boolean'));
-	    register_setting('rlrsssl_social_options', 'rsssl_soc_replace_to_http_on_blogoverview', array($this, 'options_validate_boolean'));
-
 
         add_settings_field('id_start_date_social', __("SSL switch date", "really-simple-ssl-soc"), array($this, 'get_option_start_date_social'), 'rlrsssl-social', 'rlrsssl_settings');
         add_settings_field('id_replace_to_http_on_home', __("Recover shares on the homepage", "really-simple-ssl-soc"), array($this, 'get_option_replace_to_http_on_home'), 'rlrsssl-social', 'rlrsssl_settings');
-	    add_settings_field('id_replace_to_http_on_blogoverview', __("Recover shares on the blog overview (archive) page", "really-simple-ssl-soc"), array($this, 'get_option_replace_to_http_on_blogoverview'), 'rlrsssl-social', 'rlrsssl_settings');
 
 
         register_setting('rlrsssl_social_options', 'rsssl_social_services', array($this, 'options_validate_boolean_array'));
@@ -395,14 +392,6 @@ class rsssl_soc_admin
         echo '<input id="rsssl_soc_replace_to_http_on_home" class="existing button_type" name="rsssl_soc_replace_to_http_on_home" size="40" type="checkbox" value="1"' . checked(1, $replace_to_http_on_home, false) . " />";
         rsssl_soc_help::get_help_tip(__("Recover shares on the homepage", "really-simple-ssl-soc"));
     }
-
-	public function get_option_replace_to_http_on_blogoverview()
-	{
-		$replace_to_http_on_blogoverview = get_option('rsssl_soc_replace_to_http_on_blogoverview');
-		echo '<input id="rsssl_soc_replace_to_http_on_home" class="existing button_type" name="rsssl_soc_replace_to_http_on_blogoverview" size="40" type="checkbox" value="1"' . checked(1, $replace_to_http_on_blogoverview, false) . " />";
-		rsssl_soc_help::get_help_tip(__("Recover shares on the blog overview (archive) pages", "really-simple-ssl-soc"));
-	}
-
 
     public function get_option_fb_access_token()
     {
