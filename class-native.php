@@ -633,7 +633,7 @@ class rsssl_soc_native
 
     public function enqueue_scripts()
     {
-        $version = (strpos(home_url(), "localhost") === false) ? time() : rsssl_soc_version;
+        $version = (strpos(home_url(), "localhost") !== false) ? time() : rsssl_soc_version;
 
         $theme = get_option('rsssl_buttons_theme');
 
