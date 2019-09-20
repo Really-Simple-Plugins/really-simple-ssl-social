@@ -23,9 +23,8 @@ class rsssl_soc_admin
             add_action('admin_menu', array($this, 'add_settings_page'), 40);
         }
 
-        $plugin = rsssl_soc_plugin;
+	    $plugin = rsssl_soc_plugin;
         add_filter("plugin_action_links_$plugin", array($this, 'plugin_settings_link'));
-	    add_filter("rsssl_fixer_output", array($this, 'insert_og_url_in_src'));
 
 	    add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
 
@@ -189,6 +188,10 @@ class rsssl_soc_admin
         add_settings_field('rsssl_share_cache_time', __("Share cache time in hours", "really-simple-ssl-soc"), array($this, 'get_option_share_cache_time'), 'rlrsssl-social', 'rlrsssl_settings');
 
         add_settings_field('id_clear_share_cache', __("Clear share cache", "really-simple-ssl"), array($this, 'get_option_clear_share_cache'), 'rlrsssl-social', 'rlrsssl_settings');
+
+
+	    add_settings_field('add_og_url', __("Add og: url to page source", "really-simple-ssl-soc"), array($this, 'get_option_add_og_url'), 'rlrsssl-social', 'rlrsssl_settings');
+	    register_setting('rlrsssl_social_options', 'add_og_url', array($this, 'options_validate'));
 
     }
 
@@ -425,6 +428,13 @@ class rsssl_soc_admin
         rsssl_soc_help::get_help_tip(__("Clicking this button will clear the cache, forcing the shares to be retrieved on next pageload.", "really-simple-ssl-soc"));
     }
 
+    public function get_option_add_og_url()
+    {
+	    $add_og_url = get_option('add_og_url');
+	    echo '<input id="add_og_url" name="add_og_url" class="existing button_type" size="40" type="checkbox" value="1"' . checked(1, $add_og_url, false) . " />";
+	    rsssl_soc_help::get_help_tip(__("Not having an og :url can cause issues with Facebook. Enable this option if instructed to do so. ", "really-simple-ssl-soc"));
+    }
+
     public function listen_for_clear_share_cache()
     {
         //check nonce
@@ -625,45 +635,13 @@ class rsssl_soc_admin
     {
 	    $rsssl_button_type = get_option('rsssl_button_type');
 
-    	if (!$this->src_contains_og_url() && $rsssl_button_type == "existing") {
+    	if (!get_option('add_og_url') && $rsssl_button_type == "existing") {
 		    ?>
-		    <div id="message" class="warning updated notice is-dismissible rlrsssl-success">
-			    <?php sprintf(__( "We haven't found an og:url property in your page source. The og:url property is required before share retrieval can work correctly. Enable the og:url option in the plugin %ssettings%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl')."></a>");?>
+		    <div id="message" class="error fade notice is-dismissible rsssl-soc-dismiss-notice">
+			    <p><?php echo sprintf(__( "We haven't found an og: url property in your page source. The og: url property is required before share retrieval can work correctly. Enable the og: url option in the plugin %ssettings%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl&tab=social').">" ,   "</a>");?></p>
 		    </div>
 		    <?php
 	    }
-    }
-
-    public function src_contains_og_url()
-    {
-    	$response = wp_remote_get(home_url());
-	    $status = wp_remote_retrieve_response_code( $response );
-	    $web_source = wp_remote_retrieve_body( $response );
-
-//	    if ( $status != 200 ) {
-//		    return false;
-//	    }
-	    if ( strpos( $web_source, "og:url=" ) === false ) {
-		    return false;
-	    } else {
-		    return true;
-	    }
-    }
-
-    public function insert_og_url_in_src($html)
-    {
-	    $rsssl_button_type = get_option('rsssl_button_type');
-
-	    error_log("In insert og url");
-
-    	if ($this->src_contains_og_url() && !$rsssl_button_type == "existing") return;
-
-    	error_log('geen og:url gevonden, button type is EXISTING! REPLACE!');
-
-    	$url_http = str_replace('https://', 'http://', home_url());
-
-		$html = str_replace("</title>", "</title> <br> <meta property='og:url' content='$url_http'/>", $html);
-		return $html;
     }
 
 }//class closure
