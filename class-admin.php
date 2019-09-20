@@ -23,6 +23,12 @@ class rsssl_soc_admin
             add_action('admin_menu', array($this, 'add_settings_page'), 40);
         }
 
+        if (is_admin()) {
+	        add_action('admin_print_footer_scripts', array($this, 'insert_dismiss_og_url_notice'));
+        }
+
+	    add_action('wp_ajax_dismiss_og_url_notice', array($this, 'dismiss_og_url_notice_callback'));
+
 	    $plugin = rsssl_soc_plugin;
         add_filter("plugin_action_links_$plugin", array($this, 'plugin_settings_link'));
 
@@ -635,13 +641,41 @@ class rsssl_soc_admin
     {
 	    $rsssl_button_type = get_option('rsssl_button_type');
 
-    	if (!get_option('add_og_url') && $rsssl_button_type == "existing") {
+    	if (!get_option('add_og_url') && $rsssl_button_type == "existing" && !get_option('rsssl_soc_og_url_notice_dismissed')) {
 		    ?>
 		    <div id="message" class="error fade notice is-dismissible rsssl-soc-dismiss-notice">
-			    <p><?php echo sprintf(__( "We haven't found an og: url property in your page source. The og: url property is required before share retrieval can work correctly. Enable the og: url option in the plugin %ssettings%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl&tab=social').">" ,   "</a>");?></p>
+			    <p><?php echo sprintf(__( "Really Simple SSL Social hasn't found an og: url property in your page source. The og: url property is required before share retrieval can work correctly. Enable the og: url option on the plugin %ssettings page%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl').">" ,   "</a>");?></p>
 		    </div>
 		    <?php
 	    }
     }
+
+	public function insert_dismiss_og_url_notice()
+	{
+		$ajax_nonce = wp_create_nonce("really-simple-ssl");
+		?>
+		<script type='text/javascript'>
+            jQuery(document).ready(function ($) {
+                $(".rsssl-soc-dismiss-notice.is-dismissible").on("click", ".notice-dismiss", function (event) {
+                    var data = {
+                        'action': 'dismiss_og_url_notice',
+                        'security': '<?php echo $ajax_nonce; ?>'
+                    };
+                    $.post(ajaxurl, data, function (response) {
+
+                    });
+                });
+            });
+		</script>
+		<?php
+	}
+
+	public function dismiss_og_url_notice_callback()
+	{
+		if (!current_user_can($this->capability) ) return;
+		check_ajax_referer('really-simple-ssl', 'security');
+		update_option('rsssl_soc_og_url_notice_dismissed', true);
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
 
 }//class closure
