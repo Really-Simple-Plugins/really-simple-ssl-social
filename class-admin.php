@@ -25,7 +25,9 @@ class rsssl_soc_admin
 
         $plugin = rsssl_soc_plugin;
         add_filter("plugin_action_links_$plugin", array($this, 'plugin_settings_link'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+	    add_filter("rsssl_fixer_output", array($this, 'insert_og_url_in_src'));
+
+	    add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
 
         add_action('admin_init', array($this, 'init'), 15);
 
@@ -33,6 +35,7 @@ class rsssl_soc_admin
 
         //Add_settings?
         add_action('admin_init', array($this, 'add_settings'), 40);
+	    add_action( 'admin_notices', array ($this, 'maybe_show_og_url_notice' ));
 
     }
 
@@ -614,10 +617,53 @@ class rsssl_soc_admin
             } else {
                 update_option('rsssl_button_type', 'existing');
             }
-
             update_option('rsssl-soc-current-version', rsssl_soc_version);
         }
     }
 
+    public function maybe_show_og_url_notice()
+    {
+	    $rsssl_button_type = get_option('rsssl_button_type');
+
+    	if (!$this->src_contains_og_url() && $rsssl_button_type == "existing") {
+		    ?>
+		    <div id="message" class="warning updated notice is-dismissible rlrsssl-success">
+			    <?php sprintf(__( "We haven't found an og:url property in your page source. The og:url property is required before share retrieval can work correctly. Enable the og:url option in the plugin %ssettings%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl')."></a>");?>
+		    </div>
+		    <?php
+	    }
+    }
+
+    public function src_contains_og_url()
+    {
+    	$response = wp_remote_get(home_url());
+	    $status = wp_remote_retrieve_response_code( $response );
+	    $web_source = wp_remote_retrieve_body( $response );
+
+//	    if ( $status != 200 ) {
+//		    return false;
+//	    }
+	    if ( strpos( $web_source, "og:url=" ) === false ) {
+		    return false;
+	    } else {
+		    return true;
+	    }
+    }
+
+    public function insert_og_url_in_src($html)
+    {
+	    $rsssl_button_type = get_option('rsssl_button_type');
+
+	    error_log("In insert og url");
+
+    	if ($this->src_contains_og_url() && !$rsssl_button_type == "existing") return;
+
+    	error_log('geen og:url gevonden, button type is EXISTING! REPLACE!');
+
+    	$url_http = str_replace('https://', 'http://', home_url());
+
+		$html = str_replace("</title>", "</title> <br> <meta property='og:url' content='$url_http'/>", $html);
+		return $html;
+    }
 
 }//class closure
