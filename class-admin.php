@@ -196,7 +196,7 @@ class rsssl_soc_admin
         add_settings_field('id_clear_share_cache', __("Clear share cache", "really-simple-ssl"), array($this, 'get_option_clear_share_cache'), 'rlrsssl-social', 'rlrsssl_settings');
 
 
-	    add_settings_field('add_og_url', __("Add og: url to page source", "really-simple-ssl-soc"), array($this, 'get_option_add_og_url'), 'rlrsssl-social', 'rlrsssl_settings');
+	    add_settings_field('add_og_url', __("Add og url to page source", "really-simple-ssl-soc"), array($this, 'get_option_add_og_url'), 'rlrsssl-social', 'rlrsssl_settings');
 	    register_setting('rlrsssl_social_options', 'add_og_url', array($this, 'options_validate'));
 
     }
@@ -644,7 +644,7 @@ class rsssl_soc_admin
     	if (!get_option('add_og_url') && $rsssl_button_type == "existing" && !get_option('rsssl_soc_og_url_notice_dismissed')) {
 		    ?>
 		    <div id="message" class="error fade notice is-dismissible rsssl-soc-dismiss-notice">
-			    <p><?php echo sprintf(__( "Really Simple SSL Social hasn't found an og: url property in your page source. The og: url property is required before share retrieval can work correctly. Enable the og: url option on the plugin %ssettings page%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl').">" ,   "</a>");?></p>
+			    <p><?php echo sprintf(__( "Really Simple SSL Social hasn't found an og url property in your page source. The og url property is required before share retrieval can work correctly. Enable the og url option on the plugin %ssettings page%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl').">" ,   "</a>");?></p>
 		    </div>
 		    <?php
 	    }
