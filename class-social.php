@@ -220,9 +220,6 @@ class rsssl_soc_social
     public
     function fix_social($html)
     {
-
-        error_log("Fix social");
-
         if ($this->use_http()) {
 
             $http_url = str_replace("https://", "http://", home_url());

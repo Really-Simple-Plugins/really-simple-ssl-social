@@ -14,10 +14,12 @@ if (!function_exists('rsssl_uses_gutenberg')) {
 //Lets add Open Graph Meta Info
 function rsssl_insert_fb_in_head() {
 
-	if (src_contains_og_url() === true) return;
-	$rsssl_button_type = get_option('rsssl_button_type');
+	if (src_contains_og_url() == true) return;
 
+	$rsssl_button_type = get_option('rsssl_button_type');
 	if ($rsssl_button_type == "builtin" || $rsssl_button_type == 'native') return;
+
+	if(!get_option('add_og_url') ) return;
 
     global $rsssl_soc_social;
     $url = $rsssl_soc_social->use_http() ? str_replace("https://","http://",get_permalink()) : get_permalink();
@@ -30,10 +32,9 @@ add_action( 'wp_head', 'rsssl_insert_fb_in_head', 5 );
 function src_contains_og_url()
 {
 	$response = wp_remote_get(home_url());
-	$status = wp_remote_retrieve_response_code( $response );
 	$web_source = wp_remote_retrieve_body( $response );
 
-	if ( strpos( $web_source, 'property="og:url="' ) === true ) {
+	if ( strpos( $web_source, 'property="og:url="') == true ) {
 		return true;
 	} else {
 		add_action( 'wp_head', 'rsssl_insert_fb_in_head', 5 );
