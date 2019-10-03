@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.0
-Stable tag: 4.0.4
+Stable tag: 4.0.5
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0.5 =
+* Added option to insert og:url when recovering shares for existing buttons
+
 = 4.0.4 =
 * Updated Facebook API to v3.3
 * Added option to recover shares on blog overview (archive) pages
