@@ -15,6 +15,9 @@ if (!function_exists('rsssl_uses_gutenberg')) {
 function rsssl_insert_fb_in_head() {
 
 	if (src_contains_og_url() === true) return;
+	$rsssl_button_type = get_option('rsssl_button_type');
+
+	if ($rsssl_button_type == "builtin" || $rsssl_button_type == 'native') return;
 
     global $rsssl_soc_social;
     $url = $rsssl_soc_social->use_http() ? str_replace("https://","http://",get_permalink()) : get_permalink();
