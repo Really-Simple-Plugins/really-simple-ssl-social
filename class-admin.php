@@ -23,9 +23,16 @@ class rsssl_soc_admin
             add_action('admin_menu', array($this, 'add_settings_page'), 40);
         }
 
-        $plugin = rsssl_soc_plugin;
+        if (is_admin()) {
+	        add_action('admin_print_footer_scripts', array($this, 'insert_dismiss_og_url_notice'));
+        }
+
+	    add_action('wp_ajax_dismiss_og_url_notice', array($this, 'dismiss_og_url_notice_callback'));
+
+	    $plugin = rsssl_soc_plugin;
         add_filter("plugin_action_links_$plugin", array($this, 'plugin_settings_link'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+
+	    add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
 
         add_action('admin_init', array($this, 'init'), 15);
 
@@ -33,6 +40,7 @@ class rsssl_soc_admin
 
         //Add_settings?
         add_action('admin_init', array($this, 'add_settings'), 40);
+	    add_action( 'admin_notices', array ($this, 'maybe_show_og_url_notice' ));
 
     }
 
@@ -186,6 +194,10 @@ class rsssl_soc_admin
         add_settings_field('rsssl_share_cache_time', __("Share cache time in hours", "really-simple-ssl-soc"), array($this, 'get_option_share_cache_time'), 'rlrsssl-social', 'rlrsssl_settings');
 
         add_settings_field('id_clear_share_cache', __("Clear share cache", "really-simple-ssl"), array($this, 'get_option_clear_share_cache'), 'rlrsssl-social', 'rlrsssl_settings');
+
+
+	    add_settings_field('add_og_url', __("Add og url to page source", "really-simple-ssl-soc"), array($this, 'get_option_add_og_url'), 'rlrsssl-social', 'rlrsssl_settings');
+	    register_setting('rlrsssl_social_options', 'add_og_url', array($this, 'options_validate'));
 
     }
 
@@ -422,6 +434,13 @@ class rsssl_soc_admin
         rsssl_soc_help::get_help_tip(__("Clicking this button will clear the cache, forcing the shares to be retrieved on next pageload.", "really-simple-ssl-soc"));
     }
 
+    public function get_option_add_og_url()
+    {
+	    $add_og_url = get_option('add_og_url');
+	    echo '<input id="add_og_url" name="add_og_url" class="existing button_type" size="40" type="checkbox" value="1"' . checked(1, $add_og_url, false) . " />";
+	    rsssl_soc_help::get_help_tip(__("Not having an og :url can cause issues with Facebook. Enable this option if instructed to do so. ", "really-simple-ssl-soc"));
+    }
+
     public function listen_for_clear_share_cache()
     {
         //check nonce
@@ -614,10 +633,49 @@ class rsssl_soc_admin
             } else {
                 update_option('rsssl_button_type', 'existing');
             }
-
             update_option('rsssl-soc-current-version', rsssl_soc_version);
         }
     }
 
+    public function maybe_show_og_url_notice()
+    {
+	    $rsssl_button_type = get_option('rsssl_button_type');
+
+    	if (!get_option('add_og_url') && $rsssl_button_type == "existing" && !get_option('rsssl_soc_og_url_notice_dismissed')) {
+		    ?>
+		    <div id="message" class="error fade notice is-dismissible rsssl-soc-dismiss-notice">
+			    <p><?php echo sprintf(__( "Really Simple SSL Social hasn't found an og url property in your page source. The og url property is required before share retrieval can work correctly. Enable the og url option on the plugin %ssettings page%s", "really-simple-ssl-soc" ), "<a href=".admin_url('options-general.php?page=rlrsssl_really_simple_ssl').">" ,   "</a>");?></p>
+		    </div>
+		    <?php
+	    }
+    }
+
+	public function insert_dismiss_og_url_notice()
+	{
+		$ajax_nonce = wp_create_nonce("really-simple-ssl");
+		?>
+		<script type='text/javascript'>
+            jQuery(document).ready(function ($) {
+                $(".rsssl-soc-dismiss-notice.is-dismissible").on("click", ".notice-dismiss", function (event) {
+                    var data = {
+                        'action': 'dismiss_og_url_notice',
+                        'security': '<?php echo $ajax_nonce; ?>'
+                    };
+                    $.post(ajaxurl, data, function (response) {
+
+                    });
+                });
+            });
+		</script>
+		<?php
+	}
+
+	public function dismiss_og_url_notice_callback()
+	{
+		if (!current_user_can($this->capability) ) return;
+		check_ajax_referer('really-simple-ssl', 'security');
+		update_option('rsssl_soc_og_url_notice_dismissed', true);
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
 
 }//class closure
