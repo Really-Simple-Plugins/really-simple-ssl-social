@@ -29,18 +29,27 @@ function rsssl_insert_fb_in_head() {
 }
 add_action( 'wp_head', 'rsssl_insert_fb_in_head', 5 );
 
-function src_contains_og_url()
-{
-	$response = wp_remote_get(home_url());
-	$web_source = wp_remote_retrieve_body( $response );
+function src_contains_og_url() {
 
-	if ( strpos( $web_source, 'property="og:url="') == true ) {
+	if ( ! get_transient( 'rsssl_soc_src_contains_og_url' ) ) {
+
+		$response   = wp_remote_get( home_url() );
+		$web_source = wp_remote_retrieve_body( $response );
+
+		if ( strpos( $web_source, 'property="og:url="' ) == true ) {
+			$contains_og_url = 'true';
+		} else {
+			$contains_og_url = 'false';
+		}
+		set_transient('rsssl_soc_src_contains_og_url', $contains_og_url, 3600);
+	}
+
+	if (get_transient( 'rsssl_soc_src_contains_og_url' ) === true) {
 		return true;
 	} else {
 		add_action( 'wp_head', 'rsssl_insert_fb_in_head', 5 );
 	}
 }
-
 
 //function rsssl_insert_upgrade_insecure_requests_header() {
 //    echo '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">';

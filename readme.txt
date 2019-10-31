@@ -2,7 +2,7 @@
 Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
-Tested up to: 5.0
+Tested up to: 5.3
 Stable tag: 4.0.5
 
 Recovers Facebook likes for your website after migration to https.
