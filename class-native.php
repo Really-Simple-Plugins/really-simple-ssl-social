@@ -607,9 +607,9 @@ class rsssl_soc_native
 
         //Str_replace the FB template to either share or like, depending on the configured setting. Adjust width and height accordingly.
         if (get_option('rsssl_fb_button_type') == 'shares') {
-            $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("share" , "600" , "900"), $html);
+            $html = str_replace(array('{height}' , '{width}'), array("600" , "900"), $html);
         } else {
-            $html = str_replace(array('{like_or_share}' , '{height}' , '{width}'), array("like" , "350" , "450"), $html);
+            $html = str_replace(array('{height}' , '{width}'), array("350" , "450"), $html);
         }
 
         if (isset($service['whatsapp'])) {
