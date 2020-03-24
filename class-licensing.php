@@ -192,7 +192,7 @@ public function add_license_page(){
 							<?php _e('Really Simple SSL social license Key'); ?>
 						</th>
 						<td>
-							<input id="rsssl_soc_license_key" name="rsssl_soc_license_key" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
+							<input id="rsssl_soc_license_key" name="rsssl_soc_license_key" type="password" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
 							<?php if( false !== $license ) { ?>
 										<?php if( $status !== false && $status == 'valid' ) { ?>
 											<span style="color:green;"><?php _e('active'); ?></span>
