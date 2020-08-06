@@ -3,7 +3,7 @@ Contributors:RogierLankhorst
 Requires at least: 4.2
 License: GPL2
 Tested up to: 5.5
-Stable tag: 4.0.6
+Stable tag: 4.0.7
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -25,6 +25,9 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
+= 4.0.7 =
+* Tested up to WordPress 5.5
+
 = 4.0.6 =
 * Fixed a bug where likes showed shares in built-in buttons
 
