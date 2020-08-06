@@ -6,8 +6,8 @@
  * Version: 4.0.7
  * Text Domain: really-simple-ssl-social
  * Domain Path: /languages
- * Author: Rogier Lankhorst
- * Author URI: https://www.rogierlankhorst.com
+ * Author: Really Simple Plugins
+ * Author URI: https://www.really-simple-plugins.com
  */
 
 /*  Copyright 2014  Rogier Lankhorst  (email : rogier@rogierlankhorst.com)
