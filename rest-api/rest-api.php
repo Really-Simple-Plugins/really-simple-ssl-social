@@ -9,9 +9,10 @@
 add_action('rest_api_init', 'rsssl_rest_route');
 function rsssl_rest_route()
 {
-    register_rest_route('rsssl/v1/', 'buttons/id/(?P<id>[0-9]+)', array(
+    register_rest_route('rsssl/v1', 'buttons/id/(?P<id>[0-9]+)', array(
         'methods' => 'GET',
         'callback' => 'rsssl_social_buttons',
+        'permission_callback' => '__return_true',
     ));
 }
 

@@ -54,21 +54,17 @@ function rsssl_social_editor_assets() { // phpcs:ignore
 
     wp_localize_script(
         'rsssl-social-block',
-        'complianz',
+        'rsssl_social',
         array(
             'site_url' => site_url(),
         )
     );
-    //https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/
-    //wp package install git@github.com:wp-cli/i18n-command.git
-    //wp i18n make-pot . config/languages/complianz.pot --exclude="pro-assets, core/assets"
-    wp_set_script_translations( 'rsssl-social-block', 'really-simple-ssl-social' , rsssl_soc_path . 'config/languages');
 
-    // Styles.
     $theme = get_option('rsssl_buttons_theme');
-    if (!get_option('rsssl_button_type') === 'native') {
+
+    //if (!get_option('rsssl_button_type') === 'native') {
         wp_enqueue_style('rsssl_social_buttons_style', rsssl_soc_url . "assets/css/$theme.min.css", array(), rsssl_soc_version);
-    }
+    //}
 
     if (get_option('rsssl_button_type') === 'native') {
         wp_register_style('rsssl_social_native_style', rsssl_soc_url . "assets/css/native.min.css", array(), rsssl_soc_version);

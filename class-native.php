@@ -19,6 +19,7 @@ class rsssl_soc_native
 
         self::$_this = $this;
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts') );
+
         add_action('wp_ajax_nopriv_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_get_likes', array($this, 'get_likes_ajax'));
         add_action('wp_ajax_rsssl_clear_likes', array($this, 'ajax_clear_likes'));
