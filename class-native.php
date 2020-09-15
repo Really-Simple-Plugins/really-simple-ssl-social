@@ -66,6 +66,9 @@ class rsssl_soc_native
         return ob_get_clean();
     }
 
+	/**
+	 * Initialize plugin
+	 */
 
     public function initialize()
     {
@@ -173,7 +176,10 @@ class rsssl_soc_native
         return $shares;
     }
 
-
+	/**
+	 * Get ajax likes
+	 * @param bool $post_id
+	 */
     public function get_likes_ajax($post_id = false)
     {
         if (!isset($_GET['post_id'])) return;
@@ -184,7 +190,13 @@ class rsssl_soc_native
 
     }
 
-
+	/**
+	 * Retrieve total shares
+	 * @param $service
+	 * @param $url
+	 *
+	 * @return int
+	 */
     public function retrieve_shares_total($service, $url){
 
         //make sure the current home_url is https, as this is a really simple ssl add on.
@@ -242,7 +254,7 @@ class rsssl_soc_native
     }
 
 
-    /*
+    /**
 
       Clear the likes for a specific url
 
@@ -259,6 +271,11 @@ class rsssl_soc_native
         $this->clear_likes($post_id);
         die(json_encode('success'));
     }
+
+	/**
+	 * Clear likes by post_id
+	 * @param $post_id
+	 */
 
     public function clear_likes($post_id)
     {
@@ -282,10 +299,13 @@ class rsssl_soc_native
         $this->clear_cached_likes($url_http);
     }
 
-    /*
-
-
-    */
+	/**
+	 * Get cached likes total
+	 * @param $type
+	 * @param $post_id
+	 *
+	 * @return int|string
+	 */
 
     public function get_cached_likes_total($type, $post_id)
     {
@@ -331,6 +351,15 @@ class rsssl_soc_native
 
     }
 
+	/**
+	 * Get cached likes
+	 * @param $type
+	 * @param $url
+	 * @param $post_id
+	 *
+	 * @return int
+	 */
+
     private function get_cached_likes($type, $url, $post_id){
         if ($this->debug) $url = "https://www.wordpress.org";
         $share_cache = get_transient("rsssl_" . $type . "_shares");
@@ -346,7 +375,10 @@ class rsssl_soc_native
         return $share_cache[$url];
     }
 
-
+	/**
+	 * Clear cached likes
+	 * @param $url
+	 */
     private function clear_cached_likes($url)
     {
         //* 3600 to convert user input to hours
@@ -369,7 +401,12 @@ class rsssl_soc_native
         set_transient('rsssl_yummly_shares', $share_cache, apply_filters("rsssl_social_cache_expiration", $expiration));
     }
 
-
+	/**
+	 * Convert nr to human readable format
+	 * @param $nr
+	 *
+	 * @return string
+	 */
     private function convert_nr($nr)
     {
 
@@ -389,6 +426,12 @@ class rsssl_soc_native
 
     }
 
+	/**
+	 * Retrieve fb likes over API
+	 * @param $url
+	 *
+	 * @return int
+	 */
     private function retrieve_fb_likes($url)
      {
          $expiration = (get_option('rsssl_share_cache_time') * 3600);
@@ -411,6 +454,12 @@ class rsssl_soc_native
          return intval($shares);
      }
 
+	/**
+	 * Get twitter likes
+	 * @param $url
+	 *
+	 * @return int
+	 */
     private function retrieve_twitter_likes($url)
     {
         $share_cache = get_transient('rsssl_twitter_shares');
@@ -429,8 +478,12 @@ class rsssl_soc_native
         return intval($shares);
     }
 
-//https://vk.com/share.php?act=count&url=https://really-simple-ssl.com
-
+	/**
+	 * Get pinterest likes
+	 * @param $url
+	 *
+	 * @return int
+	 */
     private function retrieve_pinterest_likes($url)
     {
         $shares = 0;
@@ -453,6 +506,12 @@ class rsssl_soc_native
         return intval($shares);
     }
 
+	/**
+	 * retrieve yummly likes
+	 * @param $url
+	 *
+	 * @return int
+	 */
     private function retrieve_yummly_likes($url)
     {
         $shares = 0;
@@ -473,11 +532,12 @@ class rsssl_soc_native
         return intval($shares);
     }
 
-    /*
-
-        Add like buttons to bottom of all posts and pages.
-
-    */
+	/**
+	 * Add like buttons to bottom of all posts and pages.
+	 * @param $content
+	 *
+	 * @return string
+	 */
 
     public function like_buttons_content_filter($content)
     {
@@ -506,7 +566,10 @@ class rsssl_soc_native
         return $content;
     }
 
-
+	/**
+	 * Show buttons
+	 * @return bool
+	 */
     public function show_buttons()
     {
         //$post_type = "rsssl_homepage";
@@ -631,6 +694,10 @@ class rsssl_soc_native
         return $html;
     }
 
+	/**
+	 * Enqueue scripts
+	 */
+
     public function enqueue_scripts()
     {
         $version = (strpos(home_url(), "localhost") !== false) ? time() : rsssl_soc_version;
@@ -694,6 +761,9 @@ class rsssl_soc_native
 
     }
 
+	/**
+	 * Scripts for native buttons
+	 */
     public function native_buttons_scripts() {
         echo "<div id=\"fb-root\"></div>
                   <script>
@@ -709,7 +779,12 @@ class rsssl_soc_native
         echo "<script src=\"//platform.linkedin.com/in.js\" type=\"text/javascript\"> lang: en_US</script>";
     }
 
-
+	/**
+	 * sanitize custom css
+	 * @param $css
+	 *
+	 * @return string|string[]|null
+	 */
     public function sanitize_custom_css($css)
     {
         $css = preg_replace('/\/\*(.|\s)*?\*\//i', '', $css);
@@ -718,7 +793,7 @@ class rsssl_soc_native
     }
 
 
-    /*
+    /**
         add attributes to pinterest src
     */
 
@@ -730,7 +805,7 @@ class rsssl_soc_native
         return $tag;
     }
 
-    /*
+    /**
 
       Generate the editor html on a page with the shortcode.
 
