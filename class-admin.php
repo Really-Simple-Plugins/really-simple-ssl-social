@@ -17,7 +17,7 @@ class rsssl_soc_admin
         //Add social settings tab
         $core_plugin = 'really-simple-ssl/rlrsssl-really-simple-ssl.php';
         if ( is_plugin_active($core_plugin)) {
-            add_filter('rsssl_tabs', array($this, 'add_social_tab'), 10, 3);
+            add_filter('rsssl_grid_tabs', array($this, 'add_social_tab'), 10, 3);
             add_action('show_tab_social', array($this, 'add_social_page'));
         } else {
             add_action('admin_menu', array($this, 'add_settings_page'), 40);
@@ -216,7 +216,7 @@ class rsssl_soc_admin
             'configuration' => __("Configuration", "really-simple-ssl")
         );
 
-        $tabs = apply_filters("rsssl_tabs", $tabs);
+        $tabs = apply_filters("rsssl_grid_tabs", $tabs);
 
         echo '<h2 class="nav-tab-wrapper">';
 
@@ -617,6 +617,11 @@ class rsssl_soc_admin
     public function section_text()
     {
         ?>
+	    <style>
+		    .rsssl-main {
+			    margin-left:30px;
+		    }
+	    </style>
         <p><?php _e('Settings for Really Simple SSL Social', 'really-simple-ssl-soc'); ?></p>
         <?php
     }

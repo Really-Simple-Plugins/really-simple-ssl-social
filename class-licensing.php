@@ -26,7 +26,7 @@ function __construct() {
 	add_action('admin_init', array($this, 'register_option'), 20,3);
 	add_action('admin_init', array($this, 'deactivate_license'),30,3);
 	add_action( 'admin_notices', array ($this, 'error_messages' ));
-	add_filter('rsssl_tabs', array($this,'add_license_tab'),20,3 );
+	add_filter('rsssl_grid_tabs', array($this,'add_license_tab'),20,3 );
 
 	add_action('show_tab_license', array($this, 'add_license_page'));
 
@@ -145,6 +145,11 @@ public function add_license_page(){
     $license_data = $this->get_latest_license_data();
 
     ?>
+		<style>
+			.rsssl-main {
+				margin:30px;
+			}
+		</style>
 		<form method="post" action="options.php">
 			<?php wp_nonce_field( 'rsssl_soc_nonce', 'rsssl_soc_nonce' ); ?>
 			<?php settings_fields('rsssl_soc_license'); ?>
