@@ -32,6 +32,7 @@ $plugin_data = get_plugin_data(__FILE__);
 define('rsssl_soc_url', plugin_dir_url(__FILE__));
 define('rsssl_soc_path', plugin_dir_path(__FILE__));
 define('rsssl_soc_plugin', plugin_basename(__FILE__));
+define('RSSSL_SOC_ITEM_ID', 21562);
 
 define('rsssl_soc_version', $plugin_data['Version']);
 define('rsssl_soc_plugin_file', __FILE__);
@@ -41,11 +42,13 @@ require_once(plugin_dir_path(__FILE__) . 'functions.php');
 if (!defined('REALLY_SIMPLE_SSL_URL')) define('REALLY_SIMPLE_SSL_URL', 'https://www.really-simple-ssl.com');
 
 if (is_admin()) {
-    require_once(dirname(__FILE__) . '/class-licensing.php');
     require_once(dirname(__FILE__) . '/class-admin.php');
-    $rsssl__soc_licensing = new rsssl_soc_licensing;
     $rsssl_soc_admin = new rsssl_soc_admin;
 }
+
+//outside is_admin for autoupdate purposes
+require_once(dirname(__FILE__) . '/class-licensing.php');
+$rsssl__soc_licensing = new rsssl_soc_licensing;
 
 $core_plugin = '/really-simple-ssl/rlrsssl-really-simple-ssl.php';
 if (!is_plugin_active($core_plugin)) {
