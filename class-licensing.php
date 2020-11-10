@@ -25,18 +25,25 @@ function __construct() {
 	add_action('admin_init', array($this, 'activate_license'), 10,3);
 	add_action('admin_init', array($this, 'register_option'), 20,3);
 	add_action('admin_init', array($this, 'deactivate_license'),30,3);
+	add_action('admin_init', array($this, 'add_license_hooks'),40,4);
 	add_action( 'admin_notices', array ($this, 'error_messages' ));
-	add_filter('rsssl_grid_tabs', array($this,'add_license_tab'),20,3 );
+//	add_action('maybe_show_expiration_alert', array($this, 'maybe_show_expiration_alert'));
 
-	add_action('show_tab_license', array($this, 'add_license_page'));
+	add_action('maybe_add_rsssl_social_license_field', array($this, 'add_license_page'));
 
-	add_action('wp_ajax_rsssl_soc_dismiss_license_notice', array($this,'dismiss_license_notice') );
-	add_action("admin_notices", array($this, 'show_notice_license'));
-	add_action("network_admin_notices", array($this, 'show_multisite_notice_license'));
 }
 
 static function this() {
 	return self::$_this;
+}
+
+public function add_license_hooks() {
+	if (defined('rsssl_pro_version')) return;
+		add_action('show_tab_license', array($this, 'add_license_page'));
+		add_filter('rsssl_grid_tabs', array($this,'add_license_tab'),20,3 );
+		add_action('wp_ajax_rsssl_soc_dismiss_license_notice', array($this,'dismiss_license_notice') );
+		add_action("admin_notices", array($this, 'show_notice_license'));
+		add_action("network_admin_notices", array($this, 'show_multisite_notice_license'));
 }
 
 public function show_notice_license(){
@@ -144,17 +151,17 @@ public function add_license_page(){
 	$status 	= get_option( 'rsssl_soc_license_status' );
     $license_data = $this->get_latest_license_data();
 
-    ?>
+	if (!defined('rsssl_pro_version')) { ?>
 		<style>
 			.rsssl-main {
 				margin:30px;
 			}
 		</style>
 		<form method="post" action="options.php">
-			<?php wp_nonce_field( 'rsssl_soc_nonce', 'rsssl_soc_nonce' ); ?>
-			<?php settings_fields('rsssl_soc_license'); ?>
+	<?php }
+			wp_nonce_field( 'rsssl_soc_nonce', 'rsssl_soc_nonce' );
+			settings_fields('rsssl_soc_license');
 
-            <?php
             //expired, revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
             $message = $this->get_error_message($license_data);
 
@@ -188,40 +195,42 @@ public function add_license_page(){
                 $this->rsssl_notice(__("Enter your license here so you keep receiving updates and support.", 'really-simple-ssl-pro'));
             }
 
+            if (!defined('rsssl_pro_version')) {
             ?>
-
 			<table class="form-table">
 				<tbody>
-					<tr valign="top">
-						<th scope="row" valign="top">
-							<?php _e('Really Simple SSL social license Key'); ?>
-						</th>
-						<td>
-							<input id="rsssl_soc_license_key" name="rsssl_soc_license_key" type="password" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
-							<?php if( false !== $license ) { ?>
-										<?php if( $status !== false && $status == 'valid' ) { ?>
-											<span style="color:green;"><?php _e('active'); ?></span>
-											<input type="submit" class="button-secondary" name="rsssl_soc_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
-										<?php } else {?>
-											<input type="submit" class="button-secondary" name="rsssl_soc_license_activate" value="<?php _e('Activate License'); ?>"/>
+			<?php } ?>
+				<tr valign="top" style="margin-top: 10px">
+					<th scope="row" valign="top">
+						<?php _e('Really Simple SSL social license Key'); ?>
+					</th>
+					<td>
+						<input id="rsssl_soc_license_key" class="rsssl_license_key" name="rsssl_soc_license_key" type="password" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
+						<?php if( false !== $license ) { ?>
+									<?php if( $status !== false && $status == 'valid' ) { ?>
+										<span style="color:green;"><?php _e('active'); ?></span>
+										<input type="submit" class="button-secondary" name="rsssl_soc_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
+									<?php } else {?>
+										<input type="submit" class="button-secondary" name="rsssl_soc_license_activate" value="<?php _e('Activate License'); ?>"/>
 
-										<?php } ?>
-									</td>
-								</tr>
-							<?php } else {
-								?>
-								<label class="description" for="rsssl_soc_license_key"><?php _e('Enter your license key'); ?></label>
-								<?php
-							}?>
-
+									<?php } ?>
+								</td>
+							</tr>
+						<?php } else {
+							?>
+							<label class="description" for="rsssl_soc_license_key"><?php _e('Enter your license key'); ?></label>
+							<?php
+						}?>
+			<?php if (!defined('rsssl_pro_version')) { ?>
 				</tbody>
 			</table>
-            <input type="submit" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="<?php _e("Save changes", "really-simple-ssl-soc"); ?>">
-
+		<input type="submit" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="<?php _e("Save changes", "really-simple-ssl-soc"); ?>">
 		</form>
-
-	<?php
-}
+		<?php } else {?>
+			<input type="hidden" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="rsssl_soc_license_key">
+		<?php }?>
+		<?php
+	}
 
 
 
