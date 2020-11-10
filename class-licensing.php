@@ -2,7 +2,7 @@
 defined('ABSPATH') or die("you do not have access to this page!");
 if (!defined('REALLY_SIMPLE_SSL_URL')) define( 'REALLY_SIMPLE_SSL_URL', 'https://www.really-simple-ssl.com'); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 
-if( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
+if( !class_exists( 'RSSSL_SOC_SL_Plugin_Updater' ) ) {
 	// load our custom updater
 	include( dirname( __FILE__ ) . '/EDD_SL_Plugin_Updater.php' );
 }
@@ -131,7 +131,7 @@ class rsssl_soc_licensing {
 		$license_key = trim( get_option( 'rsssl_soc_license_key' ) );
 
 		// setup the updater
-		$edd_updater = new EDD_SL_Plugin_Updater( REALLY_SIMPLE_SSL_URL, dirname(__FILE__)."/really-simple-social.php", array(
+		$edd_updater = new RSSSL_SOC_SL_Plugin_Updater( REALLY_SIMPLE_SSL_URL, dirname(__FILE__)."/really-simple-social.php", array(
 				'version' 	=> rsssl_soc_version, 				// current version number
 				'license' 	=> $license_key, 		// license key (used get_option above to retrieve from DB)
 				'item_id' => RSSSL_SOC_ITEM_ID,
