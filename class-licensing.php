@@ -20,7 +20,7 @@ class rsssl_soc_licensing {
 	    $this->author = 'RogierLankhorst';
 
 		self::$_this = $this;
-		add_action('init', array($this, 'plugin_updater'), 0 );
+		add_action('admin_init', array($this, 'plugin_updater'), 0 );
 		add_action('admin_init', array($this, 'activate_license'), 10,3);
 		add_action('admin_init', array($this, 'register_option'), 20,3);
 		add_action('admin_init', array($this, 'deactivate_license'),30,3);
