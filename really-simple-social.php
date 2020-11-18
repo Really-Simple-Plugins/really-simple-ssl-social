@@ -48,7 +48,7 @@ if (is_admin()) {
 
 //outside is_admin for autoupdate purposes
 require_once(dirname(__FILE__) . '/class-licensing.php');
-$rsssl__soc_licensing = new rsssl_soc_licensing;
+$rsssl_soc_licensing = new rsssl_soc_licensing;
 
 $core_plugin = '/really-simple-ssl/rlrsssl-really-simple-ssl.php';
 if (!is_plugin_active($core_plugin)) {
