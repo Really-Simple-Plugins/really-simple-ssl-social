@@ -27,8 +27,6 @@ class rsssl_soc_licensing {
 		add_action('admin_init', array($this, 'add_license_hooks'),40,4);
 		add_action( 'admin_notices', array ($this, 'error_messages' ));
 
-		add_action('maybe_add_rsssl_social_license_field', array($this, 'add_license_page'));
-
 	}
 
 	static function this() {
@@ -36,12 +34,38 @@ class rsssl_soc_licensing {
 	}
 
 	public function add_license_hooks() {
+		add_filter('rsssl_social_license_block', array($this, 'add_social_license_block'), 30 );
 		if (defined('rsssl_pro_version')) return;
 		add_action('show_tab_license', array($this, 'add_license_page'));
 		add_filter('rsssl_grid_tabs', array($this,'add_license_tab'),20,3 );
 		add_action('wp_ajax_rsssl_soc_dismiss_license_notice', array($this,'dismiss_license_notice') );
 		add_action("admin_notices", array($this, 'show_notice_license'));
 		add_action("network_admin_notices", array($this, 'show_multisite_notice_license'));
+	}
+
+	public function add_social_license_block($grid_items=false) {
+
+		$grid_items['social'] = array(
+				'title' => __("Really Simple SSL Social license key", "really-simple-ssl"),
+				'header' => rsssl_template_path.'/header.php',
+				'content' => rsssl_soc_path.'/grid/templates/license.php',
+				'footer' => rsssl_soc_path . '/grid/templates/license-footer.php',
+				'class' => 'regular rsssl-license-grid',
+				'type' => 'settings',
+				'can_hide' => true,
+				'instructions' => false,
+		);
+
+		return $grid_items;
+	}
+
+	/**
+	 * Add license page to grid block
+	 */
+
+	public function add_license_page() {
+		if (!current_user_can('manage_options')) return;
+		RSSSL()->really_simple_ssl->render_grid( $this->add_social_license_block() );
 	}
 
 	/**
@@ -103,7 +127,6 @@ class rsssl_soc_licensing {
 	  <?php
 	}
 
-
 	public function show_multisite_notice_license(){
 	//prevent showing the review on edit screen, as gutenberg removes the class which makes it editable.
 	$screen = get_current_screen();
@@ -124,8 +147,6 @@ class rsssl_soc_licensing {
 		}
 	}
 
-
-
 	public function plugin_updater() {
 		// retrieve our license key from the DB
 		$license_key = trim( get_option( 'rsssl_soc_license_key' ) );
@@ -141,99 +162,10 @@ class rsssl_soc_licensing {
 
 	}
 
-
 	public function add_license_tab($tabs){
 		$tabs['license'] = __("License","really-simple-ssl-soc");
 		return $tabs;
 	}
-
-	public function add_license_page(){
-		$license 	= get_option( 'rsssl_soc_license_key' );
-		$status 	= get_option( 'rsssl_soc_license_status' );
-	    $license_data = $this->get_latest_license_data();
-
-		if (!defined('rsssl_pro_version')) { ?>
-			<style>
-				.rsssl-main {
-					margin:30px;
-				}
-			</style>
-			<form method="post" action="options.php">
-		<?php }
-				wp_nonce_field( 'rsssl_soc_nonce', 'rsssl_soc_nonce' );
-				settings_fields('rsssl_soc_license');
-
-	            //expired, revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
-	            $message = $this->get_error_message($license_data);
-
-	            if ($status=='valid' || $license_data->license=='site_inactive') {
-	                $upgrade = $license_data->license_limit == 1 ? __("a 5 sites or unlimited sites license", "really-simple-ssl-pro") : __("an unlimited sites license", "really-simple-ssl-pro");
-	                if ($license_data->activations_left < $license_data->license_limit) {
-	                    $this->rsssl_notice(sprintf(__('You have %d activations left on your license. If you need more activations you can upgrade your current license to %s on your %saccount%s page.', "really-simple-ssl-pro"), $license_data->activations_left, $upgrade, '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning');
-	                }
-	            }
-
-	            if ($message) {
-	                $this->rsssl_notice($message,'warning');
-	            } elseif ($license_data->license == 'deactivated'){
-	                if ($status=='valid'){
-	                    $this->rsssl_notice(__("Your license is valid, but not activated on this site", 'really-simple-ssl-pro'));
-	                } elseif(!empty($status)) {
-	                    $this->rsssl_notice(__("Your license does not seem to be valid. Please check your license key", 'really-simple-ssl-pro'));
-	                }
-	            } elseif ($status == 'valid') {
-	                $date = $license_data->expires;
-	                $date = strtotime($date);
-	                $date = date(get_option('date_format'), $date);
-	                $this->rsssl_notice(sprintf(__("Your license is valid, and expires on: %s", 'really-simple-ssl-pro'), $date ));
-	            } elseif ($license_data->license == 'expired') {
-	                $link = '<a target="_blank" href="' . $this->website . "/account/" . '">';
-	                $this->rsssl_notice(sprintf(__("Your license key has expired. Please renew your license key on %syour account page%s", 'really-simple-ssl-pro'), $link, '</a>'), 'warning');
-	            } elseif ($license_data->license_limit == '0') {
-	                $this->rsssl_notice(sprintf(__("Your license key cannot be activated because you have no activations left. Check on which site your license is currently activated or upgrade to a 5 site or unlimited license on your %saccount%s page.", "really-simple-ssl-pro"), '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning');
-	            }
-	            else {
-	                $this->rsssl_notice(__("Enter your license here so you keep receiving updates and support.", 'really-simple-ssl-pro'));
-	            }
-
-	            if (!defined('rsssl_pro_version')) {
-	            ?>
-				<table class="form-table">
-					<tbody>
-				<?php } ?>
-					<tr valign="top" style="margin-top: 10px">
-						<th scope="row" valign="top">
-							<?php _e('Really Simple SSL social license Key'); ?>
-						</th>
-						<td>
-							<input id="rsssl_soc_license_key" class="rsssl_license_key" name="rsssl_soc_license_key" type="password" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
-							<?php if( false !== $license ) { ?>
-										<?php if( $status !== false && $status == 'valid' ) { ?>
-											<span style="color:green;"><?php _e('active'); ?></span>
-											<input type="submit" class="button-secondary" name="rsssl_soc_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
-										<?php } else {?>
-											<input type="submit" class="button-secondary" name="rsssl_soc_license_activate" value="<?php _e('Activate License'); ?>"/>
-
-										<?php } ?>
-									</td>
-								</tr>
-							<?php } else {
-								?>
-								<label class="description" for="rsssl_soc_license_key"><?php _e('Enter your license key'); ?></label>
-								<?php
-							}?>
-				<?php if (!defined('rsssl_pro_version')) { ?>
-					</tbody>
-				</table>
-			<input type="submit" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="<?php _e("Save changes", "really-simple-ssl-soc"); ?>">
-			</form>
-			<?php } else {?>
-				<input type="hidden" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="rsssl_soc_license_key">
-			<?php }?>
-			<?php
-	}
-
-
 
 	public function register_option() {
 		// creates our settings in the options table
@@ -503,16 +435,26 @@ class rsssl_soc_licensing {
 
     public function rsssl_notice($msg, $type='rsssl_notice_license', $hide = false, $echo=true)
     {
+		if ($msg == '') return;
 
-        if ($msg == '') return;
+		ob_start();
+		?>
+			<tr style="width: 100%;">
+				<td class="rsssl-progress-status rsssl-<?php echo $type ?>">
+					<?php echo $type ?>
+				</td>
+				<td class="rsssl-license-notice-text" style="margin-left: 15px;">
+					<?php echo $msg ?>
+				</td>
+			</tr>
+		<?php
 
-        $hide_class = $hide ? "rsssl-hide" : "";
-        $html = '<div class="rsssl_notice_license '.$type.' ' . $hide_class . '">' . $msg . '</div>';
-        if ($echo) {
-            echo $html;
-        } else {
-            return $html;
-        }
+		$contents = ob_get_clean();
+		if ($echo) {
+			echo $contents;
+		} else {
+			return $contents;
+		}
     }
 
 	//change deprecated function depending on version.

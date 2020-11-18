@@ -6,6 +6,10 @@
     cursor: pointer;
 }
 
+.rsssl-license-field {
+	width: 100%;
+}
+
 /* Base styles for the entire tooltip */
 [data-rsssl-tooltip]:before,
 [data-rsssl-tooltip]:after,
