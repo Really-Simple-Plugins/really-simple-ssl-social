@@ -38,7 +38,7 @@ class rsssl_soc_licensing {
 		add_filter('rsssl_social_license_block', array($this, 'add_social_license_block'), 30 );
 		if (defined('rsssl_pro_version')) return;
 		add_filter( 'rsssl_grid_tabs', array( $this, 'add_license_tab' ), 20, 3 );
-		
+
 		// Standalone social compatibility, if free not found, add the standalone license page
 		if (defined('rsssl_version')) {
 			add_action( 'show_tab_license', array( $this, 'add_license_page' ) );
@@ -536,7 +536,7 @@ class rsssl_soc_licensing {
 		ob_start();
 		?>
 			<tr style="width: 100%;">
-				<td class="rsssl-progress-status rsssl-<?php echo $type ?>">
+				<td class="rsssl-progress-status rsssl-license-status rsssl-<?php echo $type ?>">
 					<?php echo $type ?>
 				</td>
 				<td class="rsssl-license-notice-text" style="margin-left: 15px;">
