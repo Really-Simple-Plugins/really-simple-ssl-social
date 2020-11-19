@@ -6,11 +6,41 @@
     cursor: pointer;
 }
 
-.rsssl-license-field {
-	width: 100%;
+.rsssl-license-table {
+	display: flex;
 }
 
-/* Base styles for the entire tooltip */
+#rsssl_soc_license_key {
+	width: 100% !important;
+}
+
+.form-table > tbody:nth-child(1) > tr:nth-child(1) {
+	width: 100% !important;
+}
+
+.rsssl-license-field {
+	width: 100% !important;
+}
+
+tr {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+.rsssl-license-status {
+	padding: 5px !important;
+	margin-top: 12px !important;
+}
+
+.rsssl-disable-for-other-users {
+	display: flex;
+	flex: 1;
+	justify-content: flex-end;
+	align-items: center;
+	margin-right: 15px;
+}
+
+	/* Base styles for the entire tooltip */
 [data-rsssl-tooltip]:before,
 [data-rsssl-tooltip]:after,
 .rsssl-tooltip:before,

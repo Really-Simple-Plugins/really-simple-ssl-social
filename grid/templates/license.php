@@ -4,7 +4,7 @@ $license = trim( get_option( 'rsssl_soc_license_key' ) );
 $license_data = $rsssl_soc_licensing->get_latest_license_data();
 $status = get_site_transient('rsssl_soc_license_status');
 
-wp_nonce_field('rsssl_pro_nonce', 'rsssl_pro_nonce');
+wp_nonce_field('rsssl_soc_nonce', 'rsssl_soc_nonce');
 if (!is_network_admin()) {
 	settings_fields('rsssl_soc_license');
 } else { ?>
