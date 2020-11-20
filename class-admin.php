@@ -465,7 +465,7 @@ class rsssl_soc_admin
 
     public function add_social_tab($tabs)
     {
-        $tabs['social'] = __("Social", "really-simple-ssl-pro");
+        $tabs['social'] = __("Social", "'really-simple-ssl-soc'");
         return $tabs;
     }
 

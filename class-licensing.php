@@ -88,33 +88,33 @@ class rsssl_soc_licensing {
 		$message = $this->get_error_message($license_data);
 
 		if ($status=='valid' || $license_data->license=='site_inactive') {
-			$upgrade = $license_data->license_limit == 1 ? __("a 5 sites or unlimited sites license", "really-simple-ssl-pro") : __("an unlimited sites license", "really-simple-ssl-pro");
+			$upgrade = $license_data->license_limit == 1 ? __("a 5 sites or unlimited sites license", "'really-simple-ssl-soc'") : __("an unlimited sites license", "really-simple-ssl-soc");
 			if ($license_data->activations_left < $license_data->license_limit) {
-				$this->rsssl_notice(sprintf(__('You have %d activations left on your license. If you need more activations you can upgrade your current license to %s on your %saccount%s page.', "really-simple-ssl-pro"), $license_data->activations_left, $upgrade, '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning');
+				$this->rsssl_notice(sprintf(__('You have %d activations left on your license. If you need more activations you can upgrade your current license to %s on your %saccount%s page.', "'really-simple-ssl-soc'"), $license_data->activations_left, $upgrade, '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning',__('Warning', "'really-simple-ssl-soc'"));
 			}
 		}
 
 		if ($message) {
-			$this->rsssl_notice($message,'warning');
+			$this->rsssl_notice($message,'warning', __());
 		} elseif ($license_data->license == 'deactivated'){
 			if ($status=='valid'){
-				$this->rsssl_notice(__("Your license is valid, but not activated on this site", 'really-simple-ssl-pro'));
+				$this->rsssl_notice(__("Your license is valid, but not activated on this site", "'really-simple-ssl-soc'"), 'open', __('Open', "'really-simple-ssl-soc'"));
 			} elseif(!empty($status)) {
-				$this->rsssl_notice(__("Your license does not seem to be valid. Please check your license key", 'really-simple-ssl-pro'));
+				$this->rsssl_notice(__("Your license does not seem to be valid. Please check your license key", "'really-simple-ssl-soc'"), 'open', __('Open', "'really-simple-ssl-soc'"));
 			}
 		} elseif ($status == 'valid') {
 			$date = $license_data->expires;
 			$date = strtotime($date);
 			$date = date(get_option('date_format'), $date);
-			$this->rsssl_notice(sprintf(__("Your license is valid, and expires on: %s", 'really-simple-ssl-pro'), $date ));
+			$this->rsssl_notice(sprintf(__("Your license is valid, and expires on: %s", "'really-simple-ssl-soc'"), $date ), 'success', __('Success', "'really-simple-ssl-soc'"));
 		} elseif ($license_data->license == 'expired') {
 			$link = '<a target="_blank" href="' . $this->website . "/account/" . '">';
-			$this->rsssl_notice(sprintf(__("Your license key has expired. Please renew your license key on %syour account page%s", 'really-simple-ssl-pro'), $link, '</a>'), 'warning');
+			$this->rsssl_notice(sprintf(__("Your license key has expired. Please renew your license key on %syour account page%s", "'really-simple-ssl-soc'"), $link, '</a>'), 'warning', __('Warning', "'really-simple-ssl-soc'"));
 		} elseif ($license_data->license_limit == '0') {
-			$this->rsssl_notice(sprintf(__("Your license key cannot be activated because you have no activations left. Check on which site your license is currently activated or upgrade to a 5 site or unlimited license on your %saccount%s page.", "really-simple-ssl-pro"), '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning');
+			$this->rsssl_notice(sprintf(__("Your license key cannot be activated because you have no activations left. Check on which site your license is currently activated or upgrade to a 5 site or unlimited license on your %saccount%s page.", "'really-simple-ssl-soc'"), '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning', __('Warning', "'really-simple-ssl-soc'"));
 		}
 		else {
-			$this->rsssl_notice(__("Enter your license here so you keep receiving updates and support.", 'really-simple-ssl-pro'));
+			$this->rsssl_notice(__("Enter your license here so you keep receiving updates and support.", "'really-simple-ssl-soc'"), 'open', __('Open', "'really-simple-ssl-soc'"));
 		}
 
 	if (!defined('rsssl_pro_version')) {
@@ -493,65 +493,63 @@ class rsssl_soc_licensing {
         $account_link = '<a target="_blank" href="https://really-simple-ssl.com/account">';
         $message = false;
         if ($license_data && $license_data->license =='invalid'){
-            $message  = sprintf(__("This is not a valid license key. You can find your license key in your %saccount page%s or the purchase confirmation e-mail.", 'really-simple-ssl-pro'), $account_link , '</a>');
+            $message  = sprintf(__("This is not a valid license key. You can find your license key in your %saccount page%s or the purchase confirmation e-mail.", "'really-simple-ssl-soc'"), $account_link , '</a>');
         } elseif ($license_data && ( false === $license_data->success )) {
             switch ($license_data->error) {
                 case 'revoked':
-                    $message = sprintf(__("Your license has been revoked. Please contact %ssupport%s", 'really-simple-ssl-pro'), $support_link, '</a>');
+                    $message = sprintf(__("Your license has been revoked. Please contact %ssupport%s", "'really-simple-ssl-soc'"), $support_link, '</a>');
                     break;
                 case 'missing':
-                    $message = sprintf(__("Your license could not be found in the database. Please contact %ssupport%s", 'really-simple-ssl-pro'), $support_link, '</a>');
+                    $message = sprintf(__("Your license could not be found in the database. Please contact %ssupport%s", "'really-simple-ssl-soc'"), $support_link, '</a>');
                     break;
                 case 'invalid':
                 case 'site_inactive':
-                    $message = __("Your license has not yet been activated for this domain.", 'really-simple-ssl-pro');
+                    $message = __("Your license has not yet been activated for this domain.", "'really-simple-ssl-soc'");
                     break;
                 case 'item_name_mismatch':
-                    $message = __("Your license key appears to be invalid.", 'really-simple-ssl-pro');
+                    $message = __("Your license key appears to be invalid.", "'really-simple-ssl-soc'");
                     break;
                 case 'no_activations_left':
-                    $message = sprintf(__("You have no activations left on your license. Please upgrade your license at %really-simple-ssl.com%s", 'really-simple-ssl-pro'), $link, '</a>');
+                    $message = sprintf(__("You have no activations left on your license. Please upgrade your license at %really-simple-ssl.com%s", "'really-simple-ssl-soc'"), $link, '</a>');
                     break;
             }
 
         } elseif ($license_data && ( true === $license_data->success )) {
             switch ($license_data->license) {
                 case 'inactive':
-                    $message = __("Your license is valid, but has not yet been activated for this domain.", 'really-simple-ssl-pro');
+                    $message = __("Your license is valid, but has not yet been activated for this domain.", "'really-simple-ssl-soc'");
                     break;
             }
 
 
         }elseif (!$license_data) {
-            $message  = __("license data error", 'really-simple-ssl-pro');
+            $message  = __("license data error", "'really-simple-ssl-soc'");
         }
 
         return $message;
     }
 
-    public function rsssl_notice($msg, $type='rsssl_notice_license', $hide = false, $echo=true)
-    {
+	public function rsssl_notice($msg, $type, $status)
+	{
+
 		if ($msg == '') return;
 
 		ob_start();
 		?>
-			<tr style="width: 100%;">
-				<td class="rsssl-progress-status rsssl-license-status rsssl-<?php echo $type ?>">
-					<?php echo $type ?>
-				</td>
-				<td class="rsssl-license-notice-text" style="margin-left: 15px;">
-					<?php echo $msg ?>
-				</td>
-			</tr>
+		<tr style="width:100%">
+			<td>
+				<span class="rsssl-progress-status rsssl-license-status rsssl-<?php echo $type ?>">
+                        <?php echo $status ?>
+                    </span></td>
+			<td class="rsssl-license-notice-text">
+				<?php echo $msg ?>
+			</td>
+		</tr>
 		<?php
 
 		$contents = ob_get_clean();
-		if ($echo) {
-			echo $contents;
-		} else {
-			return $contents;
-		}
-    }
+		echo $contents;
+	}
 
 	//change deprecated function depending on version.
 
