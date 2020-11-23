@@ -25,9 +25,6 @@ class rsssl_soc_licensing {
 		add_action('admin_init', array($this, 'register_option'), 20,3);
 		add_action('admin_init', array($this, 'deactivate_license'),30,3);
 		add_action('admin_init', array($this, 'add_license_hooks'),40,4);
-
-		add_action( 'admin_notices', array ($this, 'error_messages' ));
-
 	}
 
 	static function this() {
@@ -51,6 +48,14 @@ class rsssl_soc_licensing {
 		add_action("network_admin_notices", array($this, 'show_multisite_notice_license'));
 	}
 
+	/**
+	 * Get the license key
+	 * @return string
+	 */
+	public function license_key(){
+		return trim( get_option( 'rsssl_soc_license_key' ) );
+	}
+
 	public function add_social_license_block($grid_items=false) {
 
 		$grid_items['social'] = array(
@@ -71,7 +76,7 @@ class rsssl_soc_licensing {
 		error_log("Adding standlone license peeg");
 		$license 	= get_option( 'rsssl_soc_license_key' );
 		$status 	= get_option( 'rsssl_soc_license_status' );
-		$license_data = $this->get_latest_license_data();
+		$status = $this->get_license_status();
 
 		if (!defined('rsssl_pro_version')) { ?>
 			<style>
@@ -84,38 +89,8 @@ class rsssl_soc_licensing {
 		wp_nonce_field( 'rsssl_soc_nonce', 'rsssl_soc_nonce' );
 		settings_fields('rsssl_soc_license');
 
-		//expired, revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
-		$message = $this->get_error_message($license_data);
+		echo $this->get_license_label();
 
-		if ($status=='valid' || $license_data->license=='site_inactive') {
-			$upgrade = $license_data->license_limit == 1 ? __("a 5 sites or unlimited sites license", "'really-simple-ssl-soc'") : __("an unlimited sites license", "really-simple-ssl-soc");
-			if ($license_data->activations_left < $license_data->license_limit) {
-				$this->rsssl_notice(sprintf(__('You have %d activations left on your license. If you need more activations you can upgrade your current license to %s on your %saccount%s page.', "'really-simple-ssl-soc'"), $license_data->activations_left, $upgrade, '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning',__('Warning', "'really-simple-ssl-soc'"));
-			}
-		}
-
-		if ($message) {
-			$this->rsssl_notice($message,'warning', __());
-		} elseif ($license_data->license == 'deactivated'){
-			if ($status=='valid'){
-				$this->rsssl_notice(__("Your license is valid, but not activated on this site", "'really-simple-ssl-soc'"), 'open', __('Open', "'really-simple-ssl-soc'"));
-			} elseif(!empty($status)) {
-				$this->rsssl_notice(__("Your license does not seem to be valid. Please check your license key", "'really-simple-ssl-soc'"), 'open', __('Open', "'really-simple-ssl-soc'"));
-			}
-		} elseif ($status == 'valid') {
-			$date = $license_data->expires;
-			$date = strtotime($date);
-			$date = date(get_option('date_format'), $date);
-			$this->rsssl_notice(sprintf(__("Your license is valid, and expires on: %s", "'really-simple-ssl-soc'"), $date ), 'success', __('Success', "'really-simple-ssl-soc'"));
-		} elseif ($license_data->license == 'expired') {
-			$link = '<a target="_blank" href="' . $this->website . "/account/" . '">';
-			$this->rsssl_notice(sprintf(__("Your license key has expired. Please renew your license key on %syour account page%s", "'really-simple-ssl-soc'"), $link, '</a>'), 'warning', __('Warning', "'really-simple-ssl-soc'"));
-		} elseif ($license_data->license_limit == '0') {
-			$this->rsssl_notice(sprintf(__("Your license key cannot be activated because you have no activations left. Check on which site your license is currently activated or upgrade to a 5 site or unlimited license on your %saccount%s page.", "'really-simple-ssl-soc'"), '<a href="https://really-simple-ssl.com/account" target="_blank">', '</a>'), 'warning', __('Warning', "'really-simple-ssl-soc'"));
-		}
-		else {
-			$this->rsssl_notice(__("Enter your license here so you keep receiving updates and support.", "'really-simple-ssl-soc'"), 'open', __('Open', "'really-simple-ssl-soc'"));
-		}
 
 	if (!defined('rsssl_pro_version')) {
 		?>
@@ -294,75 +269,11 @@ class rsssl_soc_licensing {
 			// retrieve the license from the database
 			$license = sanitize_key(trim( $_POST['rsssl_soc_license_key']));
 			update_option('rsssl_soc_license_key', $license);
-			// data to send in our API request
-			$api_params = array(
-				'edd_action'=> 'activate_license',
-				'license' 	=> $license,
-				'item_id' => RSSSL_SOC_ITEM_ID,
-				'url'       => home_url()
-			);
-
-			// Call the custom API.
-			$args = array( 'timeout' => 15, 'sslverify' => true, 'body' => $api_params );
-			$args = apply_filters('rsssl_soc_license_verification_args', $args );
-
-			$response = wp_remote_post( REALLY_SIMPLE_SSL_URL, $args );
-
-				// make sure the response came back okay
-				if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-					$error_message = $response->get_error_message();
-					$message =  ( is_wp_error( $response ) && ! empty( $error_message ) ) ? $error_message : __( 'An error occurred, please try again.' );
-
-				}
-
-				// Check if anything passed on a message constituting a failure
-				if ( ! empty( $message ) ) {
-					$base_url = admin_url( 'options-general.php?page=rlrsssl_really_simple_ssl&tab=license' );
-					$redirect = add_query_arg( array( 'sl_activation' => 'false', 'message' => urlencode( $message ) ), $base_url );
-					delete_option( 'rsssl_soc_license_status' );
-					wp_redirect( $redirect );
-					exit();
-				}
-
-			// decode the license data
-			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-
-			// $license_data->license will be either "valid" or "invalid"
-			update_option( 'rsssl_soc_license_status', $license_data->license );
-
-			// $license_data->license will be either "deactivated" or "failed"
-			if( $license_data->license == 'deactivated' ) {
-				delete_option( 'rsssl_soc_license_status' );
-			}
+			$this->get_license_status('activate_license', true );
 
 		}
 	}
 
-	/**
-	 * This is a means of catching errors from the activation method above and displaying it to the customer
-	 */
-	public function error_messages() {
-		if ( isset( $_GET['sl_activation'] ) && ! empty( $_GET['message'] ) ) {
-
-			switch( $_GET['sl_activation'] ) {
-
-				case 'false':
-					$message = urldecode( $_GET['message'] );
-					?>
-					<div class="error">
-						<p><?php echo $message; ?></p>
-					</div>
-					<?php
-					break;
-
-				case 'true':
-				default:
-					// Developers can put a custom success message here for when activation is successful if they way.
-					break;
-
-			}
-		}
-	}
 
 	/**
 	 * Deactivate the license
@@ -377,172 +288,288 @@ class rsssl_soc_licensing {
 
 			// run a quick security check
 		    if( ! check_admin_referer( 'rsssl_soc_nonce', 'rsssl_soc_nonce' ) )
-				return; // get out if we didn't click the Activate button
+				return;
 
-			// retrieve the license from the database
-			$license = trim( get_option( 'rsssl_soc_license_key' ) );
-
-			// data to send in our API request
-			$api_params = array(
-				'edd_action'=> 'deactivate_license',
-				'license' 	=> $license,
-				'item_id' => RSSSL_SOC_ITEM_ID,
-				'url'       => home_url()
-			);
-
-			// Call the custom API.
-			$response = wp_remote_post( REALLY_SIMPLE_SSL_URL, array( 'timeout' => 15, 'sslverify' => true, 'body' => $api_params ) );
-
-			// make sure the response came back okay
-			if ( is_wp_error( $response ) )
-				return false;
-
-			// decode the license data
-			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-
-			// $license_data->license will be either "deactivated" or "failed"
-			if( $license_data->license == 'deactivated' ) {
-				delete_option( 'rsssl_soc_license_status' );
-				delete_option('rsssl_license_notice_dismissed');
-			}
-
-
+			$this->get_license_status('deactivate_license', true );
 		}
 	}
 
 	/**
 	 * Check if license is valid
-	 * @return bool|string
+	 * @return bool
 	 */
 
-	public function license_is_valid() {
-		$status	= get_option( 'rsssl_soc_license_status' );
+	public function license_is_valid()
+	{
+		$status = $this->get_license_status();
+		if ($status == "valid") {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-		if ($status=="valid") return true;
+	/**
+	 * Save the license key
+	 */
 
-		//check if any of the multisite sites has a valid license.
-		//One with a valid license is enough.
+	public function save_license(){
 
-		if (is_multisite()) {
-			$sites = $this->get_sites_bw_compatible();
-			foreach ( $sites as $site ) {
-				$this->switch_to_blog_bw_compatible($site);
-				if (is_main_site(get_current_blog_id())) {
-					$status	= get_option( 'rsssl_soc_license_status' );
+		if (!current_user_can('manage_options')) return;
+
+		if (!isset($_POST["rsssl_soc_license_save"]) || !isset($_POST["rsssl_soc_license_save"]) || !isset($_POST['rsssl_soc_nonce']) ) return;
+
+		if( !wp_verify_nonce( $_POST['rsssl_soc_nonce'], 'rsssl_soc_nonce' ) ) return;
+
+		$license = sanitize_text_field(trim($_POST['rsssl_soc_license_key']));
+		$license = $this->sanitize_license($license);
+		update_option('rsssl_soc_license_key', $license );
+
+		if ( is_network_admin() ) {
+			wp_redirect(add_query_arg(array('page' => "really-simple-ssl", 'tab' => 'license'), network_admin_url('settings.php')));
+		} else {
+			wp_redirect(add_query_arg(array('page' => "rlrsssl_really_simple_ssl", 'tab' => 'license'), admin_url('options-general.php')));
+		}
+		exit;
+	}
+
+	/**
+	 * Get latest license data from license key
+	 * @param string $action
+	 * @param bool $clear_cache
+	 * @return string
+	 *   empty => no license key yet
+	 *   invalid, disabled, deactivated
+	 *   revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
+	 *   inactive, expired, valid
+	 */
+
+	public function get_license_status($action = 'check_license', $clear_cache = false )
+	{
+		$status = get_site_transient('rsssl_soc_license_status');
+		if ($clear_cache) $status = false;
+
+		if (!$status || get_site_option('rsssl_soc_license_activation_limit') === FALSE ){
+			$status = 'invalid';
+			$license = get_option('rsssl_soc_license_key');
+
+			if ( strlen($license) ===0 ) return 'empty';
+
+			// data to send in our API request
+			$api_params = array(
+				'edd_action' => $action,
+				'license' => $license,
+				'item_id' => RSSSL_SOC_ITEM_ID,
+				'url' => home_url()
+			);
+
+			$args = apply_filters('rsssl_license_verification_args', array('timeout' => 15, 'sslverify' => true, 'body' => $api_params) );
+			$response = wp_remote_post(REALLY_SIMPLE_SSL_URL, $args);
+			if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
+				set_site_transient('rsssl_soc_license_status', 'error');
+			} else {
+				$license_data = json_decode(wp_remote_retrieve_body($response));
+				if ( $license_data && ($license_data->license =='invalid' || $license_data->license === 'disabled') ){
+					$status = $license_data->license; //invalid, disabled, deactivated
+				} elseif ( $license_data && ( false === $license_data->success )) {
+					$status = $license_data->error; //revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
+				} elseif ( $license_data && ( true === $license_data->success )) {
+					$status = $license_data->license; //inactive, expired, valid
+					$date = $license_data->expires;
+					if ( $date !== 'lifetime' ) {
+						$date = strtotime($date);
+						$date = date(get_option('date_format'), $date);
+					}
+
+					update_site_option('rsssl_soc_license_expires', $date);
+					update_site_option('rsssl_soc_license_activation_limit', $license_data->license_limit);
+					update_site_option('rsssl_soc_license_activations_left', $license_data->activations_left);
+				} elseif ( $license_data && $license_data->license == 'failed') {
+					$status = 'empty';
+					delete_site_option('rsssl_soc_license_key' );
+					delete_site_option('rsssl_soc_license_expires' );
+					delete_site_option('rsssl_soc_license_activation_limit' );
+					delete_site_option('rsssl_soc_license_activations_left' );
+				} elseif ($license_data && $license_data->license == 'deactivated') {
+					$status = 'inactive';
 				}
+			}
 
-				restore_current_blog(); //switches back to previous blog, not current, so we have to do it each loop
+			set_site_transient('rsssl_soc_license_status', $status, WEEK_IN_SECONDS);
+		}
+		return $status;
+	}
 
-				//but if it's true, we exit immediately.
-				if ($status=="valid") return "true";
+	/**
+	 * Get license status label
+	 * @return string
+	 */
+
+	public function get_license_label(){
+		$status = $this->get_license_status();
+		$support_link = '<a target="_blank" href="https://really-simple-ssl.com/support">';
+		$account_link = '<a target="_blank" href="https://really-simple-ssl.com/account">';
+
+		$activation_limit = get_site_option('rsssl_soc_license_activation_limit' );
+		$activations_left = get_site_option('rsssl_soc_license_activations_left' );
+		$expires_date = get_site_option('rsssl_soc_license_expires' );
+
+		$expires_message = $expires_date === 'lifetime' ? __("You have a lifetime license.", 'really-simple-ssl-pro') : sprintf(__("Valid until %s.", 'really-simple-ssl-pro'), $expires_date);
+
+		$next_upsell = '';
+		if ($activations_left == 0) {
+			switch ( $activation_limit ) {
+				case 1:
+					$next_upsell = sprintf(__( "Upgrade to a %s5 sites or unlimited%s license.", "really-simple-ssl-pro" ), $account_link, '</a>');
+					break;
+				case 5:
+					$next_upsell = sprintf(__( "Upgrade to an %sAgency%s license.", "really-simple-ssl-pro" ), $account_link, '</a>');
+					break;
+				default:
+					$next_upsell = sprintf(__( "You can renew your license on your %saccount%s.", "really-simple-ssl-pro" ), $account_link, '</a>');
 			}
 		}
 
+		$messages = array();
+
+		/**
+		 * Some default messages, if the license is valid
+		 */
+
+		if ( $status === 'valid' || $status === 'no_activations_left' || $status === 'inactive' ) {
+			$messages[] = array(
+				'type' => 'success',
+				'label' => __('Open', 'really-simple-ssl-pro'),
+				'message' => $expires_message,
+			);
+
+			$messages[] = array(
+				'type' => 'premium',
+				'label' => __('Open', 'really-simple-ssl-pro'),
+				'message' => sprintf(__("Valid license for %s.", 'really-simple-ssl-pro'), 'Really Simple SSL Social '.rsssl_soc_version),
+			);
+
+			$messages[] = array(
+				'type' => 'premium',
+				'label' => __('License', 'really-simple-ssl-pro'),
+				'message' => sprintf(__("%s/%s activations available.", 'really-simple-ssl-pro'), $activations_left, $activation_limit ).' '.$next_upsell,
+			);
+		}
+
+		switch ( $status ) {
+			case 'error':
+				$messages[] = array(
+					'type' => 'warning',
+					'label' => __('Warning', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("The license information could not be retrieved at this moment. Please try again at a later time.", 'really-simple-ssl-pro'), $account_link, '</a>'),
+				);
+				break;
+			case 'empty':
+				$messages[] = array(
+					'type' => 'open',
+					'label' => __('Open', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("Please enter your license key. Available in your %saccount%s.", 'really-simple-ssl-pro'), $account_link, '</a>'),
+				);
+				break;
+			case 'inactive':
+			case 'deactivated':
+			case 'site_inactive':
+				$messages[] = array(
+					'type' => 'open',
+					'label' => __('Open', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("Please activate your license key.", 'really-simple-ssl-pro'), $account_link, '</a>'),
+				);
+				break;
+			case 'revoked':
+				$messages[] = array(
+					'type' => 'warning',
+					'label' => __('Warning', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("Your license has been revoked. Please contact %ssupport%s.", 'really-simple-ssl-pro'), $support_link, '</a>'),
+				);
+				break;
+			case 'missing':
+				$messages[] = array(
+					'type' => 'warning',
+					'label' => __('Warning', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("Your license could not be found in our system. Please contact %ssupport%s.", 'really-simple-ssl-pro'), $support_link, '</a>'),
+				);
+				break;
+			case 'invalid':
+			case 'disabled':
+				$messages[] = array(
+					'type' => 'warning',
+					'label' => __('Warning', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("This license is not valid. Find out why on your %saccount%s.", 'really-simple-ssl-pro'), $account_link, '</a>'),
+				);
+				break;
+			case 'item_name_mismatch':
+				$messages[] = array(
+					'type' => 'warning',
+					'label' => __('Warning', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("This license is not valid for this product. Find out why on your %saccount%s.", 'really-simple-ssl-pro'), $account_link, '</a>'),
+				);
+				break;
+			case 'no_activations_left':
+				$messages[] = array(
+					'type' => 'open',
+					'label' => __('License', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("%s/%s activations available.", 'really-simple-ssl-pro'), 0, $activation_limit ).' '.$next_upsell,
+				);
+				break;
+			case 'expired':
+				$messages[] = array(
+					'type' => 'warning',
+					'label' => __('Warning', 'really-simple-ssl-pro'),
+					'message' => sprintf(__("Your license key has expired. Please renew your license key on your %saccount%s.", 'really-simple-ssl-pro'), $account_link, '</a>'),
+				);
+				break;
+		}
+
+		$html = '';
+		foreach ( $messages as $message ) {
+			$html .= $this->rsssl_notice( $message );
+		}
+
+		return $html;
 	}
 
-    public
-    function get_latest_license_data()
-    {
+	/**
+	 * Show a notice regarding the license
+	 * @param array $message
+	 *
+	 * @return string
+	 */
 
-        $license_data = false;
-        // retrieve the license from the database
-        $license = get_option('rsssl_soc_license_key');
-
-        // data to send in our API request
-        $api_params = array(
-            'edd_action' => 'check_license',
-            'license' => $license,
-            'item_id' => RSSSL_SOC_ITEM_ID,
-            'url' => home_url()
-        );
-
-        // Call the custom API.
-        $args = array('timeout' => 15, 'sslverify' => true, 'body' => $api_params);
-        $args = apply_filters('rsssl_license_verification_args', $args);
-
-        $response = wp_remote_post($this->website, $args);
-
-        // make sure the response came back okay
-        if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
-            $message = is_wp_error($response) ? $response->get_error_message() : __('An error occurred while updating the license data, please try again.');
-            echo $message;
-        } else {
-            $license_data = json_decode(wp_remote_retrieve_body($response));
-            if ('valid' !== $license_data->license) {
-                delete_transient('rsssl_soc_license_status');
-                //expired, revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
-            } else {
-                $date = $license_data->expires;
-                $date = strtotime($date);
-                $date = date(get_option('date_format'), $date);
-                update_option('rsssl_soc_license_expires', $date);
-                set_transient('rsssl_soc_license_status', $license_data->license, YEAR_IN_SECONDS);
-                // $license_data->license will be either "deactivated" or "failed"
-                if ($license_data->license == 'deactivated') {
-                    delete_transient('rsssl_soc_license_status');
-                }
-            }
-        }
-
-        return $license_data;
-    }
-
-    public function get_error_message($license_data){
-        $link = '<a target="_blank" href="' . $this->website . '">';
-        $support_link = '<a target="_blank" href="https://really-simple-ssl.com/support">';
-        $account_link = '<a target="_blank" href="https://really-simple-ssl.com/account">';
-        $message = false;
-        if ($license_data && $license_data->license =='invalid'){
-            $message  = sprintf(__("This is not a valid license key. You can find your license key in your %saccount page%s or the purchase confirmation e-mail.", "'really-simple-ssl-soc'"), $account_link , '</a>');
-        } elseif ($license_data && ( false === $license_data->success )) {
-            switch ($license_data->error) {
-                case 'revoked':
-                    $message = sprintf(__("Your license has been revoked. Please contact %ssupport%s", "'really-simple-ssl-soc'"), $support_link, '</a>');
-                    break;
-                case 'missing':
-                    $message = sprintf(__("Your license could not be found in the database. Please contact %ssupport%s", "'really-simple-ssl-soc'"), $support_link, '</a>');
-                    break;
-                case 'invalid':
-                case 'site_inactive':
-                    $message = __("Your license has not yet been activated for this domain.", "'really-simple-ssl-soc'");
-                    break;
-                case 'item_name_mismatch':
-                    $message = __("Your license key appears to be invalid.", "'really-simple-ssl-soc'");
-                    break;
-                case 'no_activations_left':
-                    $message = sprintf(__("You have no activations left on your license. Please upgrade your license at %really-simple-ssl.com%s", "'really-simple-ssl-soc'"), $link, '</a>');
-                    break;
-            }
-
-        } elseif ($license_data && ( true === $license_data->success )) {
-            switch ($license_data->license) {
-                case 'inactive':
-                    $message = __("Your license is valid, but has not yet been activated for this domain.", "'really-simple-ssl-soc'");
-                    break;
-            }
-
-
-        }elseif (!$license_data) {
-            $message  = __("license data error", "'really-simple-ssl-soc'");
-        }
-
-        return $message;
-    }
-
-	public function rsssl_notice($msg, $type, $status)
+	public function rsssl_notice($message)
 	{
-
-		if ($msg == '') return;
+		if ( !isset($message['message']) || $message['message'] == '') return '';
 
 		ob_start();
 		?>
+		<style>
+			.rsssl-progress-status {
+				display: block;
+				min-width: 60px;
+				text-align: center;
+				border-radius: 15px;
+				padding: 4px 8px 4px 8px;
+				font-size: 0.8em;
+				font-weight: 600;
+				height: 17px;
+				line-height: 17px;
+			}
+			#rsssl_soc_license_key {
+				<?php if (!defined('rsssl_pro_version') ) echo 'width:300px !important;'?>
+			}
+		</style>
 		<tr style="width:100%">
 			<td>
-				<span class="rsssl-progress-status rsssl-license-status rsssl-<?php echo $type ?>">
-                        <?php echo $status ?>
-                    </span></td>
+	                    <span class="rsssl-progress-status rsssl-license-status rsssl-<?php echo $message['type'] ?>">
+                            <?php echo $message['label'] ?>
+                        </span>
+			</td>
 			<td class="rsssl-license-notice-text">
-				<?php echo $msg ?>
+				<?php echo $message['message'] ?>
 			</td>
 		</tr>
 		<?php
