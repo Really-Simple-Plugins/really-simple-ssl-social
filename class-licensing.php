@@ -121,7 +121,7 @@ class rsssl_soc_licensing {
 		<?php if (!defined('rsssl_pro_version')) { ?>
 			</tbody>
 			</table>
-			<input type="submit" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="<?php _e("Save changes", "really-simple-ssl-soc"); ?>">
+			<input type="submit" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="<?php _e("Save changes", "really-simple-ssl-social"); ?>">
 			</form>
 		<?php } else {?>
 			<input type="hidden" name="rsssl_soc_license_activate" id="submit" class="button button-primary" value="rsssl_soc_license_key">
@@ -153,8 +153,8 @@ class rsssl_soc_licensing {
 			 <?php if (!is_multisite()) {?>
 					<div class="error fade notice is-dismissible rsssl-soc-dismiss-notice">
 				    <p>
-				      <?php echo __("You haven't activated your Really Simple SSL social license yet. To get all future updates, enter your license on the settings page.","really-simple-ssl-soc");?>
-							<a href="options-general.php?page=rlrsssl_really_simple_ssl&tab=license"><?php echo __("Go to the settings page","really-simple-ssl-soc");?></a>
+				      <?php echo __("You haven't activated your Really Simple SSL social license yet. To get all future updates, enter your license on the settings page.","really-simple-ssl-social");?>
+							<a href="options-general.php?page=rlrsssl_really_simple_ssl&tab=license"><?php echo __("Go to the settings page","really-simple-ssl-social");?></a>
 							or <a target="blank" href="https://www.really-simple-ssl.com/premium">purchase a license</a>
 						</p>
 					</div>
@@ -208,8 +208,8 @@ class rsssl_soc_licensing {
 
 			  <div id="message" class="error fade notice">
 			    <p>
-			      <?php echo __("You haven't activated your Really Simple SSL social license yet on your main site. To get all future updates, enter your license on the settings page of your main site.","really-simple-ssl-soc");?>
-						<a href="<?php echo trailingslashit(admin_url())?>options-general.php?page=rlrsssl_really_simple_ssl&tab=license"><?php echo __("Go to the settings page","really-simple-ssl-soc");?></a>
+			      <?php echo __("You haven't activated your Really Simple SSL social license yet on your main site. To get all future updates, enter your license on the settings page of your main site.","really-simple-ssl-social");?>
+						<a href="<?php echo trailingslashit(admin_url())?>options-general.php?page=rlrsssl_really_simple_ssl&tab=license"><?php echo __("Go to the settings page","really-simple-ssl-social");?></a>
 						or <a target="blank" href="https://www.really-simple-ssl.com/pro">purchase a license</a>
 					</p>
 				</div>
@@ -234,7 +234,7 @@ class rsssl_soc_licensing {
 	}
 
 	public function add_license_tab($tabs){
-		$tabs['license'] = __("License","really-simple-ssl-soc");
+		$tabs['license'] = __("License","really-simple-ssl-social");
 		return $tabs;
 	}
 

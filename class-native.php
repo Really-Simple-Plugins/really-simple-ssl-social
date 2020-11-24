@@ -15,7 +15,7 @@ class rsssl_soc_native
     function __construct()
     {
         if (isset(self::$_this))
-            wp_die(sprintf(__('%s is a singleton class and you cannot create a second instance.', 'really-simple-ssl-soc'), get_class($this)));
+            wp_die(sprintf(__('%s is a singleton class and you cannot create a second instance.', "really-simple-ssl-social"), get_class($this)));
 
         self::$_this = $this;
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts') );
@@ -682,7 +682,7 @@ class rsssl_soc_native
 
         //Only replace the label for the 'color-new' and 'dark' themes.
         if ((get_option('rsssl_buttons_theme') === 'color-new') || (get_option('rsssl_buttons_theme') === 'dark') || (get_option('rsssl_buttons_theme') === 'sidebar-color') || (get_option('rsssl_buttons_theme') === 'sidebar-dark')) {
-            $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-soc").'</span>', $html);
+            $html = str_replace("{label}" , '<span class="rsssl-label">'.__("Share","really-simple-ssl-social").'</span>', $html);
         } else {
             $html = str_replace("{label}", "", $html);
         }

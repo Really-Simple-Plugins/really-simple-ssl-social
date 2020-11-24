@@ -3,7 +3,7 @@
 	$status = $rsssl_soc_licensing->get_license_status();
 
 	?>
-	<input type="submit" class="button button-secondary" name="rsssl_soc_license_save" value="<?php _e('Save', 'really-simple-ssl-soc'); ?>"/>
+	<input type="submit" class="button button-secondary" name="rsssl_soc_license_save" value="<?php _e('Save', "really-simple-ssl-social"); ?>"/>
 <?php
 
     if ($status && $status == 'valid') { ?>

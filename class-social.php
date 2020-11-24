@@ -8,7 +8,7 @@ class rsssl_soc_social
     function __construct()
     {
         if (isset(self::$_this))
-            wp_die(sprintf(__('%s is a singleton class and you cannot create a second instance.', 'really-simple-ssl-soc'), get_class($this)));
+            wp_die(sprintf(__('%s is a singleton class and you cannot create a second instance.', "really-simple-ssl-social"), get_class($this)));
 
         self::$_this = $this;
 
