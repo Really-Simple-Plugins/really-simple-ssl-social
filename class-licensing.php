@@ -73,7 +73,6 @@ class rsssl_soc_licensing {
 	}
 
 	public function add_standalone_license_page(){
-		error_log("Adding standlone license peeg");
 		$license 	= get_option( 'rsssl_soc_license_key' );
 		$status 	= get_option( 'rsssl_soc_license_status' );
 		$status = $this->get_license_status();
@@ -373,6 +372,11 @@ class rsssl_soc_licensing {
 					$status = $license_data->license; //invalid, disabled, deactivated
 				} elseif ( $license_data && ( false === $license_data->success )) {
 					$status = $license_data->error; //revoked, missing, invalid, site_inactive, item_name_mismatch, no_activations_left
+				} elseif ( $license_data && ($license_data->license === 'failed' || $license_data->license === 'deactivated') ) {
+					$status = 'empty';
+					delete_site_option('rsssl_soc_license_expires' );
+					delete_site_option('rsssl_soc_license_activation_limit' );
+					delete_site_option('rsssl_soc_license_activations_left' );
 				} elseif ( $license_data && ( true === $license_data->success )) {
 					$status = $license_data->license; //inactive, expired, valid
 					$date = $license_data->expires;
@@ -384,12 +388,6 @@ class rsssl_soc_licensing {
 					update_site_option('rsssl_soc_license_expires', $date);
 					update_site_option('rsssl_soc_license_activation_limit', $license_data->license_limit);
 					update_site_option('rsssl_soc_license_activations_left', $license_data->activations_left);
-				} elseif ( $license_data && $license_data->license == 'failed') {
-					$status = 'empty';
-					delete_site_option('rsssl_soc_license_key' );
-					delete_site_option('rsssl_soc_license_expires' );
-					delete_site_option('rsssl_soc_license_activation_limit' );
-					delete_site_option('rsssl_soc_license_activations_left' );
 				} elseif ($license_data && $license_data->license == 'deactivated') {
 					$status = 'inactive';
 				}

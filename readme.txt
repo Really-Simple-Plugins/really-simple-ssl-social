@@ -4,7 +4,7 @@ Requires at least: 5.0
 License: GPL2
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 4.0.8
+Stable tag: 4.1.1
 
 Recovers Facebook likes for your website after migration to https.
 
@@ -26,8 +26,12 @@ For more information: go to the [website](https://www.really-simple-ssl.com/), o
 == Frequently Asked Questions ==
 
 == Changelog ==
-= 4.0.8 =
+= 4.1.1 =
+* Warning on deactivating license
+
+= 4.1.0 =
 * PHP docs
+* Compatibility with RSSSL 4.0.0
 
 = 4.0.7 =
 * Tested up to WordPress 5.5
