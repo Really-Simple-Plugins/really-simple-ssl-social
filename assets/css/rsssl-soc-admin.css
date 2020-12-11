@@ -32,6 +32,14 @@ tr {
 	margin-top: 12px !important;
 }
 
+.rsssl-license-notice-text {
+	margin-left: 15px !important;
+}
+.rsssl-progress-status {
+	margin-top: 0!important;
+	padding-top: 6px!important;
+}
+
 	/* Base styles for the entire tooltip */
 [data-rsssl-tooltip]:before,
 [data-rsssl-tooltip]:after,
