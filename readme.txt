@@ -2,7 +2,7 @@
 Contributors: RogierLankhorst
 Requires at least: 5.0
 License: GPL2
-Tested up to: 5.7
+Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: 4.1.2
 
