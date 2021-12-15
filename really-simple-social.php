@@ -47,10 +47,6 @@ if (is_admin()) {
     $rsssl_soc_admin = new rsssl_soc_admin;
 }
 
-//outside is_admin for autoupdate purposes
-require_once(dirname(__FILE__) . '/class-licensing.php');
-$rsssl_soc_licensing = new rsssl_soc_licensing;
-
 $core_plugin = '/really-simple-ssl/rlrsssl-really-simple-ssl.php';
 if (!is_plugin_active($core_plugin)) {
     require_once(dirname(__FILE__) . '/class-mixed-content-fixer.php');
